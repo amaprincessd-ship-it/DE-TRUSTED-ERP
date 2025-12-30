@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | PETTY CASH VOUCHER SYSTEM</title>
+    <title>DE-TRUSTED ERP | EXPENSE CLAIM SYSTEM</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -14,21 +14,17 @@
         
         body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #e2e8f0; color: #1e293b; overflow: hidden; }
 
-        /* BANK HEADER */
         .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; height: 60px; }
         .search-bar { background: #ffffff; color: #333; border: none; padding: 8px 20px; border-radius: 4px; width: 450px; font-weight: 700; border: 2px solid #002366; outline: none; }
 
-        /* SIDEBAR - 10 DESKS */
         .sidebar { background: #001f3f; height: calc(100vh - 60px); position: fixed; width: 240px; top: 60px; overflow-y: auto; padding-bottom: 50px; border-right: 1px solid rgba(255,255,255,0.1); }
         .nav-btn { width: 100%; text-align: left; padding: 13px 25px; font-size: 10.5px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; letter-spacing: 0.05em; }
         .nav-btn.active { background: #003366; color: #fbbf24; border-left: 5px solid #fbbf24; font-weight: 800; }
         .dept-header { padding: 15px 25px 5px 25px; font-size: 9px; color: #64748b; font-weight: 900; text-transform: uppercase; }
 
-        /* MAIN CONTENT */
         .workspace { margin-left: 240px; padding: 85px 40px 40px 40px; height: 100vh; overflow-y: auto; }
-        .bank-card { background: white; border-radius: 2px; border: 1px solid #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 30px; min-height: 700px; }
+        .bank-card { background: white; border-radius: 2px; border: 1px solid #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 30px; min-height: 800px; }
         
-        /* FORM UI */
         .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
         .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #f8fafc; margin-bottom: 15px; border-radius: 4px; }
         .bank-input:focus { border-color: #001f3f; background: #fff; outline: none; }
@@ -37,7 +33,7 @@
         .security-select { background: #fffbeb !important; border-left: 4px solid #fbbf24 !important; font-weight: bold; }
         .btn-post { background: #001f3f; color: white; padding: 14px 40px; font-weight: 800; border-radius: 2px; text-transform: uppercase; cursor: pointer; border: none; }
         
-        .audit-alert { font-size: 10px; background: #fff1f2; color: #9f1239; border-left: 3px solid #e11d48; padding: 10px; margin-bottom: 20px; font-weight: 700; }
+        .audit-trail-log { font-family: 'Roboto Mono', monospace; font-size: 10px; background: #1e293b; color: #10b981; padding: 15px; border-radius: 4px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -48,9 +44,8 @@
             const e = React.createElement;
             const { useState } = React;
 
-            // Numeric to Words Utility
             const toWords = (n) => {
-                if (!n || n <= 0) return "Zero Currency Units Only";
+                if (!n || n <= 0) return "Zero GHS Only";
                 const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
                 const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
                 const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
@@ -65,44 +60,44 @@
             };
 
             const SYSTEM_REGISTRY = {
-                "Executive": { desk: "Executive", title: "Strategic Performance", fields: ["KPIs", "Group Cash Flow", "Audit Summary"] },
-                "Administration": { desk: "Administration", title: "Asset Registry Inquiry", fields: ["Asset ID (Search)", "Asset Name", "Location", "IFRS Depreciation"] },
-                "Financial Reporting": { desk: "Finance", title: "IFRS Financial Reporting Hub", fields: ["Period", "Revenue", "Expenses", "Total Assets", "Total Liabilities", "Equity"] },
-                "Payment Voucher": { desk: "Finance", title: "Payment Voucher Master", fields: ["Voucher ID (Auto)", "Payee Name", "Invoice Ref", "Amount (Numeric)", "Total Paid", "Status"] },
-                "Petty Cash Voucher": { 
+                "Executive": { desk: "Executive", title: "Strategic Performance", fields: ["Operating Margin", "Compliance Score"] },
+                "Administration": { desk: "Administration", title: "Asset Registry", fields: ["Asset ID", "Location", "IFRS Depreciation"] },
+                "Financial Reporting": { desk: "Finance", title: "IFRS Financial Reporting Hub", fields: ["Period", "Revenue", "Expenses", "Audit Status"] },
+                "Payment Voucher": { desk: "Finance", title: "Payment Voucher Master", fields: ["Voucher ID", "Payee", "Amount"] },
+                "Petty Cash Voucher": { desk: "Finance", title: "Petty Cash Form", fields: ["Voucher ID", "Employee", "Amount"] },
+                "Expense Claim": { 
                     desk: "Finance", 
-                    title: "Petty Cash Voucher Form", 
-                    fields: ["Voucher ID (Auto)", "Date", "Department / Project", "Employee Name", "Currency", "Exchange Rate", "Expense Purpose / Description", "Amount (Numeric)", "Amount In Words (Auto)", "Expense Category", "Approved By", "Payment Method", "Status"] 
+                    title: "Employee Expense Claim Form", 
+                    fields: ["Claim ID (Auto)", "Date of Claim", "Employee Name (Search)", "Employee ID (Auto)", "Department", "Expense Category", "Currency", "Exchange Rate", "Invoice / Receipt Number", "Vendor / Payee", "Amount (Numeric)", "Amount In Words (Auto)", "Date of Expense", "Expense Purpose / Description", "Payment Mode", "Approved By", "Status"] 
                 },
-                "Accounts Receivable": { desk: "Finance", title: "AR Ledger", fields: ["Invoice #", "Customer", "Amount"] },
-                "HR": { desk: "HR", title: "Personnel Master", fields: ["Staff ID", "Full Name", "Department"] },
+                "HR": { desk: "HR", title: "Personnel Master", fields: ["Staff ID", "Full Name", "Dept"] },
                 "Logistics": { desk: "Logistics", title: "Fleet Master", fields: ["Vehicle ID", "Driver"] },
-                "Warehouse": { desk: "Warehouse", title: "Stock Registry", fields: ["Item Code", "Current Balance"] },
-                "Production": { desk: "Production", title: "Work Orders", fields: ["Order ID", "Qty", "QC Pass Status"] },
-                "Procurement": { desk: "Procurement", title: "Vendor Registry", fields: ["Vendor ID", "Company"] },
-                "Sales & Marketing": { desk: "Sales & Marketing", title: "Customer CRM", fields: ["Customer ID", "Region"] },
+                "Warehouse": { desk: "Warehouse", title: "Stock Registry", fields: ["Item Code", "Balance"] },
+                "Production": { desk: "Production", title: "Work Orders", fields: ["Order ID", "Qty", "QC Status"] },
+                "Procurement": { desk: "Procurement", title: "Vendor Registry", fields: ["Vendor ID", "Terms"] },
+                "Sales & Marketing": { desk: "Sales & Marketing", title: "Customer CRM", fields: ["Client ID", "Region"] },
                 "Reception": { desk: "Reception", title: "Visitor Log", fields: ["Visit ID", "Person to See"] }
             };
 
             function App() {
                 const [currentDesk, setCurrentDesk] = useState('Finance');
-                const [activeSub, setActiveSub] = useState('Petty Cash Voucher');
-                const [pcAmount, setPcAmount] = useState(0);
+                const [activeSub, setActiveSub] = useState('Expense Claim');
+                const [claimAmt, setClaimAmt] = useState(0);
 
                 const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
 
                 return e('div', null,
                     e('div', { className: 'bank-header shadow-md' },
                         e('div', { className: 'flex items-center gap-4' },
-                            e('h1', { className: 'text-xl font-black tracking-tighter' }, 'DE-TRUSTED BANK CORE'),
-                            e('span', { className: 'bg-yellow-400 text-blue-900 px-2 py-1 text-[10px] font-black rounded' }, 'CASH_DESK_01')
+                            e('h1', { className: 'text-xl font-black tracking-tighter' }, 'DE-TRUSTED ERP'),
+                            e('span', { className: 'bg-green-600 px-2 py-1 text-[10px] rounded' }, 'AUDIT_INTEGRITY_MODE')
                         ),
-                        e('input', { className: 'search-bar', placeholder: 'FIND PCV ID, STAFF ID, OR DEPARTMENT...' }),
-                        e('div', { className: 'text-[10px] font-bold' }, '30-DEC-2025 | LIQUIDITY_ACTIVE')
+                        e('input', { className: 'search-bar', placeholder: 'SEARCH CLAIM ID, EMPLOYEE OR VENDOR...' }),
+                        e('div', { className: 'text-[10px] font-bold' }, '30-DEC-2025 | IFRS_COMPLIANT')
                     ),
 
                     e('div', { className: 'sidebar' },
-                        e('div', { className: 'dept-header' }, 'Operational Desks'),
+                        e('div', { className: 'dept-header' }, 'Enterprise Desks'),
                         ['Executive', 'Administration', 'Finance', 'HR', 'Logistics', 'Warehouse', 'Production', 'Procurement', 'Sales & Marketing', 'Reception'].map(d => 
                             e('div', { 
                                 key: d, 
@@ -119,51 +114,56 @@
                     e('main', { className: 'workspace' },
                         e('div', { className: 'flex gap-6' },
                             e('div', { className: 'w-64' },
-                                e('div', { className: 'bg-white border border-slate-300 h-[650px] overflow-y-auto' },
-                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-black border-b tracking-widest' }, 'MODULE REGISTRY'),
+                                e('div', { className: 'bg-white border border-slate-300 h-[700px] overflow-y-auto shadow-inner' },
+                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-black border-b tracking-widest' }, 'FINANCE MODULES'),
                                     Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
-                                        e('div', { key: name, onClick: () => { setActiveSub(name); if(name !== 'Petty Cash Voucher') setPcAmount(0); }, className: `p-4 text-sm cursor-pointer border-b hover:bg-blue-50 transition-all ${activeSub === name ? 'bg-blue-100 font-bold' : ''}` }, name)
+                                        e('div', { key: name, onClick: () => setActiveSub(name), className: `p-4 text-sm cursor-pointer border-b hover:bg-blue-50 transition-all ${activeSub === name ? 'bg-blue-100 font-bold' : ''}` }, name)
                                     )
                                 )
                             ),
                             e('div', { className: 'flex-1' },
                                 e('div', { className: 'bank-card' },
-                                    e('h2', { className: 'text-2xl font-bold mb-8 border-b pb-4 text-slate-800' }, schema.title),
-                                    
-                                    // Petty Cash Balance Alert Logic
-                                    activeSub === "Petty Cash Voucher" && e('div', { className: 'audit-alert' }, 
-                                        "SYSTEM ALERT: Current Petty Cash Float balance is GHS 2,450.00. Automatic replenishment alert at GHS 500.00."
+                                    e('div', { className: 'flex justify-between items-center border-b pb-4 mb-8' },
+                                        e('h2', { className: 'text-2xl font-bold text-slate-800' }, schema.title),
+                                        e('div', { className: 'flex gap-2' },
+                                            e('span', { className: 'bg-red-100 text-red-800 text-[9px] px-2 py-1 font-bold rounded' }, 'RECEIPT MANDATORY'),
+                                            e('span', { className: 'bg-blue-100 text-blue-800 text-[9px] px-2 py-1 font-bold rounded' }, 'GL AUTO-POST')
+                                        )
                                     ),
 
                                     e('div', { className: 'grid grid-cols-2 gap-x-10' },
                                         schema.fields.map(label => e('div', { key: label },
                                             e('label', { className: 'field-label' }, 
                                                 e('span', null, label),
-                                                (label.includes("Approved") || label.includes("Purpose") || label.includes("Numeric")) && e('span', { className: 'text-[8px] text-red-600 bg-red-50 px-1' }, 'MANDATORY')
+                                                (label.includes("Approved") || label.includes("Mandatory") || label.includes("Numeric") || label.includes("Purpose")) && e('span', { className: 'text-[8px] text-red-600 bg-red-50 px-1' }, 'MANDATORY')
                                             ),
                                             label === "Amount In Words (Auto)" ? 
-                                                e('div', { className: 'words-panel' }, toWords(pcAmount)) :
-                                            label === "Status" || label === "Expense Category" || label === "Department / Project" || label === "Payment Method" ? 
+                                                e('div', { className: 'words-panel' }, toWords(claimAmt)) :
+                                            label === "Status" || label === "Expense Category" || label === "Payment Mode" || label === "Department" ? 
                                                 e('select', { className: 'bank-input security-select' }, 
                                                     e('option', null, `-- Select Option --`),
-                                                    label === "Status" ? ['Draft', 'Approved', 'Paid'].map(o => e('option', {key:o}, o)) :
-                                                    label === "Expense Category" ? ['Office Supplies', 'Travel', 'Fuel', 'Misc'].map(o => e('option', {key:o}, o)) :
-                                                    ['Logistics', 'Administration', 'Production', 'Sales', 'Executive'].map(o => e('option', {key:o}, o))
+                                                    label === "Status" ? ['Draft', 'Reviewed', 'Approved', 'Paid', 'Rejected'].map(o => e('option', {key:o}, o)) :
+                                                    label === "Expense Category" ? ['Travel', 'Utilities', 'Office Supplies', 'Other'].map(o => e('option', {key:o}, o)) :
+                                                    ['Logistics', 'Administration', 'Finance', 'Production'].map(o => e('option', {key:o}, o))
                                                 ) :
                                             e(label.includes("Description") ? 'textarea' : 'input', { 
                                                 className: 'bank-input', 
-                                                type: label.includes("Numeric") || label.includes("Rate") ? "number" : "text",
-                                                onChange: (x) => { if(label === "Amount (Numeric)") setPcAmount(x.target.value); },
-                                                placeholder: label === "Voucher ID (Auto)" ? "PCV-STAMP-AUTO" : `Enter ${label}...`
+                                                type: label.includes("Numeric") ? "number" : "text",
+                                                onChange: (x) => { if(label === "Amount (Numeric)") setClaimAmt(x.target.value); },
+                                                placeholder: label.includes("Auto") ? "SYSTEM GENERATED" : `Enter ${label}...`
                                             })
                                         ))
                                     ),
-                                    e('div', { className: 'mt-10 p-4 bg-slate-50 border border-slate-200 text-[11px] font-bold text-slate-500' },
-                                        "AUDIT LOGIC: Petty cash disbursed is tracked per department. Supporting receipt upload mandatory for reconciliation."
+
+                                    activeSub === "Expense Claim" && e('div', { className: 'audit-trail-log' }, 
+                                        "> AUDIT TRAIL: [30-DEC-2025 15:33] - Claim Instance Initiated by USER_ADMIN. \n" +
+                                        "> SYSTEM CHECK: Checking for duplicate Receipt Numbers... Clear. \n" +
+                                        "> COMPLIANCE: Policy limit for Category 'Travel' is GHS 5,000.00."
                                     ),
-                                    e('div', { className: 'mt-12 flex justify-end gap-4' },
-                                        e('button', { className: 'px-6 py-3 border border-slate-300 text-xs font-bold hover:bg-slate-50' }, 'UPLOAD RECEIPTS (PDF/IMG)'),
-                                        e('button', { className: 'btn-post' }, 'Authorize Disbursement')
+
+                                    e('div', { className: 'mt-8 flex justify-end gap-4' },
+                                        e('button', { className: 'px-6 py-3 border border-slate-300 text-xs font-bold hover:bg-slate-50' }, 'ATTACH SCAN/RECEIPT'),
+                                        e('button', { className: 'btn-post' }, 'Submit for Approval')
                                     )
                                 )
                             )
