@@ -161,6 +161,62 @@
                 </div>
             );
 
+            // --- MODULE: SALES & CRM (NEW) ---
+            const SalesDesk = () => (
+                <div className="fade-in">
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Sales & <span className="text-blue-600">CRM</span></h1>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Customer Credit & Revenue Desk</p>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 locked-card p-8">
+                            <h3 className="font-black text-xs uppercase text-slate-400 mb-6">New Order Entry</h3>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase">Select Customer</label>
+                                        <select className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded font-bold outline-none">
+                                            <option>Ashalaja Construction Ltd</option>
+                                            <option>Ga South Municipal Assembly</option>
+                                            <option>Greater Accra Paint Distributors</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase">Payment Mode</label>
+                                        <select className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded font-bold outline-none">
+                                            <option>Corporate Credit (Locked)</option>
+                                            <option>Momo Pay</option>
+                                            <option>Bank Transfer</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase">Tinting Request (Color Code)</label>
+                                    <input type="text" placeholder="e.g. RAL 7016 Anthracite" className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded font-bold outline-none" />
+                                </div>
+                            </div>
+                            <div className="mt-8 p-6 bg-slate-900 rounded text-white">
+                                <div className="flex justify-between mb-2 text-xs"><span>Sub-Total</span><span>GHS 10,000.00</span></div>
+                                <div className="flex justify-between mb-2 text-xs text-blue-400 font-bold"><span>Statutory Levies (VAT/NHIL/GETFund)</span><span>GHS 2,190.00</span></div>
+                                <hr className="border-slate-700 my-4"/>
+                                <div className="flex justify-between text-xl font-black italic"><span>TOTAL DUE</span><span>GHS 12,190.00</span></div>
+                            </div>
+                            <button className="mt-6 w-full bg-blue-600 text-white py-5 font-black uppercase tracking-widest hover:bg-blue-700 transition-all">Generate Professional Waybill</button>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="bg-white p-6 shadow rounded border-b-4 border-orange-500">
+                                <p className="text-[10px] font-black text-slate-400 uppercase">Customer Credit Lock</p>
+                                <p className="text-lg font-black text-slate-800">ACTIVE - NO DEBTORS</p>
+                            </div>
+                            <div className="bg-white p-6 shadow rounded border-b-4 border-slate-900">
+                                <p className="text-[10px] font-black text-slate-400 uppercase">Daily Sales Volume</p>
+                                <p className="text-lg font-black text-slate-800 text-blue-600">GHS 48,200.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
             return (
                 <div className="flex h-screen overflow-hidden">
                     {/* SIDEBAR */}
@@ -177,23 +233,4 @@
                         </div>
                         <div className="bg-slate-800/50 p-4 rounded border border-slate-700">
                             <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">Secure State</p>
-                            <p className="text-white text-[10px] font-mono uppercase tracking-tighter">Ashalaja_Primary_Node_Active</p>
-                        </div>
-                    </div>
-
-                    {/* MAIN CONTENT */}
-                    <main className="flex-1 overflow-y-auto p-16 relative">
-                        {currentDesk === 'Production' && <ProductionDesk />}
-                        {currentDesk === 'HR' && <HRDesk />}
-                        {currentDesk === 'Warehouse' && <WarehouseDesk />}
-                        {currentDesk === 'Sales' && <div className="text-center mt-20 font-black text-slate-200 text-6xl uppercase tracking-tighter opacity-50">Sales Module Locked</div>}
-                    </main>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Dashboard />);
-    </script>
-</body>
-</html>
+                            <p className="text-white text-
