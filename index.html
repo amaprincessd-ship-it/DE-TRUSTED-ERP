@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | HR & PAYROLL SUITE</title>
+    <title>DE-TRUSTED ERP | OFFICIAL GRA PAYE SUITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
         body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; overflow: hidden; }
@@ -30,16 +29,8 @@
             function App() {
                 const [user, setUser] = useState({ auth: false, role: '', name: '' });
                 const [password, setPassword] = useState('');
-                const [activeDesk, setActiveDesk] = useState('DASHBOARD');
-                
-                // PAYROLL STATE
+                const [activeDesk, setActiveDesk] = useState('HR');
                 const [basicSalary, setBasicSalary] = useState(0);
-                const ssnitRate = 0.055; // 5.5% Employee contribution
-                const taxRate = 0.15; // Simplified 15% flat tax for demo
-                
-                const ssnitAmount = basicSalary * ssnitRate;
-                const taxAmount = (basicSalary - ssnitAmount) * taxRate;
-                const netPay = basicSalary - ssnitAmount - taxAmount;
 
                 const handleLogin = (val) => {
                     val.preventDefault();
@@ -47,11 +38,41 @@
                     else alert("INVALID KEY");
                 };
 
+                // CALCULATE SSNIT (5.5%)
+                const ssnit = basicSalary * 0.055;
+                const taxableIncome = basicSalary - ssnit;
+
+                // GRA GRADUATED TAX CALCULATION (2025 BANDS)
+                const calculatePAYE = (income) => {
+                    let tax = 0;
+                    let remaining = income;
+
+                    const bands = [
+                        { amt: 490, rate: 0.00 },   // First 490 - Free
+                        { amt: 110, rate: 0.05 },   // Next 110 - 5%
+                        { amt: 130, rate: 0.10 },   // Next 130 - 10%
+                        { amt: 3167, rate: 0.175 }, // Next 3,167 - 17.5%
+                        { amt: 16103, rate: 0.25 }, // Next 16,103 - 25%
+                        { amt: Infinity, rate: 0.30 } // Above - 30%
+                    ];
+
+                    for (let band of bands) {
+                        if (remaining <= 0) break;
+                        let taxableAtThisRate = Math.min(remaining, band.amt);
+                        tax += taxableAtThisRate * band.rate;
+                        remaining -= taxableAtThisRate;
+                    }
+                    return tax;
+                };
+
+                const payeTax = calculatePAYE(taxableIncome);
+                const netPay = taxableIncome - payeTax;
+
                 if (!user.auth) {
                     return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
-                        e('form', { onSubmit: handleLogin, className: 'glass-card w-80 text-center' },
+                        e('form', { onSubmit: handleLogin, className: 'glass-card w-80 text-center shadow-2xl' },
                             e('h1', { className: 'text-2xl font-black mb-8' }, 'DE-TRUSTED ERP'),
-                            e('input', { type: 'password', className: 'input-box text-center mb-6', placeholder: 'KEY', value: password, onChange: (v) => setPassword(v.target.value) }),
+                            e('input', { type: 'password', className: 'input-box text-center mb-6', placeholder: 'ACCESS KEY', value: password, onChange: (v) => setPassword(v.target.value) }),
                             e('button', { type: 'submit', className: 'btn-gold' }, 'ENTER')
                         )
                     );
@@ -60,58 +81,46 @@
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
                         e('div', { className: 'p-8 border-b border-slate-800' },
-                            e('h1', { className: 'text-xl font-black text-white' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[9px] text-yellow-500 font-bold' }, user.name)
+                            e('h1', { className: 'text-xl font-black text-white italic' }, 'DE-TRUSTED'),
+                            e('p', { className: 'text-[9px] text-yellow-500 font-bold uppercase' }, user.name)
                         ),
                         e('nav', { className: 'mt-4' },
-                            [
-                                {id:'DASHBOARD', n:'Dashboard', i:'📊'}, 
-                                {id:'HR', n:'HR & Payroll', i:'👥'},
-                                {id:'WHSE', n:'Warehouse', i:'📦'}
-                            ].map(d => 
+                            [{id:'HR', n:'HR & Payroll', i:'👥'}].map(d => 
                                 e('div', { key: d.id, onClick: () => setActiveDesk(d.id), className: `nav-link ${activeDesk === d.id ? 'active' : ''}` }, d.i + ' ' + d.n)
                             )
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
-                        e('h2', { className: 'text-3xl font-black mb-6 uppercase' }, activeDesk.replace('HR', 'HR & Payroll')),
-                        
-                        activeDesk === 'DASHBOARD' && e('div', { className: 'glass-card' },
-                            e('p', { className: 'text-slate-500' }, 'Welcome to the Command Center. Select a desk to begin operations.')
+                        e('div', { className: 'flex justify-between items-center mb-10' },
+                            e('h2', { className: 'text-3xl font-black uppercase' }, 'Payroll Desk'),
+                            e('span', { className: 'bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded text-[10px] font-bold' }, 'GRA 2025 COMPLIANT')
                         ),
-
-                        activeDesk === 'HR' && e('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-8' },
-                            // INPUT CARD
+                        
+                        e('div', { className: 'grid grid-cols-1 lg:grid-cols-2 gap-8' },
                             e('div', { className: 'glass-card' },
-                                e('h3', { className: 'text-lg font-bold mb-4' }, 'Salary Calculator'),
-                                e('label', { className: 'text-[10px] text-slate-400' }, 'BASIC SALARY (GHS)'),
-                                e('input', { 
-                                    type: 'number', 
-                                    className: 'input-box mb-6', 
-                                    placeholder: 'Enter amount',
-                                    onChange: (v) => setBasicSalary(parseFloat(v.target.value) || 0)
-                                }),
-                                e('button', { className: 'btn-gold', onClick: () => alert("Payroll Entry Saved") }, 'APPROVE PAYSLIP')
+                                e('h3', { className: 'text-sm font-bold mb-6 text-slate-400' }, 'EMPLOYEE DATA ENTRY'),
+                                e('div', { className: 'mb-6' },
+                                    e('label', { className: 'text-[10px] text-slate-500 font-bold' }, 'BASIC SALARY (GHS)'),
+                                    e('input', { 
+                                        type: 'number', 
+                                        className: 'input-box text-xl font-bold text-yellow-500', 
+                                        value: basicSalary,
+                                        onChange: (v) => setBasicSalary(parseFloat(v.target.value) || 0)
+                                    })
+                                ),
+                                e('button', { className: 'btn-gold' }, 'PREPARE PAYSLIP')
                             ),
-                            // BREAKDOWN CARD
-                            e('div', { className: 'glass-card bg-slate-900/50' },
-                                e('h3', { className: 'text-xs font-bold text-slate-500 mb-6 uppercase' }, 'Deduction Breakdown'),
-                                e('div', { className: 'space-y-4' },
-                                    e('div', { className: 'flex justify-between border-b border-slate-800 pb-2' }, 
-                                        e('span', { className: 'text-slate-400' }, 'Gross Salary'),
-                                        e('span', { className: 'font-bold' }, `GHS ${basicSalary.toLocaleString()}`)
-                                    ),
-                                    e('div', { className: 'flex justify-between border-b border-slate-800 pb-2' }, 
-                                        e('span', { className: 'text-red-400' }, 'SSNIT (5.5%)'),
-                                        e('span', { className: 'text-red-400' }, `- ${ssnitAmount.toLocaleString()}`)
-                                    ),
-                                    e('div', { className: 'flex justify-between border-b border-slate-800 pb-2' }, 
-                                        e('span', { className: 'text-red-400' }, 'PAYE Tax (15%)'),
-                                        e('span', { className: 'text-red-400' }, `- ${taxAmount.toLocaleString()}`)
-                                    ),
-                                    e('div', { className: 'flex justify-between pt-4' }, 
-                                        e('span', { className: 'text-emerald-500 font-bold' }, 'NET TAKE-HOME'),
-                                        e('span', { className: 'text-emerald-500 font-black text-xl' }, `GHS ${netPay.toLocaleString()}`)
+
+                            e('div', { className: 'glass-card border-slate-700 bg-slate-900/40' },
+                                e('h3', { className: 'text-xs font-bold text-slate-500 mb-6 uppercase tracking-widest' }, 'Official Tax Computation'),
+                                e('div', { className: 'space-y-4 font-mono text-sm' },
+                                    e('div', { className: 'flex justify-between' }, e('span', null, 'Gross Salary'), e('span', null, basicSalary.toFixed(2))),
+                                    e('div', { className: 'flex justify-between text-red-400' }, e('span', null, 'SSNIT Deduction (5.5%)'), e('span', null, `-${ssnit.toFixed(2)}`)),
+                                    e('div', { className: 'flex justify-between font-bold border-t border-slate-800 pt-2' }, e('span', null, 'Taxable Income'), e('span', null, taxableIncome.toFixed(2))),
+                                    e('div', { className: 'flex justify-between text-red-500' }, e('span', null, 'Graduated PAYE Tax'), e('span', null, `-${payeTax.toFixed(2)}`)),
+                                    e('div', { className: 'flex justify-between pt-6 border-t border-yellow-500/50' }, 
+                                        e('span', { className: 'text-emerald-500 font-bold' }, 'NET PAY'),
+                                        e('span', { className: 'text-emerald-500 font-black text-2xl' }, `GHS ${netPay.toFixed(2)}`)
                                     )
                                 )
                             )
