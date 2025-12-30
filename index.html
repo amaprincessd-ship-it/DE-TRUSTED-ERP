@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | FILTER & HISTORY</title>
+    <title>DE-TRUSTED ERP | MODULAR PAYROLL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
         body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
-        .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; z-index: 10; }
+        .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; z-index: 50; }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
-        .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 12px; border-radius: 6px; width: 100%; margin-top: 5px; font-family: 'Roboto Mono', monospace; outline: none; }
+        .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 12px; border-radius: 6px; width: 100%; margin-top: 5px; font-family: 'Roboto Mono', monospace; font-size: 14px; outline: none; }
+        .input-box:focus { border-color: #fbbf24; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 14px; border-radius: 6px; width: 100%; cursor: pointer; border: none; text-transform: uppercase; }
+        .ledger-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        .mono { font-family: 'Roboto Mono', monospace; }
         .history-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
         .history-table th { text-align: left; padding: 12px; border-bottom: 2px solid #334155; color: #94a3b8; }
         .history-table td { padding: 12px; border-bottom: 1px solid #1e293b; }
-        .filter-bar { background: #0f172a; border: 1px solid #fbbf24; color: #fbbf24; padding: 8px 15px; border-radius: 20px; font-size: 12px; outline: none; width: 250px; }
+        .tag-red { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .tag-green { background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -26,62 +30,72 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState } = React;
+            const { useState, useMemo } = React;
 
-            const fmt = (num) => new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2 }).format(num);
+            const fmt = (num) => new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
 
             function App() {
                 const [isAuth, setIsAuth] = useState(false);
                 const [passInput, setPassInput] = useState('');
+                
+                // Form States
                 const [empName, setEmpName] = useState('');
                 const [basicSalary, setBasicSalary] = useState(0);
-                const [bonus, setBonus] = useState(0);
-                const [loan, setLoan] = useState(0);
+                const [allowanceType, setAllowanceType] = useState('General');
+                const [allowanceAmt, setAllowanceAmt] = useState(0);
+                const [loanAmt, setLoanAmt] = useState(0);
+                const [otherDedType, setOtherDedType] = useState('Misc');
+                const [otherDedAmt, setOtherDedAmt] = useState(0);
+
                 const [history, setHistory] = useState([]);
                 const [searchTerm, setSearchTerm] = useState('');
 
-                // TAX ENGINE
-                const ssnit = (basicSalary + bonus) * 0.055;
-                const taxableIncome = (basicSalary + bonus) - ssnit;
+                // Calculation Logic
+                const grossSalary = basicSalary + allowanceAmt;
+                const ssnit = (basicSalary + allowanceAmt) * 0.055;
+                const taxableIncome = grossSalary - ssnit;
+
                 const calculatePAYE = (income) => {
-                    let tax = 0, rem = income;
+                    let tax = 0; let rem = income;
                     const bands = [{a:490,r:0},{a:110,r:0.05},{a:130,r:0.10},{a:3167,r:0.175},{a:16103,r:0.25},{a:Infinity,r:0.30}];
                     for (let b of bands) { if (rem <= 0) break; let c = Math.min(rem, b.a); tax += c * b.r; rem -= c; }
                     return tax;
                 };
+
                 const paye = calculatePAYE(taxableIncome);
-                const net = taxableIncome - paye - loan;
+                const totalDeductions = ssnit + paye + loanAmt + otherDedAmt;
+                const netPay = grossSalary - totalDeductions;
 
                 const handleLogin = (val) => {
                     val.preventDefault();
                     if (passInput === 'SUPER2025') setIsAuth(true);
-                    else alert("WRONG KEY");
+                    else alert("ACCESS DENIED");
                 };
 
                 const saveRecord = () => {
-                    if(!empName) return alert("Name required");
-                    setHistory([{ id: Date.now(), name: empName, date: new Date().toLocaleDateString(), net: net }, ...history]);
-                    setEmpName(''); setBasicSalary(0); setBonus(0); setLoan(0);
+                    if(!empName) return alert("Staff Name Required");
+                    const record = {
+                        id: Date.now(),
+                        name: empName,
+                        date: new Date().toLocaleDateString(),
+                        gross: grossSalary,
+                        deductions: totalDeductions,
+                        net: netPay
+                    };
+                    setHistory([record, ...history]);
+                    // Reset Form
+                    setEmpName(''); setBasicSalary(0); setAllowanceAmt(0); setLoanAmt(0); setOtherDedAmt(0);
                 };
 
-                const deleteRecord = (id) => setHistory(history.filter(h => h.id !== id));
-
-                // FILTER LOGIC: Search through history
-                const filteredHistory = history.filter(h => 
-                    h.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                    h.date.includes(searchTerm)
-                );
+                const filteredHistory = history.filter(h => h.name.toLowerCase().includes(searchTerm.toLowerCase()));
+                const filterTotalNet = filteredHistory.reduce((sum, item) => sum + item.net, 0);
 
                 if (!isAuth) {
                     return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
-                        e('form', { onSubmit: handleLogin, className: 'glass-card w-80 text-center' },
-                            e('h1', { className: 'text-2xl font-black mb-6' }, 'DE-TRUSTED ERP'),
-                            e('input', { 
-                                type: 'password', className: 'input-box text-center mb-6', 
-                                placeholder: 'MASTER KEY', value: passInput, 
-                                onChange: (v) => setPassInput(v.target.value) 
-                            }),
-                            e('button', { type: 'submit', className: 'btn-gold' }, 'UNLOCK')
+                        e('form', { onSubmit: handleLogin, className: 'glass-card w-80 text-center border-slate-800' },
+                            e('h1', { className: 'text-2xl font-black mb-6 tracking-tighter' }, 'DE-TRUSTED ERP'),
+                            e('input', { type: 'password', className: 'input-box text-center mb-6', placeholder: 'ENTER MASTER KEY', value: passInput, onChange: (v) => setPassInput(v.target.value) }),
+                            e('button', { type: 'submit', className: 'btn-gold' }, 'AUTHORIZE')
                         )
                     );
                 }
@@ -89,46 +103,70 @@
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
                         e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
-                        e('nav', { className: 'mt-4' }, e('div', { className: 'nav-link active' }, '👥 Payroll Desk'))
+                        e('nav', { className: 'mt-4' }, e('div', { className: 'nav-link active' }, '👥 Detailed Ledger'))
                     ),
                     e('main', { className: 'main-content flex-1' },
-                        e('h2', { className: 'text-3xl font-black mb-10' }, 'Payroll Management'),
-                        
-                        e('div', { className: 'grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10' },
-                            e('div', { className: 'glass-card space-y-4' },
-                                e('input', {className:'input-box', placeholder:'STAFF NAME', value:empName, onChange:v=>setEmpName(v.target.value)}),
-                                e('input', {type:'number', className:'input-box text-yellow-500', placeholder:'BASIC SALARY', value:basicSalary||'', onChange:v=>setBasicSalary(parseFloat(v.target.value)||0)}),
-                                e('input', {type:'number', className:'input-box', placeholder:'ALLOWANCE', value:bonus||'', onChange:v=>setBonus(parseFloat(v.target.value)||0)}),
-                                e('input', {type:'number', className:'input-box text-red-400', placeholder:'LOAN RECOVERY', value:loan||'', onChange:v=>setLoan(parseFloat(v.target.value)||0)}),
-                                e('button', {className:'btn-gold', onClick: saveRecord}, 'Process Payment')
+                        e('div', { className: 'flex justify-between items-end mb-10' },
+                            e('div', null, e('h2', { className: 'text-3xl font-black text-white' }, 'Payroll Desk'), e('p', {className:'text-xs text-slate-500 font-bold'}, 'GRA 2025 COMPLIANT MODULE')),
+                            e('button', { onClick: () => window.location.reload(), className: 'text-[10px] text-red-500 font-bold border border-red-900 px-3 py-1 rounded' }, 'SECURE LOGOUT')
+                        ),
+
+                        e('div', { className: 'grid grid-cols-1 xl:grid-cols-3 gap-6 mb-10' },
+                            // EARNINGS INPUT
+                            e('div', { className: 'glass-card' },
+                                e('h3', { className: 'ledger-label mb-4 text-emerald-500' }, 'Section 1: Earnings'),
+                                e('div', { className: 'space-y-4' },
+                                    e('div', null, e('label', {className:'text-[10px] text-slate-400'}, 'STAFF NAME'), e('input', {className:'input-box text-sm', value:empName, onChange:v=>setEmpName(v.target.value)})),
+                                    e('div', null, e('label', {className:'text-[10px] text-slate-400'}, 'BASIC SALARY'), e('input', {type:'number', className:'input-box text-yellow-500', value:basicSalary||'', onChange:v=>setBasicSalary(parseFloat(v.target.value)||0)})),
+                                    e('div', {className:'grid grid-cols-2 gap-2'}, 
+                                        e('div', null, e('label', {className:'text-[10px] text-slate-400'}, 'ALLOWANCE TYPE'), e('input', {className:'input-box text-xs', placeholder:'e.g. Transport', value:allowanceType, onChange:v=>setAllowanceType(v.target.value)})),
+                                        e('div', null, e('label', {className:'text-[10px] text-slate-400'}, 'AMOUNT'), e('input', {type:'number', className:'input-box', value:allowanceAmt||'', onChange:v=>setAllowanceAmt(parseFloat(v.target.value)||0)}))
+                                    )
+                                )
                             ),
-                            e('div', { className: 'glass-card bg-slate-900/40 border-dashed border-2 border-slate-700' },
-                                e('h3', { className: 'text-xs font-bold text-slate-500 mb-6 uppercase' }, 'Live Preview'),
-                                e('div', { className: 'space-y-3 font-mono text-sm' },
-                                    e('div', {className:'flex justify-between'}, e('span', null, 'Gross'), e('span', null, fmt(basicSalary+bonus))),
-                                    e('div', {className:'flex justify-between text-red-400'}, e('span', null, 'Tax/SSNIT'), e('span', null, `-${fmt(ssnit+paye)}`)),
-                                    e('div', {className:'flex justify-between pt-4 border-t border-yellow-500 text-emerald-500 font-bold text-xl'}, e('span', null, 'NET'), e('span', null, fmt(net)))
+                            // DEDUCTIONS INPUT
+                            e('div', { className: 'glass-card' },
+                                e('h3', { className: 'ledger-label mb-4 text-red-400' }, 'Section 2: Deductions'),
+                                e('div', { className: 'space-y-4' },
+                                    e('div', null, e('label', {className:'text-[10px] text-slate-400 font-bold text-orange-400'}, 'STAFF LOAN RECOVERY'), e('input', {type:'number', className:'input-box text-orange-400', value:loanAmt||'', onChange:v=>setLoanAmt(parseFloat(v.target.value)||0)})),
+                                    e('div', {className:'grid grid-cols-2 gap-2'}, 
+                                        e('div', null, e('label', {className:'text-[10px] text-slate-400'}, 'OTHER DED. TYPE'), e('input', {className:'input-box text-xs', placeholder:'e.g. Welfare', value:otherDedType, onChange:v=>setOtherDedType(v.target.value)})),
+                                        e('div', null, e('label', {className:'text-[10px] text-slate-400'}, 'AMOUNT'), e('input', {type:'number', className:'input-box', value:otherDedAmt||'', onChange:v=>setOtherDedAmt(parseFloat(v.target.value)||0)}))
+                                    ),
+                                    e('div', {className:'pt-6'}, e('button', {className:'btn-gold', onClick:saveRecord}, 'Commit Payroll'))
+                                )
+                            ),
+                            // MODULAR PREVIEW
+                            e('div', { className: 'glass-card bg-slate-900/50' },
+                                e('h3', { className: 'ledger-label mb-6 text-yellow-500' }, 'Modular Payslip Preview'),
+                                e('div', { className: 'space-y-3 mono text-xs' },
+                                    e('div', {className:'flex justify-between border-b border-slate-800 pb-1'}, e('span', null, 'Gross Income'), e('span', null, fmt(grossSalary))),
+                                    e('div', {className:'flex justify-between text-red-400'}, e('span', null, 'SSNIT (5.5%)'), e('span', null, `-${fmt(ssnit)}`)),
+                                    e('div', {className:'flex justify-between text-red-400'}, e('span', null, 'PAYE Tax'), e('span', null, `-${fmt(paye)}`)),
+                                    e('div', {className:'flex justify-between text-orange-400'}, e('span', null, `Loan Repayment`), e('span', null, `-${fmt(loanAmt)}`)),
+                                    e('div', {className:'flex justify-between text-orange-300'}, e('span', null, `${otherDedType} Ded.`), e('span', null, `-${fmt(otherDedAmt)}`)),
+                                    e('div', {className:'flex justify-between pt-6 border-t-2 border-emerald-500/50 text-emerald-500 font-bold text-2xl'}, e('span', null, 'NET'), e('span', null, fmt(netPay)))
                                 )
                             )
                         ),
 
                         e('div', { className: 'glass-card' },
                             e('div', { className: 'flex justify-between items-center mb-6' },
-                                e('h3', { className: 'text-xs font-bold text-slate-500 uppercase' }, 'Payroll History'),
-                                e('input', { 
-                                    className: 'filter-bar', 
-                                    placeholder: '🔍 Filter by Name or Date...', 
-                                    value: searchTerm, 
-                                    onChange: (v) => setSearchTerm(v.target.value) 
-                                })
+                                e('h3', { className: 'ledger-label' }, 'Payroll Audit History'),
+                                e('div', {className:'flex items-center gap-4'}, 
+                                    e('div', {className:'text-right'}, e('p', {className:'text-[9px] text-slate-500 font-bold uppercase'}, 'Group Total Net'), e('p', {className:'text-lg font-black text-emerald-500'}, `GHS ${fmt(filterTotalNet)}`)),
+                                    e('input', { className: 'input-box !mt-0 w-64 !py-2 text-xs', placeholder: '🔍 Search records...', value: searchTerm, onChange:v=>setSearchTerm(v.target.value)})
+                                )
                             ),
                             e('table', { className: 'history-table' },
-                                e('thead', null, e('tr', null, e('th', null, 'STAFF'), e('th', null, 'DATE'), e('th', null, 'NET PAID'), e('th', {className:'text-right'}, 'ACTION'))),
+                                e('thead', null, e('tr', null, e('th', null, 'EMPLOYEE'), e('th', null, 'DATE'), e('th', null, 'GROSS'), e('th', null, 'DED.'), e('th', null, 'NET PAY'), e('th', {className:'text-right'}, 'ACTION'))),
                                 e('tbody', null, filteredHistory.map(h => e('tr', { key: h.id },
                                     e('td', {className:'font-bold'}, h.name),
-                                    e('td', null, h.date),
-                                    e('td', {className:'text-emerald-500 font-bold'}, fmt(h.net)),
-                                    e('td', {className:'text-right'}, e('button', { onClick:()=>deleteRecord(h.id), className:'text-red-500 text-[10px] font-bold hover:underline'}, 'DELETE'))
+                                    e('td', {className:'text-slate-500'}, h.date),
+                                    e('td', null, fmt(h.gross)),
+                                    e('td', {className:'text-red-400'}, fmt(h.deductions)),
+                                    e('td', {className:'text-emerald-500 font-black'}, fmt(h.net)),
+                                    e('td', {className:'text-right'}, e('button', {onClick:()=>setHistory(history.filter(x=>x.id!==h.id)), className:'text-red-500 hover:bg-red-500/10 px-2 py-1 rounded transition'}, 'Remove'))
                                 )))
                             )
                         )
