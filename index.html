@@ -1,113 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | TOTAL INTEGRATION MAP</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+-- DE-TRUSTED ERP: CONSOLIDATED MASTER SCHEMA
+-- DATE: 2025-12-30
+-- TARGET: PostgreSQL 15+
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
-        
-        :root { --navy: #020617; --gold: #fbbf24; --connection: #334155; }
-        body { font-family: 'Ubuntu', sans-serif; background: #0f172a; color: #f8fafc; margin: 0; overflow-x: hidden; }
+BEGIN;
 
-        .integration-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 40px; }
-        .desk-node { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 12px; position: relative; transition: 0.3s; }
-        .desk-node:hover { border-color: var(--gold); background: #1e293b; }
-        
-        .node-title { font-size: 11px; font-weight: 900; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; display: block; }
-        .data-stream { font-family: 'Roboto Mono', monospace; font-size: 10px; color: #94a3b8; line-height: 1.6; }
-        
-        .connector-line { height: 2px; background: var(--connection); position: absolute; top: 50%; width: 20px; right: -21px; }
-        .arrow-right { border: solid #334155; border-width: 0 2px 2px 0; display: inline-block; padding: 3px; transform: rotate(-45deg); position: absolute; right: -20px; top: 48%; }
+-----------------------------------------------------------
+-- 1. THE FOUNDATION: HR & EMPLOYEES
+-----------------------------------------------------------
+CREATE TABLE departments (
+    dept_id SERIAL PRIMARY KEY,
+    dept_name VARCHAR(100) NOT NULL UNIQUE,
+    budget_ceiling DECIMAL(15,2) DEFAULT 0.00
+);
 
-        .flow-card { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 15px; margin-top: 20px; }
-        .pulse { animation: pulse-animation 2s infinite; }
-        @keyframes pulse-animation { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
+CREATE TABLE employees (
+    emp_id VARCHAR(20) PRIMARY KEY, -- e.g., EMP-2025-001
+    full_name VARCHAR(255) NOT NULL,
+    dept_id INT REFERENCES departments(dept_id),
+    tin_number VARCHAR(50) UNIQUE,
+    basic_salary DECIMAL(15,2) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-    <script>
-        window.onload = function() {
-            const e = React.createElement;
+-----------------------------------------------------------
+-- 2. THE FLOW: PROCUREMENT & WAREHOUSE
+-----------------------------------------------------------
+CREATE TABLE suppliers (
+    supplier_id SERIAL PRIMARY KEY,
+    company_name VARCHAR(255) NOT NULL,
+    tax_id VARCHAR(50),
+    rating INT DEFAULT 5 -- Vendor Performance
+);
 
-            function App() {
-                const desks = [
-                    { name: 'HR & Payroll', out: '➜ Employee IDs \n➜ Pay Grades \n➜ Tax Brackets' },
-                    { name: 'Procurement', out: '➜ Purchase Orders \n➜ Vendor Contracts \n➜ Commitments' },
-                    { name: 'Warehouse', out: '➜ GRN Records \n➜ Stock Balances \n➜ Bin Locations' },
-                    { name: 'Production', out: '➜ Finished Goods \n➜ Unit Costing \n➜ Batch Logs' },
-                    { name: 'Sales & Mktg', out: '➜ Tax Invoices \n➜ Revenue \n➜ Lead ROI' }
-                ];
+CREATE TABLE inventory_master (
+    sku VARCHAR(50) PRIMARY KEY,
+    item_name VARCHAR(255) NOT NULL,
+    unit_measure VARCHAR(20), -- KG, Ltr, Units
+    current_balance DECIMAL(15,2) DEFAULT 0.00,
+    reorder_level DECIMAL(15,2) DEFAULT 10.00
+);
 
-                const support = [
-                    { name: 'Legal', out: '➜ Compliance Audit \n➜ Risk Mitigation' },
-                    { name: 'Maintenance', out: '➜ Asset Lifespan \n➜ Repair Costs' },
-                    { name: 'QA', out: '➜ Defect Rates \n➜ Grade Approval' },
-                    { name: 'Logistics', out: '➜ Waybill Tracking \n➜ Fleet Ops' },
-                    { name: 'Finance', out: '➜ THE LEDGER \n➜ Profit & Loss' }
-                ];
+CREATE TABLE purchase_orders (
+    po_id VARCHAR(50) PRIMARY KEY, -- e.g., PO-2025-XXXX
+    supplier_id INT REFERENCES suppliers(supplier_id),
+    requester_id VARCHAR(20) REFERENCES employees(emp_id),
+    total_value DECIMAL(15,2),
+    po_status VARCHAR(20) DEFAULT 'DRAFT', -- DRAFT, APPROVED, RECEIVED
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-                return e('div', { className: 'p-10' },
-                    e('header', { className: 'mb-12 border-b border-slate-800 pb-8' },
-                        e('h1', { className: 'text-4xl font-black mb-2 tracking-tighter' }, 'DE-TRUSTED ERP: TOTAL INTEGRATION MAP'),
-                        e('p', { className: 'text-slate-400 font-mono text-xs uppercase tracking-widest pulse' }, 'System Connectivity: 100% | Desks Operational: 10/10')
-                    ),
+-----------------------------------------------------------
+-- 3. THE REVENUE: SALES & LOGISTICS
+-----------------------------------------------------------
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(255) NOT NULL,
+    customer_tin VARCHAR(50)
+);
 
-                    e('div', { className: 'integration-grid' },
-                        desks.map((d, i) => e('div', { key: i, className: 'desk-node' },
-                            e('span', { className: 'node-title' }, d.name),
-                            e('pre', { className: 'data-stream' }, d.out),
-                            i < 4 && e('div', { className: 'connector-line' }),
-                            i < 4 && e('div', { className: 'arrow-right' })
-                        ))
-                    ),
+CREATE TABLE sales_invoices (
+    invoice_id VARCHAR(50) PRIMARY KEY,
+    customer_id INT REFERENCES customers(customer_id),
+    sales_rep_id VARCHAR(20) REFERENCES employees(emp_id),
+    subtotal DECIMAL(15,2),
+    vat_amount DECIMAL(15,2),
+    levies_amount DECIMAL(15,2),
+    grand_total DECIMAL(15,2),
+    payment_status VARCHAR(20) DEFAULT 'UNPAID'
+);
 
-                    e('div', { className: 'integration-grid mt-10' },
-                        support.map((d, i) => e('div', { key: i, className: 'desk-node' },
-                            e('span', { className: 'node-title' }, d.name),
-                            e('pre', { className: 'data-stream' }, d.out),
-                            i < 4 && e('div', { className: 'connector-line' }),
-                            i < 4 && e('div', { className: 'arrow-right' })
-                        ))
-                    ),
+CREATE TABLE logistics_fleet (
+    vehicle_id SERIAL PRIMARY KEY,
+    license_plate VARCHAR(20) UNIQUE,
+    driver_id VARCHAR(20) REFERENCES employees(emp_id),
+    status VARCHAR(20) DEFAULT 'AVAILABLE'
+);
 
-                    
+-----------------------------------------------------------
+-- 4. THE CORE: FINANCE & GENERAL LEDGER
+-----------------------------------------------------------
+CREATE TABLE chart_of_accounts (
+    account_code INT PRIMARY KEY,
+    account_name VARCHAR(100) NOT NULL,
+    account_type VARCHAR(50) -- ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
+);
 
-                    e('div', { className: 'mt-12 grid grid-cols-2 gap-10' },
-                        e('div', { className: 'flow-card' },
-                            e('h3', { className: 'text-sky-400 font-black text-xs mb-4 uppercase' }, 'Primary Revenue Flow'),
-                            e('div', { className: 'text-[10px] font-mono leading-relaxed' }, 
-                                'Marketing Lead ➜ Sales Order ➜ Production Work Order ➜ Warehouse Picking ➜ Logistics Dispatch ➜ Tax Invoice ➜ Accounts Receivable ➜ General Ledger Credit'
-                            )
-                        ),
-                        e('div', { className: 'flow-card border-emerald-900/30 bg-emerald-900/10' },
-                            e('h3', { className: 'text-emerald-400 font-black text-xs mb-4 uppercase' }, 'Asset Preservation Flow'),
-                            e('div', { className: 'text-[10px] font-mono leading-relaxed text-emerald-100' }, 
-                                'Procurement PO ➜ Warehouse GRN ➜ Asset Registry ➜ Maintenance Schedule ➜ QA Inspection ➜ Depreciation Entry ➜ Balance Sheet Asset Recognition'
-                            )
-                        )
-                    ),
+CREATE TABLE general_ledger (
+    ledger_id SERIAL PRIMARY KEY,
+    transaction_date DATE DEFAULT CURRENT_DATE,
+    account_code INT REFERENCES chart_of_accounts(account_code),
+    debit_amount DECIMAL(15,2) DEFAULT 0.00,
+    credit_amount DECIMAL(15,2) DEFAULT 0.00,
+    reference_id VARCHAR(50), -- Links back to PO_ID or INVOICE_ID
+    trace_id UUID DEFAULT gen_random_uuid(), -- For Forensic Audits
+    description TEXT
+);
 
-                    e('footer', { className: 'mt-16 flex justify-between items-center bg-slate-800/50 p-6 rounded-lg' },
-                        e('div', null,
-                            e('p', { className: 'text-xs font-bold' }, 'DEVELOPMENT PHASE: LOGIC READY'),
-                            e('p', { className: 'text-[10px] text-slate-500 uppercase' }, 'All validation gates, statutory engines, and departmental forms architected.')
-                        ),
-                        e('button', { className: 'bg-gold text-navy px-8 py-3 font-black text-xs rounded uppercase' }, 'Begin Database Deployment (SQL)')
-                    )
-                );
-            }
+-----------------------------------------------------------
+-- 5. THE PRODUCTION & QA
+-----------------------------------------------------------
+CREATE TABLE production_work_orders (
+    wo_id VARCHAR(50) PRIMARY KEY,
+    sku_to_build VARCHAR(50) REFERENCES inventory_master(sku),
+    quantity_planned DECIMAL(15,2),
+    actual_cost DECIMAL(15,2),
+    qa_status VARCHAR(20) DEFAULT 'PENDING' -- PENDING, PASSED, REJECTED
+);
 
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(e(App));
-        };
-    </script>
-</body>
-</html>
+COMMIT;
