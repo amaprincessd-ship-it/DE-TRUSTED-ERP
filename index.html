@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | EXPENSE CLAIM SYSTEM</title>
+    <title>DE-TRUSTED ERP | TOTAL CONSOLIDATED ENGINE</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -14,26 +14,30 @@
         
         body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #e2e8f0; color: #1e293b; overflow: hidden; }
 
+        /* HEADER */
         .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; height: 60px; }
         .search-bar { background: #ffffff; color: #333; border: none; padding: 8px 20px; border-radius: 4px; width: 450px; font-weight: 700; border: 2px solid #002366; outline: none; }
 
-        .sidebar { background: #001f3f; height: calc(100vh - 60px); position: fixed; width: 240px; top: 60px; overflow-y: auto; padding-bottom: 50px; border-right: 1px solid rgba(255,255,255,0.1); }
-        .nav-btn { width: 100%; text-align: left; padding: 13px 25px; font-size: 10.5px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; letter-spacing: 0.05em; }
+        /* SIDEBAR - 10 DESKS SCROLLABLE */
+        .sidebar { background: #001f3f; height: calc(100vh - 60px); position: fixed; width: 240px; top: 60px; overflow-y: auto; padding-bottom: 80px; border-right: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn { width: 100%; text-align: left; padding: 12px 25px; font-size: 10px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; letter-spacing: 0.05em; }
         .nav-btn.active { background: #003366; color: #fbbf24; border-left: 5px solid #fbbf24; font-weight: 800; }
-        .dept-header { padding: 15px 25px 5px 25px; font-size: 9px; color: #64748b; font-weight: 900; text-transform: uppercase; }
+        .dept-header { padding: 15px 25px 5px 25px; font-size: 8px; color: #64748b; font-weight: 900; text-transform: uppercase; }
 
+        /* MAIN WORKSPACE */
         .workspace { margin-left: 240px; padding: 85px 40px 40px 40px; height: 100vh; overflow-y: auto; }
         .bank-card { background: white; border-radius: 2px; border: 1px solid #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 30px; min-height: 800px; }
         
+        /* SECURITY UI */
+        .audit-badge { font-family: 'Roboto Mono', monospace; font-size: 9px; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 3px; font-weight: bold; }
         .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
         .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #f8fafc; margin-bottom: 15px; border-radius: 4px; }
         .bank-input:focus { border-color: #001f3f; background: #fff; outline: none; }
+        .security-select { background: #fffbeb !important; border-left: 4px solid #fbbf24 !important; font-weight: bold; }
         
         .words-panel { background: #f0fdf4; border: 1px dashed #16a34a; color: #166534; padding: 10px; font-size: 11px; font-weight: 700; margin-bottom: 15px; border-radius: 4px; }
-        .security-select { background: #fffbeb !important; border-left: 4px solid #fbbf24 !important; font-weight: bold; }
         .btn-post { background: #001f3f; color: white; padding: 14px 40px; font-weight: 800; border-radius: 2px; text-transform: uppercase; cursor: pointer; border: none; }
-        
-        .audit-trail-log { font-family: 'Roboto Mono', monospace; font-size: 10px; background: #1e293b; color: #10b981; padding: 15px; border-radius: 4px; margin-top: 20px; }
+        .audit-trail-log { font-family: 'Roboto Mono', monospace; font-size: 10px; background: #1e293b; color: #10b981; padding: 15px; border-radius: 4px; margin-top: 20px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
@@ -60,29 +64,51 @@
             };
 
             const SYSTEM_REGISTRY = {
-                "Executive": { desk: "Executive", title: "Strategic Performance", fields: ["Operating Margin", "Compliance Score"] },
-                "Administration": { desk: "Administration", title: "Asset Registry", fields: ["Asset ID", "Location", "IFRS Depreciation"] },
-                "Financial Reporting": { desk: "Finance", title: "IFRS Financial Reporting Hub", fields: ["Period", "Revenue", "Expenses", "Audit Status"] },
-                "Payment Voucher": { desk: "Finance", title: "Payment Voucher Master", fields: ["Voucher ID", "Payee", "Amount"] },
-                "Petty Cash Voucher": { desk: "Finance", title: "Petty Cash Form", fields: ["Voucher ID", "Employee", "Amount"] },
-                "Expense Claim": { 
-                    desk: "Finance", 
-                    title: "Employee Expense Claim Form", 
-                    fields: ["Claim ID (Auto)", "Date of Claim", "Employee Name (Search)", "Employee ID (Auto)", "Department", "Expense Category", "Currency", "Exchange Rate", "Invoice / Receipt Number", "Vendor / Payee", "Amount (Numeric)", "Amount In Words (Auto)", "Date of Expense", "Expense Purpose / Description", "Payment Mode", "Approved By", "Status"] 
-                },
-                "HR": { desk: "HR", title: "Personnel Master", fields: ["Staff ID", "Full Name", "Dept"] },
-                "Logistics": { desk: "Logistics", title: "Fleet Master", fields: ["Vehicle ID", "Driver"] },
-                "Warehouse": { desk: "Warehouse", title: "Stock Registry", fields: ["Item Code", "Balance"] },
-                "Production": { desk: "Production", title: "Work Orders", fields: ["Order ID", "Qty", "QC Status"] },
-                "Procurement": { desk: "Procurement", title: "Vendor Registry", fields: ["Vendor ID", "Terms"] },
-                "Sales & Marketing": { desk: "Sales & Marketing", title: "Customer CRM", fields: ["Client ID", "Region"] },
-                "Reception": { desk: "Reception", title: "Visitor Log", fields: ["Visit ID", "Person to See"] }
+                // EXECUTIVE
+                "Executive Dash": { desk: "Executive", title: "Strategic Performance", fields: ["Group Revenue", "Operating Margin", "Audit Score"] },
+                
+                // ADMINISTRATION (All 9 Modules Restored)
+                "Fixed Assets": { desk: "Administration", title: "Asset Registry", fields: ["Asset ID (Search)", "Name", "Cost", "Useful Life", "IFRS Depreciation", "Location"] },
+                "Regulatory Master": { desk: "Administration", title: "Regulatory Hub", fields: ["Agency ID", "Agency Name", "Governing Act", "Status", "Last Audit Date"] },
+                "Statutory Setup": { desk: "Administration", title: "Statutory Requirements", fields: ["Stat ID", "Requirement", "Legal Code", "Frequency", "Officer"] },
+                "Permit Register": { desk: "Administration", title: "Licenses & Permits", fields: ["Permit #", "Expiry Date", "Department", "Digital Signature"] },
+                "Renewal Workflow": { desk: "Administration", title: "Renewals", fields: ["Permit Ref", "Renewal Date", "Costs", "Approval Status"] },
+                "Insurance Master": { desk: "Administration", title: "Insurance Management", fields: ["Policy #", "Provider", "Premium", "Claim Status"] },
+                "Facility Maintenance": { desk: "Administration", title: "Maintenance Log", fields: ["Machine ID", "Last Service", "Next Due", "Technician"] },
+                "Site Inspections": { desk: "Administration", title: "Inspection Registry", fields: ["Visit ID", "Auditor ID", "Findings", "Score Validation"] },
+                "Compliance Breaches": { desk: "Administration", title: "Incident Registry", fields: ["Incident ID", "Penalty", "Corrective Action Status"] },
+
+                // FINANCE (Previous + New Vouchers Restored)
+                "Financial Reporting": { desk: "Finance", title: "IFRS Financial Reporting", fields: ["Period", "IFRS Mapping", "Revenue", "Expenses", "Audit Status"] },
+                "Payment Voucher": { desk: "Finance", title: "Payment Voucher (PV) Form", fields: ["Voucher ID (Auto)", "Date", "Payment Mode", "Payee Name", "Payee Account No.", "Currency", "Exchange Rate", "Invoice / Ref No.", "Amount (Numeric)", "Amount In Words (Auto)", "Narration", "Tax/VAT Deducted", "Total Amount Paid", "Status"] },
+                "Petty Cash Voucher": { desk: "Finance", title: "Petty Cash Form", fields: ["Voucher ID (Auto)", "Date", "Department / Project", "Employee Name", "Purpose", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
+                "Expense Claim": { desk: "Finance", title: "Expense Claim Form", fields: ["Claim ID (Auto)", "Employee Name", "Employee ID", "Department", "Category", "Invoice #", "Amount (Numeric)", "Amount In Words (Auto)", "Expense Date", "Status"] },
+                "Accounts Receivable": { desk: "Finance", title: "AR Ledger", fields: ["Invoice #", "Customer", "Currency", "Amount"] },
+                "General Ledger": { desk: "Finance", title: "GL Entry Inquiry", fields: ["Entry ID", "Account", "Debit", "Credit", "Timestamp"] },
+
+                // HR
+                "Employee Registry": { desk: "HR", title: "Personnel Master", fields: ["Staff ID", "Full Name", "Dept", "Contract Status"] },
+                
+                // LOGISTICS
+                "Fleet Master": { desk: "Logistics", title: "Vehicle Registry", fields: ["Vehicle ID", "Plate #", "Driver", "Fuel Rate"] },
+                
+                // WAREHOUSE
+                "Stock Registry": { desk: "Warehouse", title: "Inventory Master", fields: ["Item Code", "Description", "Balance", "Reorder Level"] },
+                
+                // PRODUCTION (Restored)
+                "BOM Registry": { desk: "Production", title: "Bill of Materials", fields: ["Product Code", "Components", "Unit Cost", "Status"] },
+                "Work Orders": { desk: "Production", title: "Scheduling", fields: ["Order ID", "Product", "Qty", "Approval Status"] },
+
+                // PROCUREMENT, SALES, RECEPTION
+                "Vendor Registry": { desk: "Procurement", title: "Supplier Master", fields: ["Vendor ID", "Company", "Tax ID"] },
+                "Customer CRM": { desk: "Sales & Marketing", title: "Client Database", fields: ["Customer ID", "Region", "Credit Limit"] },
+                "Visitor Log": { desk: "Reception", title: "Entry Registry", fields: ["Visit ID", "Visitor Name", "Purpose"] }
             };
 
             function App() {
                 const [currentDesk, setCurrentDesk] = useState('Finance');
-                const [activeSub, setActiveSub] = useState('Expense Claim');
-                const [claimAmt, setClaimAmt] = useState(0);
+                const [activeSub, setActiveSub] = useState('Payment Voucher');
+                const [numericAmt, setNumericAmt] = useState(0);
 
                 const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
 
@@ -90,14 +116,14 @@
                     e('div', { className: 'bank-header shadow-md' },
                         e('div', { className: 'flex items-center gap-4' },
                             e('h1', { className: 'text-xl font-black tracking-tighter' }, 'DE-TRUSTED ERP'),
-                            e('span', { className: 'bg-green-600 px-2 py-1 text-[10px] rounded' }, 'AUDIT_INTEGRITY_MODE')
+                            e('span', { className: 'bg-green-600 px-2 py-1 text-[10px] rounded' }, 'SYSTEM_TOTAL_ACTIVE')
                         ),
-                        e('input', { className: 'search-bar', placeholder: 'SEARCH CLAIM ID, EMPLOYEE OR VENDOR...' }),
-                        e('div', { className: 'text-[10px] font-bold' }, '30-DEC-2025 | IFRS_COMPLIANT')
+                        e('input', { className: 'search-bar', placeholder: 'SEARCH ACROSS ALL MODULES...' }),
+                        e('div', { className: 'text-[10px] font-bold' }, '30-DEC-2025 | IFRS_SECURED')
                     ),
 
                     e('div', { className: 'sidebar' },
-                        e('div', { className: 'dept-header' }, 'Enterprise Desks'),
+                        e('div', { className: 'dept-header' }, 'Operational Desks'),
                         ['Executive', 'Administration', 'Finance', 'HR', 'Logistics', 'Warehouse', 'Production', 'Procurement', 'Sales & Marketing', 'Reception'].map(d => 
                             e('div', { 
                                 key: d, 
@@ -112,10 +138,10 @@
                     ),
 
                     e('main', { className: 'workspace' },
-                        e('div', { className: 'flex gap-6' },
+                        e('div', { className: 'flex gap-6 h-full' },
                             e('div', { className: 'w-64' },
-                                e('div', { className: 'bg-white border border-slate-300 h-[700px] overflow-y-auto shadow-inner' },
-                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-black border-b tracking-widest' }, 'FINANCE MODULES'),
+                                e('div', { className: 'bg-white border border-slate-300 h-full overflow-y-auto' },
+                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-black border-b tracking-widest' }, 'MODULES'),
                                     Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
                                         e('div', { key: name, onClick: () => setActiveSub(name), className: `p-4 text-sm cursor-pointer border-b hover:bg-blue-50 transition-all ${activeSub === name ? 'bg-blue-100 font-bold' : ''}` }, name)
                                     )
@@ -125,45 +151,39 @@
                                 e('div', { className: 'bank-card' },
                                     e('div', { className: 'flex justify-between items-center border-b pb-4 mb-8' },
                                         e('h2', { className: 'text-2xl font-bold text-slate-800' }, schema.title),
-                                        e('div', { className: 'flex gap-2' },
-                                            e('span', { className: 'bg-red-100 text-red-800 text-[9px] px-2 py-1 font-bold rounded' }, 'RECEIPT MANDATORY'),
-                                            e('span', { className: 'bg-blue-100 text-blue-800 text-[9px] px-2 py-1 font-bold rounded' }, 'GL AUTO-POST')
-                                        )
+                                        e('span', { className: 'audit-badge' }, 'BANK-GRADE SECURITY')
                                     ),
 
                                     e('div', { className: 'grid grid-cols-2 gap-x-10' },
                                         schema.fields.map(label => e('div', { key: label },
                                             e('label', { className: 'field-label' }, 
                                                 e('span', null, label),
-                                                (label.includes("Approved") || label.includes("Mandatory") || label.includes("Numeric") || label.includes("Purpose")) && e('span', { className: 'text-[8px] text-red-600 bg-red-50 px-1' }, 'MANDATORY')
+                                                (label.includes("Status") || label.includes("Approved") || label.includes("Numeric")) && e('span', { className: 'text-[8px] text-red-600 bg-red-50 px-1' }, 'MANDATORY')
                                             ),
                                             label === "Amount In Words (Auto)" ? 
-                                                e('div', { className: 'words-panel' }, toWords(claimAmt)) :
-                                            label === "Status" || label === "Expense Category" || label === "Payment Mode" || label === "Department" ? 
+                                                e('div', { className: 'words-panel' }, toWords(numericAmt)) :
+                                            label.includes("Status") || label.includes("Mode") || label.includes("Category") || label.includes("Department") ? 
                                                 e('select', { className: 'bank-input security-select' }, 
                                                     e('option', null, `-- Select Option --`),
-                                                    label === "Status" ? ['Draft', 'Reviewed', 'Approved', 'Paid', 'Rejected'].map(o => e('option', {key:o}, o)) :
-                                                    label === "Expense Category" ? ['Travel', 'Utilities', 'Office Supplies', 'Other'].map(o => e('option', {key:o}, o)) :
-                                                    ['Logistics', 'Administration', 'Finance', 'Production'].map(o => e('option', {key:o}, o))
+                                                    ['Draft', 'Approved', 'Paid', 'Review Required'].map(o => e('option', {key:o}, o))
                                                 ) :
-                                            e(label.includes("Description") ? 'textarea' : 'input', { 
+                                            e(label.includes("Narration") || label.includes("Findings") ? 'textarea' : 'input', { 
                                                 className: 'bank-input', 
                                                 type: label.includes("Numeric") ? "number" : "text",
-                                                onChange: (x) => { if(label === "Amount (Numeric)") setClaimAmt(x.target.value); },
-                                                placeholder: label.includes("Auto") ? "SYSTEM GENERATED" : `Enter ${label}...`
+                                                onChange: (x) => { if(label.includes("Numeric")) setNumericAmt(x.target.value); },
+                                                placeholder: `Enter ${label}...`
                                             })
                                         ))
                                     ),
 
-                                    activeSub === "Expense Claim" && e('div', { className: 'audit-trail-log' }, 
-                                        "> AUDIT TRAIL: [30-DEC-2025 15:33] - Claim Instance Initiated by USER_ADMIN. \n" +
-                                        "> SYSTEM CHECK: Checking for duplicate Receipt Numbers... Clear. \n" +
-                                        "> COMPLIANCE: Policy limit for Category 'Travel' is GHS 5,000.00."
+                                    e('div', { className: 'audit-trail-log' }, 
+                                        `> SYSTEM_LOG: [30-DEC-2025] | Desk: ${currentDesk} | Module: ${activeSub} | Status: Ready\n` +
+                                        `> SECURITY: All transaction logs for this session are being encrypted and pushed to Audit Cloud.`
                                     ),
 
                                     e('div', { className: 'mt-8 flex justify-end gap-4' },
-                                        e('button', { className: 'px-6 py-3 border border-slate-300 text-xs font-bold hover:bg-slate-50' }, 'ATTACH SCAN/RECEIPT'),
-                                        e('button', { className: 'btn-post' }, 'Submit for Approval')
+                                        e('button', { className: 'px-6 py-3 border border-slate-300 text-xs font-bold' }, 'AUDIT ARCHIVE'),
+                                        e('button', { className: 'btn-post' }, 'Commit & Post to GL')
                                     )
                                 )
                             )
