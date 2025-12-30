@@ -3,118 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED PAINT ERP | Ashalaja Command Center</title>
+    <title>DE-TRUSTED PAINT ERP | Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .locked-border { border-left-width: 6px; border-color: #2563eb; }
-        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        /* International Standard Typography */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;600;800&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc;
+            /* PROFESSIONAL WATERMARK */
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='32' font-weight='900' font-family='Montserrat, sans-serif' fill='%23e2e8f0' text-anchor='middle' opacity='0.4' transform='rotate(-30 200 200)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+
+        .brand-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            font-size: 1.75rem;
+        }
+
+        .sidebar-glass {
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+        }
+
+        .locked-card {
+            border-left: 6px solid #2563eb;
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        // --- COMPONENTS ---
+        const { useState } = React;
 
         const SidebarItem = ({ name, active, onClick }) => (
             <button 
                 onClick={() => onClick(name)}
-                className={`w-full text-left p-4 mb-2 font-bold transition-all uppercase text-xs tracking-widest ${active === name ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800'}`}
+                className={`w-full text-left p-4 mb-2 font-bold transition-all uppercase text-[10px] tracking-[0.2em] ${active === name ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-800 hover:text-blue-400'}`}
             >
                 {name} DESK
             </button>
         );
 
-        const StatCard = ({ label, value, color }) => (
-            <div className={`p-4 bg-white border-b-4 ${color} shadow-sm`}>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{label}</p>
-                <p className="text-xl font-bold text-slate-800">{value}</p>
-            </div>
-        );
-
-        // --- MAIN APPLICATION ---
-
-        const ERPApp = () => {
+        const Dashboard = () => {
             const [currentDesk, setCurrentDesk] = useState('Production');
-            const [isLocked, setIsLocked] = useState(true);
 
-            // 1. PRODUCTION DESK
+            // --- MODULE: PRODUCTION ---
             const ProductionDesk = () => (
-                <div className="animate-in fade-in duration-500">
-                    <header className="mb-8 border-b-2 border-slate-200 pb-4">
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter">PRODUCTION COMMAND <span className="text-blue-600">CENTER</span></h1>
-                        <p className="text-sm text-slate-500 font-bold italic">Ashalaja Site A | ISO 9001:2015 Compliant</p>
-                    </header>
+                <div className="fade-in">
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Production <span className="text-blue-600">Command</span></h1>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Ashalaja Site A | Process Security: High</p>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="col-span-2 space-y-6">
-                            <div className="bg-white p-6 shadow-xl locked-border">
-                                <h3 className="font-black mb-4 uppercase text-sm">Active Batch Configuration</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-[10px] font-bold">BASE FORMULA</label>
-                                        <select className="w-full p-3 bg-slate-100 border rounded font-bold" disabled>
-                                            <option>DT-GLOSS-EX-01 (High Sheen)</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-bold">TARGET VOLUME (L)</label>
-                                        <input type="text" value="2,000" readOnly className="w-full p-3 bg-slate-100 border rounded font-bold text-blue-600" />
-                                    </div>
+                        <div className="col-span-2 locked-card p-8">
+                            <h3 className="font-black text-xs uppercase text-slate-400 mb-6">Batch Execution Locked</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2">PRODUCT LINE</label>
+                                    <input type="text" value="De-Trusted Premium Gloss" className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded font-bold outline-none" readOnly />
                                 </div>
-                                <button className="mt-6 w-full bg-slate-900 text-white py-4 font-black hover:bg-blue-600 transition-all uppercase tracking-widest">
-                                    Initiate Mixing Sequence
-                                </button>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2">TARGET WEIGHT (KG)</label>
+                                    <input type="text" value="5,000.00" className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded font-bold text-blue-600" readOnly />
+                                </div>
                             </div>
+                            <button className="mt-8 w-full bg-slate-900 text-white py-5 font-black uppercase tracking-widest hover:bg-blue-600 transition-all">Start Batch Process</button>
                         </div>
                         <div className="space-y-4">
-                            <StatCard label="Raw Material Status" value="Optimized" color="border-blue-500" />
-                            <StatCard label="Machine Temperature" value="42°C - Stable" color="border-green-500" />
-                            <StatCard label="GSA Clearance" value="APPROVED" color="border-blue-500" />
+                            <div className="bg-white p-6 shadow rounded border-b-4 border-blue-600">
+                                <p className="text-[10px] font-black text-slate-400 uppercase">GSA Formula Status</p>
+                                <p className="text-2xl font-black text-slate-800">VERIFIED</p>
+                            </div>
+                            <div className="bg-white p-6 shadow rounded border-b-4 border-green-500">
+                                <p className="text-[10px] font-black text-slate-400 uppercase">Operational Efficiency</p>
+                                <p className="text-2xl font-black text-slate-800">98.4%</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             );
 
-            // 2. HR DESK
+            // --- MODULE: HR ---
             const HRDesk = () => (
-                <div className="animate-in slide-in-from-right duration-500">
-                    <header className="mb-8 border-b-2 border-slate-200 pb-4">
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter">ADMIN & <span className="text-green-600">HR DESK</span></h1>
-                        <p className="text-sm text-slate-500 font-bold italic">Ghana Labour Law (Act 651) Framework</p>
-                    </header>
-                    <div className="bg-white shadow-2xl p-0 overflow-hidden">
+                <div className="fade-in">
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">HR & <span className="text-blue-600">Payroll</span></h1>
+                    <div className="bg-white shadow-2xl rounded-lg overflow-hidden border border-slate-200">
                         <table className="w-full text-left">
-                            <thead className="bg-slate-900 text-white text-[10px] uppercase tracking-widest">
+                            <thead className="bg-slate-900 text-white text-[10px] font-black tracking-widest uppercase">
                                 <tr>
-                                    <th className="p-4">Staff Name</th>
-                                    <th className="p-4">Role</th>
-                                    <th className="p-4">SSNIT / TIN</th>
-                                    <th className="p-4">Net Salary (GHS)</th>
-                                    <th className="p-4">Statutory Lock</th>
+                                    <th className="p-5">Employee</th>
+                                    <th className="p-5">GhanaCard / SSNIT</th>
+                                    <th className="p-5">Basic (GHS)</th>
+                                    <th className="p-5">Tax Status</th>
+                                    <th className="p-5">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="text-sm font-bold text-slate-700">
                                 <tr className="border-b hover:bg-slate-50">
-                                    <td className="p-4">Emmanuel Tetteh</td>
-                                    <td className="p-4">Plant Manager</td>
-                                    <td className="p-4 font-mono">554109XXXX / C0021...</td>
-                                    <td className="p-4">8,450.00</td>
-                                    <td className="p-4"><span className="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px]">VERIFIED</span></td>
-                                </tr>
-                                <tr className="border-b hover:bg-slate-50">
-                                    <td className="p-4">Grace Mensah</td>
-                                    <td className="p-4">QC Chemist</td>
-                                    <td className="p-4 font-mono">622108XXXX / C0034...</td>
-                                    <td className="p-4">6,200.00</td>
-                                    <td className="p-4"><span className="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px]">VERIFIED</span></td>
+                                    <td className="p-5">Emmanuel Tetteh</td>
+                                    <td className="p-5 font-mono">GHA-72201... / 55410...</td>
+                                    <td className="p-5">12,500.00</td>
+                                    <td className="p-5"><span className="text-green-600">GRA COMPLIANT</span></td>
+                                    <td className="p-5"><button className="text-blue-600 text-xs">VIEW FILE</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -122,59 +132,68 @@
                 </div>
             );
 
-            // 3. SALES DESK
-            const SalesDesk = () => (
-                <div className="animate-in zoom-in duration-500">
-                    <h1 className="text-4xl font-black text-slate-900 mb-8">SALES & <span className="text-orange-600">CRM</span></h1>
-                    <div className="grid grid-cols-4 gap-4">
-                        {['New Invoice', 'Customer List', 'Debt Aging', 'Tinting Request'].map(btn => (
-                            <button key={btn} className="bg-white p-6 border-b-4 border-orange-500 shadow-md font-black text-xs uppercase hover:bg-orange-50 transition-all">
-                                {btn}
-                            </button>
+            // --- MODULE: WAREHOUSE & INVENTORY ---
+            const WarehouseDesk = () => (
+                <div className="fade-in">
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Inventory & <span className="text-blue-600">Warehouse</span></h1>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                        {['Raw Pigments', 'Resins', 'Additives', 'Finished Goods'].map(item => (
+                            <div key={item} className="bg-white p-6 shadow rounded border-t-4 border-blue-600">
+                                <p className="text-[10px] font-black text-slate-400 uppercase">{item}</p>
+                                <p className="text-xl font-black text-slate-800">Static Level: 100%</p>
+                            </div>
                         ))}
                     </div>
-                    <div className="mt-8 p-12 border-4 border-dashed border-slate-300 rounded-xl text-center">
-                        <p className="text-slate-400 font-bold uppercase tracking-widest">Select Customer to Initiate Locked Transaction</p>
+                    <div className="bg-white p-8 rounded shadow-lg border-2 border-slate-100">
+                        <h3 className="font-black text-sm uppercase mb-4">Stock Movement Audit (Ashalaja Site)</h3>
+                        <div className="space-y-4">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="flex justify-between items-center p-4 bg-slate-50 rounded border-l-4 border-slate-300">
+                                    <div>
+                                        <p className="text-xs font-black">Titanium Dioxide - Batch #RM-0992</p>
+                                        <p className="text-[10px] text-slate-500">Inbound from Procurement Desk | 10:45 AM</p>
+                                    </div>
+                                    <span className="text-green-600 font-bold text-xs">+500 KG</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             );
 
             return (
                 <div className="flex h-screen overflow-hidden">
-                    {/* STATIC SIDEBAR */}
-                    <div className="w-72 bg-slate-900 flex flex-col justify-between p-4">
+                    {/* SIDEBAR */}
+                    <div className="w-80 sidebar-glass flex flex-col justify-between p-6 z-10 shadow-2xl">
                         <div>
-                            <div className="p-4 mb-10">
-                                <h1 className="text-white font-black text-2xl tracking-tighter italic">DE-TRUSTED <span className="text-blue-500 font-normal">PAINT</span></h1>
-                                <p className="text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase">Enterprise Locked</p>
+                            <div className="mb-12">
+                                <h1 className="brand-title text-white">DE-TRUSTED <span className="text-blue-500 font-normal">PAINT</span></h1>
+                                <div className="h-1 w-12 bg-blue-600 mt-2"></div>
                             </div>
                             <SidebarItem name="Production" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Sales" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
                         </div>
-                        <div className="p-4 bg-slate-800 rounded border border-slate-700">
-                            <p className="text-[9px] text-slate-500 font-black mb-2 uppercase">System Status</p>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-white text-[10px] font-bold font-mono">ENCRYPTED_SYNC_ACTIVE</span>
-                            </div>
+                        <div className="bg-slate-800/50 p-4 rounded border border-slate-700">
+                            <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">Secure State</p>
+                            <p className="text-white text-[10px] font-mono uppercase tracking-tighter">Ashalaja_Primary_Node_Active</p>
                         </div>
                     </div>
 
-                    {/* DYNAMIC DESK AREA */}
-                    <div className="flex-1 overflow-y-auto p-12 bg-slate-50">
+                    {/* MAIN CONTENT */}
+                    <main className="flex-1 overflow-y-auto p-16 relative">
                         {currentDesk === 'Production' && <ProductionDesk />}
                         {currentDesk === 'HR' && <HRDesk />}
-                        {currentDesk === 'Sales' && <SalesDesk />}
-                        {currentDesk === 'Warehouse' && <div className="p-20 text-center font-black text-slate-300 text-5xl">WAREHOUSE MODULE LOCKED</div>}
-                    </div>
+                        {currentDesk === 'Warehouse' && <WarehouseDesk />}
+                        {currentDesk === 'Sales' && <div className="text-center mt-20 font-black text-slate-200 text-6xl uppercase tracking-tighter opacity-50">Sales Module Locked</div>}
+                    </main>
                 </div>
             );
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ERPApp />);
+        root.render(<Dashboard />);
     </script>
 </body>
 </html>
