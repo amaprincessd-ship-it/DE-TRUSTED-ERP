@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | REJECTION & SECURITY</title>
+    <title>DE-TRUSTED ERP | GOVERNANCE SUITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -11,8 +11,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
         body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
         
-        /* THE UNBREAKABLE GATE */
-        #security-overlay {
+        /* HARD-CODED SECURITY SHIELD */
+        #security-shield {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #020617; z-index: 10000; display: flex;
             align-items: center; justify-content: center;
@@ -23,120 +23,45 @@
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 10px; }
-        .rejection-box { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .alert-bubble { background: #fef08a; color: #854d0e; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: bold; border-left: 4px solid #ca8a04; }
     </style>
 </head>
 <body>
 
-    <div id="security-overlay">
-        <div class="glass-card w-96 text-center shadow-2xl border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-2 italic">DE-TRUSTED</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.3em]">ENCRYPTED TERMINAL</p>
-            <input type="password" id="master-key" class="input-box text-center mb-6 text-xl" placeholder="••••••••" autofocus>
-            <button onclick="verifyKey()" class="btn-gold w-full py-4">AUTHENTICATE</button>
+    <div id="security-shield">
+        <div class="glass-card w-96 text-center border-yellow-500/40">
+            <h1 class="text-3xl font-black mb-1">DE-TRUSTED</h1>
+            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.4em]">SYSTEM SECURED</p>
+            <input type="password" id="pass-key" class="input-box text-center mb-6 text-xl" placeholder="ENTER KEY" autofocus>
+            <button onclick="access()" class="btn-gold w-full py-4 text-sm">AUTHENTICATE TERMINAL</button>
         </div>
     </div>
 
     <div id="root"></div>
 
     <script>
-        // HARD-WIRED SECURITY: This runs outside of React for 100% stability
-        function verifyKey() {
-            const key = document.getElementById('master-key').value;
-            if (key === 'SUPER2025') {
-                document.getElementById('security-overlay').style.display = 'none';
-            } else {
-                alert("ACCESS DENIED: INCORRECT KEY");
-            }
+        // Native access control
+        function access() {
+            if (document.getElementById('pass-key').value === 'SUPER2025') {
+                document.getElementById('security-shield').style.display = 'none';
+            } else { alert("ACCESS DENIED"); }
         }
-        // Listen for "Enter" key on password
-        document.getElementById('master-key').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') verifyKey();
-        });
 
         window.onload = function() {
             const e = React.createElement;
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('DASHBOARD');
-                const [employees] = useState([
-                    { id: 1, name: "Kofi Mensah", dept: "Operations" },
-                    { id: 2, name: "Ama Serwaa", dept: "HR" }
-                ]);
-                
+                const [view, setView] = useState('WORKFLOW');
                 const [requests, setRequests] = useState([
-                    { id: 101, empName: "Kofi Mensah", type: "Annual Leave", start: "2025-01-05", end: "2025-01-10", status: "Pending" }
+                    { id: 1, name: "Kofi Mensah", type: "Annual", start: "2025-01-10", end: "2025-01-20", status: "Pending", reason: "", appeal: "" }
                 ]);
 
                 const [rejectingId, setRejectingId] = useState(null);
-                const [rejectReason, setRejectReason] = useState("");
+                const [reasonInput, setReasonInput] = useState("");
 
-                const approveRequest = (id) => {
-                    setRequests(requests.map(r => r.id === id ? {...r, status: 'Approved'} : r));
-                    alert("APPROVED: Alert sent to Staff & HR.");
-                };
-
-                const finalizeRejection = () => {
-                    if(!rejectReason) return alert("You MUST provide a reason for rejection.");
-                    setRequests(requests.map(r => r.id === rejectingId ? {...r, status: 'Rejected', reason: rejectReason} : r));
-                    alert(`REJECTED: Notification sent to staff. Reason: ${rejectReason}`);
-                    setRejectingId(null);
-                    setRejectReason("");
-                };
-
-                return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar' },
-                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
-                        e('nav', { className: 'mt-6' },
-                            e('div', { onClick:()=>setView('DASHBOARD'), className:`p-4 cursor-pointer text-xs font-bold ${view==='DASHBOARD'?'text-yellow-500 bg-slate-800':''}`}, '📊 WORKFLOW HUB'),
-                            e('div', { onClick:()=>setView('HISTORY'), className:`p-4 cursor-pointer text-xs font-bold ${view==='HISTORY'?'text-yellow-500 bg-slate-800':''}`}, '📜 AUDIT LOG')
-                        )
-                    ),
-                    e('main', { className: 'main-content flex-1' },
-                        
-                        view === 'DASHBOARD' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic text-white'}, 'Active Approval Queue'),
-                            e('div', {className:'grid gap-4'},
-                                requests.filter(r => r.status === 'Pending').map(req => e('div', {key:req.id, className:'glass-card border-l-4 border-yellow-500 flex justify-between items-center'},
-                                    e('div', null, 
-                                        e('h4', {className:'font-bold text-lg'}, req.empName),
-                                        e('p', {className:'text-xs text-slate-400'}, `${req.type}: ${req.start} to ${req.end}`)
-                                    ),
-                                    e('div', {className:'flex gap-2'},
-                                        e('button', {onClick:()=>approveRequest(req.id), className:'bg-emerald-600 px-4 py-2 rounded text-[10px] font-bold uppercase'}, 'Approve'),
-                                        e('button', {onClick:()=>setRejectingId(req.id), className:'bg-red-600 px-4 py-2 rounded text-[10px] font-bold uppercase'}, 'Reject')
-                                    )
-                                )),
-                                rejectingId && e('div', {className:'rejection-box animate-pulse'},
-                                    e('h4', {className:'text-red-500 font-bold text-xs mb-2'}, 'MANDATORY: ENTER REJECTION REASON'),
-                                    e('textarea', {className:'input-box w-full mb-2', rows:3, value:rejectReason, onChange:v=>setRejectReason(v.target.value), placeholder:'e.g. Critical project deadline, please reschedule...'}),
-                                    e('div', {className:'flex justify-end gap-2'},
-                                        e('button', {onClick:()=>setRejectingId(null), className:'text-[10px] text-slate-500 font-bold'}, 'CANCEL'),
-                                        e('button', {onClick:finalizeRejection, className:'bg-red-600 px-4 py-1 rounded text-[10px] font-bold'}, 'CONFIRM REJECTION')
-                                    )
-                                )
-                            )
-                        ),
-
-                        view === 'HISTORY' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic text-white'}, 'Request Audit Log'),
-                            e('div', {className:'glass-card'},
-                                e('table', {className:'w-full text-xs text-left'},
-                                    e('thead',null,e('tr',{className:'text-slate-500 border-b border-slate-800'}, e('th',{className:'pb-4'},'STAFF'), e('th',null,'STATUS'), e('th',null,'FEEDBACK'))),
-                                    e('tbody',null, requests.filter(r=>r.status!=='Pending').map(req => e('tr',{key:req.id, className:'border-b border-slate-800/50'},
-                                        e('td',{className:'py-4 font-bold'}, req.empName),
-                                        e('td',null, e('span', {className:`px-2 py-1 rounded-full font-bold text-[9px] ${req.status==='Approved'?'bg-emerald-500/20 text-emerald-500':'bg-red-500/20 text-red-500'}`}, req.status)),
-                                        e('td',{className:'italic text-slate-500'}, req.reason || 'Processed successfully.')
-                                    )))
-                                )
-                            )
-                        )
-                    )
-                );
-            }
-            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
-        };
-    </script>
-</body>
-</html>
+                const handleAction = (id, status) => {
+                    if (status === 'Rejected') {
+                        setRejectingId(id);
+                    } else {
+                        setRequests(requests.map(r => r.id === id ? {...r, status}
