@@ -3,89 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | FINANCE TRAINING TOOL</title>
+    <title>DE-TRUSTED ERP | LIVE STATUS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono&display=swap');
-        body { font-family: 'Ubuntu', sans-serif; background: #f8fafc; color: #1e293b; }
-        .match-badge { font-size: 10px; padding: 4px 10px; border-radius: 99px; font-weight: 800; }
-        .success { background: #dcfce7; color: #166534; }
-        .pending { background: #fef3c7; color: #92400e; }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Ubuntu:wght@700&display=swap');
+        body { background: #020617; color: #94a3b8; font-family: 'Roboto Mono', monospace; }
+        .pulse-green { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
     </style>
 </head>
-<body>
+<body class="p-10">
     <div id="root"></div>
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState } = React;
+            const { useState, useEffect } = React;
 
             function App() {
-                const [poRef, setPoRef] = useState('');
-                const [status, setStatus] = useState('IDLE'); // IDLE, MATCHED
+                const [logs, setLogs] = useState([
+                    "> [08:00] SYSTEM INITIALIZED",
+                    "> [08:01] CONNECTED TO POSTGRES_DB_PROD",
+                    "> [08:05] ALL 10 DESKS REPORTING READY"
+                ]);
 
-                const handleVerify = () => {
-                    if(poRef.toUpperCase() === 'PO-2025-0012') setStatus('MATCHED');
-                    else alert('Reference not found in Warehouse or Procurement records.');
-                };
+                useEffect(() => {
+                    const timer = setInterval(() => {
+                        const modules = ["FINANCE", "HR", "SALES", "WHSE", "PROD", "LOGS"];
+                        const mod = modules[Math.floor(Math.random() * modules.length)];
+                        setLogs(prev => [...prev.slice(-8), `> [${new Date().toLocaleTimeString()}] ${mod} TRANSIT ACTIVE... OK`]);
+                    }, 3000);
+                    return () => clearInterval(timer);
+                }, []);
 
-                return e('div', { className: 'p-10 max-w-4xl mx-auto' },
-                    e('div', { className: 'bg-white shadow-xl rounded-xl border border-slate-200 overflow-hidden' },
-                        // Header
-                        e('div', { className: 'bg-slate-900 p-6 text-white' },
-                            e('h2', { className: 'text-xl font-black' }, 'Payment Voucher (PV) Authorization'),
-                            e('p', { className: 'text-xs text-slate-400 uppercase tracking-widest' }, 'Finance Desk > Verification Portal')
+                return e('div', { className: 'max-w-3xl mx-auto' },
+                    e('div', { className: 'border border-slate-800 rounded-lg overflow-hidden' },
+                        e('div', { className: 'bg-slate-900 p-4 border-b border-slate-800 flex justify-between' },
+                            e('span', { className: 'text-xs font-bold text-emerald-500' }, "● SYSTEM HEARTBEAT"),
+                            e('span', { className: 'text-[10px]' }, "DE-TRUSTED ERP v4.0.0")
                         ),
-
-                        // Search Bar
-                        e('div', { className: 'p-8 border-b' },
-                            e('label', { className: 'block text-[10px] font-black text-slate-500 uppercase mb-2' }, 'Search PO or GRN Reference'),
-                            e('div', { className: 'flex gap-4' },
-                                e('input', { 
-                                    className: 'flex-1 border p-3 rounded font-mono text-sm',
-                                    placeholder: 'e.g. PO-2025-0012',
-                                    onChange: (v) => setPoRef(v.target.value)
-                                }),
-                                e('button', { 
-                                    onClick: handleVerify,
-                                    className: 'bg-emerald-600 text-white px-6 py-3 rounded font-bold text-xs' 
-                                }, 'VERIFY MATCH')
-                            )
-                        ),
-
-                        // Matching Status
-                        status === 'MATCHED' ? e('div', { className: 'p-8 animate-fade-in' },
-                            e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
-                                e('div', { className: 'p-4 bg-slate-50 rounded border' },
-                                    e('p', { className: 'text-[10px] font-bold text-slate-400' }, 'PROCUREMENT RECORD'),
-                                    e('p', { className: 'font-bold' }, 'PO-2025-0012'),
-                                    e('p', { className: 'text-xs' }, 'Supplier: Global Parts Ltd'),
-                                    e('p', { className: 'text-xs font-bold text-emerald-600' }, 'GHS 15,400.00 Approved')
-                                ),
-                                e('div', { className: 'p-4 bg-slate-50 rounded border' },
-                                    e('p', { className: 'text-[10px] font-bold text-slate-400' }, 'WAREHOUSE RECORD'),
-                                    e('p', { className: 'font-bold' }, 'GRN-99201-X'),
-                                    e('p', { className: 'text-xs' }, 'Items Received: 100%'),
-                                    e('p', { className: 'text-xs font-bold text-emerald-600' }, 'Condition: Verified')
-                                )
-                            ),
-                            e('div', { className: 'flex justify-between items-center bg-emerald-50 p-4 rounded-lg border border-emerald-200' },
-                                e('div', null,
-                                    e('span', { className: 'match-badge success' }, '✓ THREE-WAY MATCH OK'),
-                                    e('p', { className: 'text-xs text-emerald-800 mt-1' }, 'This payment is safe to post to the General Ledger.')
-                                ),
-                                e('button', { className: 'bg-slate-900 text-white px-6 py-2 rounded text-xs font-bold' }, 'POST TO LEDGER')
-                            )
-                        ) : e('div', { className: 'p-20 text-center text-slate-300 italic' }, 'Awaiting Reference Verification...')
+                        e('div', { className: 'p-6 bg-black h-64 overflow-hidden' },
+                            logs.map((log, i) => e('p', { key: i, className: 'text-xs mb-1' }, log)),
+                            e('p', { className: 'text-emerald-500 pulse-green' }, "> _")
+                        )
                     ),
-
-                    e('div', { className: 'mt-6 text-[10px] text-slate-400 text-center' }, 
-                      'AUDIT NOTICE: All interactions with this portal are recorded under the Finance Officer Trace-ID.')
+                    e('div', { className: 'grid grid-cols-3 gap-4 mt-6' },
+                        ['CPU: 12%', 'RAM: 2.4GB', 'DB Lateny: 14ms'].map(stat => 
+                            e('div', { key: stat, className: 'bg-slate-900 border border-slate-800 p-3 rounded text-[10px] text-center' }, stat)
+                        )
+                    ),
+                    e('div', { className: 'mt-10 text-center' },
+                        e('h1', { className: 'text-white text-3xl font-black italic tracking-tighter mb-2', style: {fontFamily: 'Ubuntu'} }, "GO LIVE SUCCESSFUL"),
+                        e('p', { className: 'text-xs text-slate-500' }, "The enterprise is now digitally synchronized.")
+                    )
                 );
             }
-
             const root = ReactDOM.createRoot(document.getElementById('root'));
             root.render(e(App));
         };
