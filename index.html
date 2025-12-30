@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | ULTIMATE PAYROLL</title>
+    <title>DE-TRUSTED ERP | LOAN & RECOVERY SUITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -34,17 +34,21 @@
             const fmt = (num) => new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
 
             function App() {
-                const [user, setUser] = useState({ auth: false, name: '' });
+                const [isAuth, setIsAuth] = useState(false);
                 const [passInput, setPassInput] = useState('');
                 const [empName, setEmpName] = useState('');
                 const [basicSalary, setBasicSalary] = useState(0);
                 const [bonus, setBonus] = useState(0);
+                const [loan, setLoan] = useState(0);
                 const [isBonusTaxable, setIsBonusTaxable] = useState(true);
 
-                // PAYROLL LOGIC
-                const ssnitBase = isBonusTaxable ? (basicSalary + bonus) : basicSalary;
-                const ssnit = ssnitBase * 0.055;
-                const taxableIncome = ssnitBase - ssnit;
+                // --- PAYROLL ENGINE (GRA 2025) ---
+                const taxableBonus = isBonusTaxable ? bonus : 0;
+                const untaxedBonus = isBonusTaxable ? 0 : bonus;
+                
+                const grossForTax = basicSalary + taxableBonus;
+                const ssnit = grossForTax * 0.055;
+                const taxableIncome = grossForTax - ssnit;
 
                 const calculatePAYE = (income) => {
                     let tax = 0; let rem = income;
@@ -62,14 +66,15 @@
                 };
 
                 const payeTax = calculatePAYE(taxableIncome);
-                const finalNetPay = (isBonusTaxable) ? (taxableIncome - payeTax) : (basicSalary - (basicSalary * 0.055) - calculatePAYE(basicSalary - (basicSalary * 0.055)) + bonus);
+                const netBeforeLoan = taxableIncome - payeTax + untaxedBonus;
+                const finalTakeHome = netBeforeLoan - loan;
 
                 const handleLogin = (val) => {
                     val.preventDefault();
-                    if(passInput === 'SUPER2025') {
-                        setUser({ auth: true, name: 'System Director' });
+                    if (passInput === 'SUPER2025') {
+                        setIsAuth(true);
                     } else {
-                        alert("ACCESS DENIED: Master Key Incorrect");
+                        alert("ERROR: Invalid Master Key.");
                     }
                 };
 
@@ -77,29 +82,97 @@
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
                     doc.setFont("helvetica", "bold");
-                    doc.text("DE-TRUSTED ENTERPRISE - PAYROLL RECEIPT", 105, 20, null, null, "center");
+                    doc.text("DE-TRUSTED ENTERPRISE - PAYSLIP", 105, 20, null, null, "center");
                     doc.setFontSize(10);
-                    doc.text(`Staff: ${empName || 'General Staff'}`, 20, 40);
-                    doc.text(`Status: ${isBonusTaxable ? 'Bonus Taxed' : 'Bonus Tax-Free'}`, 20, 47);
+                    doc.text(`Staff: ${empName || 'Staff Member'}`, 20, 40);
+                    doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, 20, 47);
                     
                     doc.line(20, 52, 190, 52);
-                    doc.text("Description", 20, 60); doc.text("GHS", 170, 60, {align:'right'});
+                    doc.text("EARNINGS", 20, 60); doc.text("GHS", 170, 60, {align:'right'});
                     doc.setFont("helvetica", "normal");
                     doc.text("Basic Salary", 20, 70); doc.text(fmt(basicSalary), 170, 70, {align:'right'});
-                    doc.text(`${isBonusTaxable ? 'Taxable' : 'Tax-Free'} Allowance`, 20, 78); doc.text(fmt(bonus), 170, 78, {align:'right'});
+                    doc.text(`Allowance (${isBonusTaxable ? 'Taxable' : 'Exempt'})`, 20, 78); doc.text(fmt(bonus), 170, 78, {align:'right'});
                     
-                    doc.text("SSNIT (5.5%)", 20, 95); doc.text(`-${fmt(ssnit)}`, 170, 95, {align:'right'});
-                    doc.text("Income Tax (PAYE)", 20, 103); doc.text(`-${fmt(payeTax)}`, 170, 103, {align:'right'});
-
-                    doc.line(130, 115, 190, 115);
                     doc.setFont("helvetica", "bold");
-                    doc.text("TOTAL NET PAYABLE", 20, 125); 
-                    doc.text(`GHS ${fmt(finalNetPay)}`, 170, 125, {align:'right'});
-                    doc.save(`Payslip_${empName}.pdf`);
+                    doc.text("DEDUCTIONS", 20, 95);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("SSNIT (5.5%)", 20, 105); doc.text(`-${fmt(ssnit)}`, 170, 105, {align:'right'});
+                    doc.text("PAYE Income Tax", 20, 113); doc.text(`-${fmt(payeTax)}`, 170, 113, {align:'right'});
+                    doc.text("Staff Loan Recovery", 20, 121); doc.text(`-${fmt(loan)}`, 170, 121, {align:'right'});
+
+                    doc.line(130, 130, 190, 130);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(12);
+                    doc.text("TOTAL NET PAY", 20, 140); 
+                    doc.text(`GHS ${fmt(finalTakeHome)}`, 170, 140, {align:'right'});
+                    doc.save(`Payslip_${empName || 'Staff'}.pdf`);
                 };
 
-                if (!user.auth) {
+                if (!isAuth) {
                     return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
-                        e('form', { onSubmit: handleLogin, className: 'glass-card w-96 text-center border-slate-800' },
-                            e('div', { className: 'mb-8' },
-                                e('h1', { className:
+                        e('form', { onSubmit: handleLogin, className: 'glass-card w-96 text-center border-slate-800 shadow-2xl' },
+                            e('h1', { className: 'text-2xl font-black italic mb-2' }, 'DE-TRUSTED ERP'),
+                            e('p', { className: 'text-[10px] text-yellow-500 font-bold mb-8' }, 'SYSTEM ACCESS REQUIRED'),
+                            e('input', { 
+                                type: 'password', 
+                                className: 'input-box text-center mb-6 border-slate-700', 
+                                placeholder: 'ENTER KEY', 
+                                value: passInput, 
+                                onChange: (v) => setPassInput(v.target.value),
+                                autoFocus: true
+                            }),
+                            e('button', { type: 'submit', className: 'btn-gold' }, 'Unlock Dashboard')
+                        )
+                    );
+                }
+
+                return e('div', { className: 'flex' },
+                    e('aside', { className: 'sidebar' },
+                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
+                        e('nav', { className: 'mt-4' }, e('div', { className: 'nav-link active' }, '👥 Payroll Desk'))
+                    ),
+                    e('main', { className: 'main-content flex-1' },
+                        e('div', { className: 'flex justify-between items-center mb-10' },
+                            e('h2', { className: 'text-3xl font-black' }, 'Payroll & Loan Control'),
+                            e('button', { onClick: () => window.location.reload(), className: 'text-[10px] bg-red-950/30 text-red-500 px-3 py-1 rounded border border-red-900 font-bold' }, 'EXIT SYSTEM')
+                        ),
+                        e('div', { className: 'grid grid-cols-1 lg:grid-cols-2 gap-8' },
+                            e('div', { className: 'glass-card space-y-4' },
+                                e('div', null, e('label', {className:'text-[10px] text-slate-500'}, 'STAFF NAME'), e('input', {className:'input-box text-sm', placeholder:'Kofi Antwi', value:empName, onChange:v=>setEmpName(v.target.value)})),
+                                e('div', null, e('label', {className:'text-[10px] text-slate-500'}, 'BASIC SALARY (GHS)'), e('input', {type:'number', className:'input-box text-yellow-500', value:basicSalary, onChange:v=>setBasicSalary(parseFloat(v.target.value)||0)})),
+                                e('div', null, 
+                                    e('div', {className:'flex justify-between mb-1'}, 
+                                        e('label', {className:'text-[10px] text-slate-500'}, 'ALLOWANCE'),
+                                        e('div', {className:'flex gap-1'}, 
+                                            e('button', { onClick:()=>setIsBonusTaxable(true), className: `toggle-btn ${isBonusTaxable ? 'bg-yellow-500 text-black' : 'bg-slate-800'}` }, 'TAXABLE'),
+                                            e('button', { onClick:()=>setIsBonusTaxable(false), className: `toggle-btn ${!isBonusTaxable ? 'bg-emerald-500 text-black' : 'bg-slate-800'}` }, 'EXEMPT')
+                                        )
+                                    ),
+                                    e('input', {type:'number', className:'input-box', value:bonus, onChange:v=>setBonus(parseFloat(v.target.value)||0)})
+                                ),
+                                e('div', null, e('label', {className:'text-[10px] text-red-400 font-bold'}, 'LOAN RECOVERY (DEDUCTION)'), e('input', {type:'number', className:'input-box text-red-500', value:loan, onChange:v=>setLoan(parseFloat(v.target.value)||0)})),
+                                e('div', {className:'pt-4'}, e('button', {className:'btn-gold', onClick: generatePDF}, 'Generate PDF Payslip'))
+                            ),
+                            e('div', { className: 'glass-card bg-slate-900/40' },
+                                e('h3', { className: 'text-xs font-bold text-slate-500 mb-8 uppercase tracking-widest' }, 'Live Calculation Breakdown'),
+                                e('div', { className: 'space-y-4 mono text-sm' },
+                                    e('div', { className: 'flex justify-between' }, e('span', null, 'Basic Salary'), e('span', null, fmt(basicSalary))),
+                                    e('div', { className: 'flex justify-between text-emerald-400' }, e('span', null, 'Total Allowances'), e('span', null, fmt(bonus))),
+                                    e('div', { className: 'flex justify-between text-red-400' }, e('span', null, 'SSNIT (5.5%)'), e('span', null, `-${fmt(ssnit)}`)),
+                                    e('div', { className: 'flex justify-between text-red-400' }, e('span', null, 'PAYE Tax'), e('span', null, `-${fmt(payeTax)}`)),
+                                    e('div', { className: 'flex justify-between text-orange-400 font-bold' }, e('span', null, 'Loan Deduction'), e('span', null, `-${fmt(loan)}`)),
+                                    e('div', { className: 'flex justify-between pt-6 border-t border-yellow-500' }, 
+                                        e('span', { className: 'text-emerald-500 font-bold' }, 'FINAL NET PAY'),
+                                        e('span', { className: 'text-emerald-500 font-black text-2xl' }, `GHS ${fmt(finalTakeHome)}`)
+                                    )
+                                )
+                            )
+                        )
+                    )
+                );
+            }
+            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+        };
+    </script>
+</body>
+</html>
