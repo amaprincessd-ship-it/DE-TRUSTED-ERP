@@ -39,6 +39,11 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
+        .exec-card {
+            border-top: 4px solid #0f172a;
+            background: white;
+        }
+
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -65,7 +70,7 @@
         );
 
         const Dashboard = () => {
-            const [currentDesk, setCurrentDesk] = useState('Production');
+            const [currentDesk, setCurrentDesk] = useState('Executive');
 
             // --- MODULE: PRODUCTION ---
             const ProductionDesk = () => (
@@ -132,7 +137,7 @@
                 </div>
             );
 
-            // --- MODULE: WAREHOUSE & INVENTORY ---
+            // --- MODULE: WAREHOUSE ---
             const WarehouseDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Inventory & <span className="text-blue-600">Warehouse</span></h1>
@@ -145,13 +150,13 @@
                         ))}
                     </div>
                     <div className="bg-white p-8 rounded shadow-lg border-2 border-slate-100">
-                        <h3 className="font-black text-sm uppercase mb-4">Stock Movement Audit (Ashalaja Site)</h3>
+                        <h3 className="font-black text-sm uppercase mb-4">Stock Movement Audit</h3>
                         <div className="space-y-4">
                             {[1, 2, 3].map(i => (
                                 <div key={i} className="flex justify-between items-center p-4 bg-slate-50 rounded border-l-4 border-slate-300">
                                     <div>
                                         <p className="text-xs font-black">Titanium Dioxide - Batch #RM-0992</p>
-                                        <p className="text-[10px] text-slate-500">Inbound from Procurement Desk | 10:45 AM</p>
+                                        <p className="text-[10px] text-slate-500">Inbound from Procurement | 10:45 AM</p>
                                     </div>
                                     <span className="text-green-600 font-bold text-xs">+500 KG</span>
                                 </div>
@@ -161,56 +166,108 @@
                 </div>
             );
 
-            // --- MODULE: SALES & CRM (NEW) ---
+            // --- MODULE: SALES ---
             const SalesDesk = () => (
                 <div className="fade-in">
-                    <div className="mb-8">
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Sales & <span className="text-blue-600">CRM</span></h1>
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Customer Credit & Revenue Desk</p>
-                    </div>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Sales & <span className="text-blue-600">CRM</span></h1>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2 locked-card p-8">
-                            <h3 className="font-black text-xs uppercase text-slate-400 mb-6">New Order Entry</h3>
+                            <h3 className="font-black text-xs uppercase text-slate-400 mb-6">Order Entry</h3>
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase">Select Customer</label>
-                                        <select className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded font-bold outline-none">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase">Customer</label>
+                                        <select className="w-full p-4 bg-slate-50 border rounded font-bold outline-none mt-1">
                                             <option>Ashalaja Construction Ltd</option>
-                                            <option>Ga South Municipal Assembly</option>
-                                            <option>Greater Accra Paint Distributors</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase">Payment Mode</label>
-                                        <select className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded font-bold outline-none">
-                                            <option>Corporate Credit (Locked)</option>
-                                            <option>Momo Pay</option>
-                                            <option>Bank Transfer</option>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase">Payment</label>
+                                        <select className="w-full p-4 bg-slate-50 border rounded font-bold outline-none mt-1">
+                                            <option>Corporate Credit</option>
                                         </select>
                                     </div>
                                 </div>
+                                <input type="text" placeholder="Tinting Code (RAL/NCS)" className="w-full p-4 bg-slate-50 border rounded font-bold outline-none" />
+                            </div>
+                            <div className="mt-8 p-6 bg-slate-900 rounded text-white italic">
+                                <div className="flex justify-between text-xl font-black tracking-tighter uppercase"><span>Total Due</span><span>GHS 12,190.00</span></div>
+                            </div>
+                            <button className="mt-6 w-full bg-blue-600 text-white py-5 font-black uppercase tracking-widest">Generate Waybill</button>
+                        </div>
+                        <div className="bg-white p-6 shadow rounded border-b-4 border-orange-500 h-fit">
+                            <p className="text-[10px] font-black text-slate-400 uppercase">Credit Status</p>
+                            <p className="text-lg font-black text-slate-800">ACCOUNT CLEAR</p>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            // --- MODULE: EXECUTIVE COCKPIT (MD's DESK) ---
+            const ExecutiveDesk = () => (
+                <div className="fade-in">
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Executive <span className="text-slate-500">Cockpit</span></h1>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 italic underline decoration-blue-500 decoration-2">Confidential | Managing Director Access</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                        <div className="exec-card p-6 shadow-xl">
+                            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Monthly Revenue</p>
+                            <p className="text-2xl font-black text-blue-600 tracking-tighter">GHS 842,500</p>
+                        </div>
+                        <div className="exec-card p-6 shadow-xl">
+                            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Production Yield</p>
+                            <p className="text-2xl font-black text-green-600 tracking-tighter">97.8%</p>
+                        </div>
+                        <div className="exec-card p-6 shadow-xl">
+                            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Payroll Liability</p>
+                            <p className="text-2xl font-black text-slate-800 tracking-tighter">GHS 142,000</p>
+                        </div>
+                        <div className="exec-card p-6 shadow-xl">
+                            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">LTI (Safety Days)</p>
+                            <p className="text-2xl font-black text-orange-600 tracking-tighter">412 Days</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="bg-white p-8 shadow-2xl border-l-8 border-slate-900">
+                            <h3 className="font-black text-xs uppercase text-slate-500 mb-6">Net Profit/Loss (Real-Time IFRS)</h3>
+                            <div className="space-y-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase">Tinting Request (Color Code)</label>
-                                    <input type="text" placeholder="e.g. RAL 7016 Anthracite" className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded font-bold outline-none" />
+                                    <div className="flex justify-between text-xs font-bold mb-1"><span>Gross Revenue</span><span>GHS 842k</span></div>
+                                    <div className="w-full bg-slate-100 h-4 rounded-full overflow-hidden">
+                                        <div className="bg-blue-600 h-full w-[84%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between text-xs font-bold mb-1"><span>Operating Costs (Ashalaja)</span><span>GHS 310k</span></div>
+                                    <div className="w-full bg-slate-100 h-4 rounded-full overflow-hidden">
+                                        <div className="bg-slate-400 h-full w-[31%]"></div>
+                                    </div>
+                                </div>
+                                <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
+                                    <span className="text-[10px] font-black uppercase text-slate-400">Projected Net</span>
+                                    <span className="text-4xl font-black text-slate-900 tracking-tighter">GHS 532,500</span>
                                 </div>
                             </div>
-                            <div className="mt-8 p-6 bg-slate-900 rounded text-white">
-                                <div className="flex justify-between mb-2 text-xs"><span>Sub-Total</span><span>GHS 10,000.00</span></div>
-                                <div className="flex justify-between mb-2 text-xs text-blue-400 font-bold"><span>Statutory Levies (VAT/NHIL/GETFund)</span><span>GHS 2,190.00</span></div>
-                                <hr className="border-slate-700 my-4"/>
-                                <div className="flex justify-between text-xl font-black italic"><span>TOTAL DUE</span><span>GHS 12,190.00</span></div>
-                            </div>
-                            <button className="mt-6 w-full bg-blue-600 text-white py-5 font-black uppercase tracking-widest hover:bg-blue-700 transition-all">Generate Professional Waybill</button>
                         </div>
-                        <div className="space-y-4">
-                            <div className="bg-white p-6 shadow rounded border-b-4 border-orange-500">
-                                <p className="text-[10px] font-black text-slate-400 uppercase">Customer Credit Lock</p>
-                                <p className="text-lg font-black text-slate-800">ACTIVE - NO DEBTORS</p>
-                            </div>
-                            <div className="bg-white p-6 shadow rounded border-b-4 border-slate-900">
-                                <p className="text-[10px] font-black text-slate-400 uppercase">Daily Sales Volume</p>
-                                <p className="text-lg font-black text-slate-800 text-blue-600">GHS 48,200.00</p>
+
+                        <div className="bg-slate-900 p-8 text-white shadow-2xl rounded-tr-[3rem]">
+                            <h3 className="font-black text-xs uppercase text-blue-400 mb-6 tracking-[0.2em]">Statutory Lock Dashboard</h3>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center p-3 border-b border-slate-800">
+                                    <span className="text-xs">GRA PAYE Submission</span>
+                                    <span className="bg-blue-600 px-2 py-1 rounded text-[10px] font-black italic uppercase">Validated</span>
+                                </div>
+                                <div className="flex justify-between items-center p-3 border-b border-slate-800">
+                                    <span className="text-xs">SSNIT Contributions (Tier 1 & 2)</span>
+                                    <span className="bg-blue-600 px-2 py-1 rounded text-[10px] font-black italic uppercase">Validated</span>
+                                </div>
+                                <div className="flex justify-between items-center p-3">
+                                    <span className="text-xs font-bold text-orange-400 italic">Financial Month-End Lock</span>
+                                    <button className="bg-white text-slate-900 px-4 py-2 font-black text-[10px] uppercase tracking-tighter hover:bg-orange-500 hover:text-white transition-all">Authenticate Seal</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -226,11 +283,32 @@
                                 <h1 className="brand-title text-white">DE-TRUSTED <span className="text-blue-500 font-normal">PAINT</span></h1>
                                 <div className="h-1 w-12 bg-blue-600 mt-2"></div>
                             </div>
+                            <SidebarItem name="Executive" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Production" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Sales" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
                         </div>
                         <div className="bg-slate-800/50 p-4 rounded border border-slate-700">
-                            <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">Secure State</p>
-                            <p className="text-white text-
+                            <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">System State</p>
+                            <p className="text-white text-[10px] font-mono uppercase tracking-tighter">Ashalaja_Primary_Mirror_Live</p>
+                        </div>
+                    </div>
+
+                    {/* MAIN CONTENT */}
+                    <main className="flex-1 overflow-y-auto p-16 relative">
+                        {currentDesk === 'Executive' && <ExecutiveDesk />}
+                        {currentDesk === 'Production' && <ProductionDesk />}
+                        {currentDesk === 'HR' && <HRDesk />}
+                        {currentDesk === 'Warehouse' && <WarehouseDesk />}
+                        {currentDesk === 'Sales' && <SalesDesk />}
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Dashboard />);
+    </script>
+</body>
+</html>
