@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Secure Executive Console</title>
+    <title>DE-TRUSTED ERP | Royal Executive Console</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -15,36 +15,41 @@
         body { 
             font-family: 'Inter', sans-serif; 
             margin: 0; 
-            color: #0f172a;
-            background-color: #f8fafc;
-            /* DE-TRUSTED WATERMARK OVERLAY */
-            background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Georgia' font-size='24' fill='rgba(15, 23, 42, 0.05)' text-anchor='middle' transform='rotate(-35, 150, 150)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
+            color: #1e293b;
+            /* Light Gold to White Gradient Background */
+            background: linear-gradient(135deg, #ffffff 0%, #fefce8 100%);
             background-attachment: fixed;
+            /* DE-TRUSTED WATERMARK */
+            background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Georgia' font-size='22' fill='rgba(184, 134, 11, 0.07)' text-anchor='middle' transform='rotate(-35, 150, 150)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
         }
 
         h1, h2, h3, .cambria { font-family: 'Cambria', 'Georgia', serif; }
         
-        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 240px; z-index: 50; border-right: 1px solid rgba(255,255,255,0.1); }
-        .nav-btn { width: 100%; text-align: left; padding: 12px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
-        .nav-btn.active { background: #0f172a; color: #3b82f6; border-left-color: #3b82f6; font-weight: 700; }
+        /* Royal Blue Sidebar */
+        .sidebar-royal { background: #002366; min-height: 100vh; position: fixed; width: 240px; z-index: 50; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
+        .nav-btn { width: 100%; text-align: left; padding: 12px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #94a3b8; cursor: pointer; }
+        .nav-btn.active { background: #001a4d; color: #fbbf24; border-left-color: #fbbf24; font-weight: 700; }
         
-        .admin-sub-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); border: 1px solid #e2e8f0; border-radius: 12px; height: calc(100vh - 180px); overflow-y: auto; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-        .branch-label { font-size: 9px; font-weight: 900; color: #94a3b8; padding: 18px 20px 8px 20px; text-transform: uppercase; letter-spacing: 0.15em; border-top: 1px solid #f1f5f9; }
+        /* Navigation Links */
+        .admin-sub-card { background: rgba(255, 255, 255, 0.9); border: 1px solid #eab308; border-radius: 12px; height: calc(100vh - 180px); overflow-y: auto; }
+        .branch-label { font-size: 9px; font-weight: 900; color: #002366; padding: 18px 20px 8px 20px; text-transform: uppercase; letter-spacing: 0.15em; border-top: 1px solid #fef3c7; }
         
         .sub-link { padding: 10px 20px; font-size: 12px; color: #475569; cursor: pointer; display: flex; align-items: center; border-left: 3px solid transparent; transition: 0.2s; }
-        .sub-link:hover { background: #f8fafc; color: #2563eb; }
-        .sub-link.active { background: #eff6ff; color: #2563eb; font-weight: 700; border-left-color: #2563eb; }
+        .sub-link:hover { background: #fffbeb; color: #002366; }
+        .sub-link.active { background: #fef3c7; color: #002366; font-weight: 700; border-left-color: #002366; }
 
-        .workspace-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid #e2e8f0; padding: 2.5rem; min-height: 750px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
+        /* Workspace Panels */
+        .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 750px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); }
         
-        .intro-text { font-size: 12px; color: #312e81; line-height: 1.8; font-weight: 500; }
+        .intro-text { font-size: 12px; color: #002366; line-height: 1.8; font-weight: 500; }
         
-        .field-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 6px; display: block; letter-spacing: 0.05em; }
-        .input-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; transition: 0.2s; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); }
-        .input-linked:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .field-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #002366; margin-bottom: 6px; display: block; }
+        .input-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; border-bottom: 2px solid #eab308; }
+        .input-linked:focus { border-color: #002366; background: #fffdf5; }
 
-        .db-badge { font-size: 8px; font-weight: 900; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: #475569; }
-        .strat-card { border-left: 3px solid #312e81; background: #f5f3ff; padding: 15px; margin-bottom: 12px; border-radius: 0 6px 6px 0; }
+        .strat-card { border-left: 4px solid #fbbf24; background: #fffbeb; padding: 15px; margin-bottom: 12px; border-radius: 0 8px 8px 0; }
+        .royal-badge { font-size: 8px; font-weight: 900; padding: 3px 10px; border-radius: 20px; background: #002366; color: #fbbf24; }
+        
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -86,21 +91,21 @@
                 }, name);
 
                 return e('div', { className: 'fade-in' },
-                    e('div', { className: 'mb-8 border-b border-slate-200 pb-6 flex justify-between items-end' },
+                    e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
                         e('div', null,
-                            e('h1', { className: 'text-3xl cambria text-slate-900' }, 'Administration Desk'),
-                            e('p', { className: 'text-slate-500 text-sm' }, 'Unified Statutory Hub | DE-TRUSTED PAINT')
+                            e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Administration Desk'),
+                            e('p', { className: 'text-blue-700 text-sm font-medium' }, 'DE-TRUSTED Master Statutory Console')
                         ),
-                        e('div', { className: 'flex items-center gap-2' },
-                            e('span', { className: 'text-[9px] font-bold text-blue-600' }, 'SYSTEM_LINK_SECURE'),
-                            e('div', { className: 'w-2 h-2 bg-blue-500 rounded-full animate-pulse' })
+                        e('div', { className: 'flex items-center gap-3' },
+                            e('span', { className: 'royal-badge' }, 'SECURE_NODE_ALPHA'),
+                            e('div', { className: 'w-3 h-3 bg-blue-600 rounded-full animate-pulse' })
                         )
                     ),
 
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
-                            e('div', { className: 'admin-sub-card' },
-                                e('div', { className: 'branch-label' }, 'Executive Strategy'),
+                            e('div', { className: 'admin-sub-card shadow-lg' },
+                                e('div', { className: 'branch-label' }, 'Executive Overview'),
                                 ["Department Purpose"].map(SubMenuLink),
                                 e('div', { className: 'branch-label' }, 'Regulatory Hub'),
                                 ["GRA (Revenue)", "SSNIT (Pension)", "FDA (Food & Drugs)", "GSA (Standards)", "EPA (Environmental)", "RGD (Registrar)", "Local Assembly"].map(SubMenuLink),
@@ -114,43 +119,43 @@
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card fade-in', key: activeSub },
                                 schema.isWelcome ? e('div', null,
-                                    e('h2', { className: 'text-[10px] font-black text-indigo-800 uppercase tracking-widest mb-4' }, schema.title),
+                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, schema.title),
                                     e('p', { className: 'intro-text mb-8' }, 
                                         "The Administration Department of De-Trusted Paint Manufacturing Company serves as the central coordinating function responsible for ensuring organizational efficiency, regulatory compliance, corporate governance, internal controls, and operational continuity. In line with Ghanaian corporate practice, the department acts as:"
                                     ),
-                                    e('div', { className: 'strat-card' }, 
-                                        e('h4', { className: 'font-bold text-indigo-950 text-sm' }, 'The institutional backbone of DE-TRUSTED PAINT'),
-                                        e('p', { className: 'text-[11px] text-indigo-700 mt-1 opacity-80' }, 'Driving foundational excellence.')
+                                    e('div', { className: 'strat-card shadow-sm' }, 
+                                        e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The institutional backbone of DE-TRUSTED PAINT'),
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Driving foundational excellence.')
                                     ),
-                                    e('div', { className: 'strat-card' }, 
-                                        e('h4', { className: 'font-bold text-indigo-950 text-sm' }, 'The custodian of policies, records, and compliance'),
-                                        e('p', { className: 'text-[11px] text-indigo-700 mt-1 opacity-80' }, 'Upholding statutory integrity and data security.')
+                                    e('div', { className: 'strat-card shadow-sm' }, 
+                                        e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The custodian of policies, records, and compliance'),
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Upholding statutory integrity.')
                                     ),
-                                    e('div', { className: 'strat-card' }, 
-                                        e('h4', { className: 'font-bold text-indigo-950 text-sm' }, 'The interface between management, staff, regulators, and external stakeholders'),
-                                        e('p', { className: 'text-[11px] text-indigo-700 mt-1 opacity-80' }, 'Strategic bridge for industrial harmony.')
+                                    e('div', { className: 'strat-card shadow-sm' }, 
+                                        e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The strategic interface'),
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Bridging management, regulators, and stakeholders.')
                                     )
                                 ) : e('div', null,
                                     e('div', { className: 'flex justify-between items-start mb-10' },
                                         e('div', null,
-                                            e('h2', { className: 'text-2xl font-bold text-slate-800' }, schema.title),
+                                            e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
                                             e('div', { className: 'flex gap-2 mt-2' }, 
-                                                e('span', { className: 'db-badge' }, `DB_TABLE: ${schema.table}`),
-                                                e('span', { className: 'db-badge text-blue-600' }, 'LOCKED')
+                                                e('span', { className: 'royal-badge' }, `DB_ID: ${schema.table}`),
+                                                e('span', { className: 'text-[9px] font-bold text-amber-600 uppercase' }, '• Active Protocol')
                                             )
                                         ),
                                         e('div', { className: 'flex gap-2' },
-                                            e('button', { className: 'bg-slate-900 text-white text-[9px] font-bold uppercase px-6 py-2.5 rounded-md hover:bg-slate-800 shadow-lg' }, 'Commit Changes'),
-                                            e('button', { className: 'border border-slate-200 text-slate-500 text-[9px] font-bold uppercase px-6 py-2.5 rounded-md' }, 'Audits')
+                                            e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-6 py-2.5 rounded-md hover:bg-blue-800 transition-all' }, 'Execute Save'),
+                                            e('button', { className: 'border border-amber-400 text-amber-700 text-[9px] font-bold uppercase px-6 py-2.5 rounded-md hover:bg-amber-50' }, 'Audit History')
                                         )
                                     ),
-                                    e('div', { className: 'mb-8 p-4 bg-slate-50 border-l-2 border-slate-400 rounded-r-md' },
-                                        e('p', { className: 'text-[13px] text-slate-600 font-medium' }, schema.desc)
+                                    e('div', { className: 'mb-8 p-4 bg-blue-50 border-l-4 border-blue-900 rounded-r-md' },
+                                        e('p', { className: 'text-[13px] text-blue-800' }, schema.desc)
                                     ),
                                     e('div', { className: 'grid grid-cols-2 gap-x-8 gap-y-6' },
                                         schema.fields.map(label => e('div', { key: label },
                                             e('label', { className: 'field-label' }, label),
-                                            e('input', { className: 'input-linked', placeholder: `Sync ${label}...` })
+                                            e('input', { className: 'input-linked', placeholder: `Database input for ${label}...` })
                                         ))
                                     )
                                 )
@@ -165,10 +170,10 @@
                 const desks = ['Executive', 'Administration', 'Finance', 'Production', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'HR', 'Reception'];
 
                 return e('div', { className: 'flex' },
-                    e('div', { className: 'sidebar-executive' },
-                        e('div', { className: 'p-8 mb-6' },
-                            e('h1', { className: 'cambria text-white text-3xl' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.2em] mt-2' }, 'Admin System')
+                    e('div', { className: 'sidebar-royal' },
+                        e('div', { className: 'p-8 mb-6 border-b border-blue-800' },
+                            e('h1', { className: 'cambria text-white text-2xl font-bold tracking-tight' }, 'DE-TRUSTED'),
+                            e('p', { className: 'text-[10px] text-amber-400 font-bold uppercase tracking-[0.2em] mt-2' }, 'Royal ERP Master')
                         ),
                         desks.map(name => 
                             e('button', {
@@ -179,7 +184,7 @@
                         )
                     ),
                     e('main', { className: 'flex-1 ml-[240px] min-h-screen p-16' },
-                        currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'py-40 text-center opacity-10' }, e('h1', { className: 'text-8xl font-black' }, currentDesk))
+                        currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'py-40 text-center opacity-10' }, e('h1', { className: 'text-8xl font-black text-blue-900' }, currentDesk))
                     )
                 );
             }
