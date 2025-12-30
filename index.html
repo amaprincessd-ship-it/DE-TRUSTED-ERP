@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | WAREHOUSE DESK</title>
+    <title>DE-TRUSTED ERP | PRODUCTION DESK</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,23 +12,21 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        :root { --navy: #001f3f; --gold: #fbbf24; --orange: #c2410c; }
+        :root { --navy: #001f3f; --gold: #fbbf24; --indigo: #3730a3; }
         body { font-family: 'Ubuntu', sans-serif; background: #f1f5f9; margin: 0; }
 
         .sidebar { background: var(--navy); height: 100vh; width: 260px; position: fixed; border-right: 4px solid var(--gold); }
         .workspace { margin-left: 260px; padding: 40px; }
         
         .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .header-warehouse { background: var(--orange); color: white; padding: 25px; border-radius: 8px 8px 0 0; }
+        .header-prod { background: var(--indigo); color: white; padding: 25px; border-radius: 8px 8px 0 0; }
         
         .field-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .w-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
+        .p-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
         
-        .stock-badge { background: #ffedd5; color: #9a3412; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 800; }
-        .match-success { color: #15803d; font-weight: 800; font-size: 11px; }
-
-        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; padding: 15px; border-bottom: 1px solid #f1f5f9; align-items: center; }
-        .item-row-header { background: #f8fafc; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; padding: 10px 15px; }
+        .cost-summary { background: #eef2ff; border: 1px solid #c7d2fe; padding: 20px; border-radius: 6px; }
+        .ledger-preview { font-family: 'Roboto Mono', monospace; font-size: 11px; background: #0f172a; color: #94a3b8; padding: 15px; border-radius: 4px; }
+        .highlight-text { color: #818cf8; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -37,95 +35,97 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState } = React;
+            const { useState, useEffect } = React;
 
             function App() {
-                const [poReference, setPoReference] = useState('');
-                const [isMatched, setIsMatched] = useState(false);
+                const [rawMaterialCost, setRawMaterialCost] = useState(2500.00);
+                const [laborHours, setLaborHours] = useState(0);
+                const [overheadRate] = useState(15); // 15% of material cost
+                const [totalProductionCost, setTotalProductionCost] = useState(0);
 
-                // Simulated PO Linkage
-                const handleMatch = () => {
-                    if(poReference === 'PO-2025-0012') setIsMatched(true);
-                    else alert('PO Reference not found in Procurement Desk.');
-                };
+                useEffect(() => {
+                    const laborCost = laborHours * 45; // Simulated rate GHS 45/hr
+                    const overheads = rawMaterialCost * (overheadRate / 100);
+                    setTotalProductionCost(rawMaterialCost + laborCost + overheads);
+                }, [rawMaterialCost, laborHours]);
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar p-6' },
                         e('h1', { className: 'text-white text-xl font-black mb-10' }, 'DE-TRUSTED ERP'),
-                        ['Inventory Dashboard', 'Goods Received (GRN)', 'Stock Issue (IIN)', 'Stock Take', 'Bin Locations', 'Scrap/Damages'].map(i => 
-                            e('div', { key: i, className: 'text-orange-200 text-xs font-bold py-3 border-b border-white/10 cursor-pointer hover:text-white' }, i.toUpperCase())
+                        ['BOM Master', 'Work Orders', 'Resource Planning', 'Quality Control', 'Machine Downtime', 'Costing Reports'].map(i => 
+                            e('div', { key: i, className: 'text-indigo-200 text-xs font-bold py-3 border-b border-white/10 cursor-pointer hover:text-white' }, i.toUpperCase())
                         )
                     ),
 
                     e('main', { className: 'workspace flex-1' },
                         e('div', { className: 'card' },
-                            e('div', { className: 'header-warehouse flex justify-between items-center' },
+                            e('div', { className: 'header-prod flex justify-between items-center' },
                                 e('div', null,
-                                    e('h2', { className: 'text-2xl font-black' }, 'Goods Received Note (GRN)'),
-                                    e('p', { className: 'text-xs opacity-80' }, 'Warehouse > Stock Inward Registry')
+                                    e('h2', { className: 'text-2xl font-black' }, 'Bill of Materials (BOM)'),
+                                    e('p', { className: 'text-xs opacity-80' }, 'Production > Manufacturing Recipe & Costing')
                                 ),
                                 e('div', { className: 'text-right' },
-                                    e('p', { className: 'text-[10px] font-black' }, 'GRN NUMBER'),
-                                    e('span', { className: 'text-xl font-mono font-bold' }, 'GRN-99201-X')
+                                    e('p', { className: 'text-[10px] font-black' }, 'BOM ID'),
+                                    e('span', { className: 'text-xl font-mono font-bold' }, 'BOM-2025-AX1')
                                 )
                             ),
 
                             e('div', { className: 'p-8' },
-                                e('div', { className: 'grid grid-cols-3 gap-6 mb-8 border-b pb-8' },
+                                e('div', { className: 'grid grid-cols-2 gap-10 mb-8' },
                                     e('div', null,
-                                        e('label', { className: 'field-label' }, 'Parent PO Reference'),
-                                        e('div', { className: 'flex gap-2' },
-                                            e('input', { 
-                                                className: 'w-input mb-0', 
-                                                placeholder: 'PO-2025-XXXX',
-                                                onChange: (x) => setPoReference(x.target.value)
-                                            }),
-                                            e('button', { 
-                                                className: 'bg-orange-700 text-white px-4 rounded font-bold text-[10px]',
-                                                onClick: handleMatch
-                                            }, 'MATCH')
-                                        )
+                                        e('h3', { className: 'text-xs font-black text-indigo-900 border-b pb-2 mb-4' }, 'FINISHED PRODUCT'),
+                                        e('label', { className: 'field-label' }, 'Product Name'),
+                                        e('input', { className: 'p-input', defaultValue: 'Industrial Steel Beam - Grade A' }),
+                                        e('label', { className: 'field-label' }, 'Production Unit'),
+                                        e('select', { className: 'p-input' }, ['Units', 'Kilograms', 'Litres', 'Tonnes'].map(u => e('option', {key:u}, u)))
                                     ),
                                     e('div', null,
-                                        e('label', { className: 'field-label' }, 'Waybill / Delivery Note #'),
-                                        e('input', { className: 'w-input', placeholder: 'Enter Vendor Doc #' })
-                                    ),
-                                    e('div', null,
-                                        e('label', { className: 'field-label' }, 'Receiving Officer'),
-                                        e('input', { className: 'w-input bg-slate-50', value: 'EMP-7712 | S. Kojo', readOnly: true })
+                                        e('h3', { className: 'text-xs font-black text-indigo-900 border-b pb-2 mb-4' }, 'PRODUCTION PARAMETERS'),
+                                        e('label', { className: 'field-label' }, 'Direct Labor (Man-Hours)'),
+                                        e('input', { className: 'p-input', type: 'number', onChange: (x) => setLaborHours(x.target.value) }),
+                                        e('label', { className: 'field-label' }, 'Production Line'),
+                                        e('select', { className: 'p-input' }, ['Assembly Line 1', 'Heavy Forge Area', 'Finishing Section'].map(l => e('option', {key:l}, l)))
                                     )
                                 ),
 
-                                isMatched ? e('div', null,
-                                    e('div', { className: 'flex justify-between items-center mb-4' },
-                                        e('h3', { className: 'text-xs font-black text-orange-900' }, 'ITEMS EXPECTED FROM PO-2025-0012'),
-                                        e('span', { className: 'match-success' }, '✓ THREE-WAY MATCH INITIATED')
+                                e('h3', { className: 'text-xs font-black text-indigo-900 border-b pb-2 mb-4' }, 'COST ACCUMULATION (AUTO-CALCULATED)'),
+                                e('div', { className: 'grid grid-cols-2 gap-10' },
+                                    e('div', { className: 'cost-summary' },
+                                        e('div', { className: 'flex justify-between mb-2 text-sm' }, 
+                                            e('span', null, 'Raw Materials (from Warehouse):'), 
+                                            e('span', { className: 'font-bold' }, `GHS ${rawMaterialCost.toLocaleString()}`)
+                                        ),
+                                        e('div', { className: 'flex justify-between mb-2 text-sm' }, 
+                                            e('span', null, 'Direct Labor Cost (from HR):'), 
+                                            e('span', { className: 'font-bold' }, `GHS ${(laborHours * 45).toLocaleString()}`)
+                                        ),
+                                        e('div', { className: 'flex justify-between mb-4 text-sm' }, 
+                                            e('span', null, `Overheads (${overheadRate}%):`), 
+                                            e('span', { className: 'font-bold' }, `GHS ${(rawMaterialCost * 0.15).toLocaleString()}`)
+                                        ),
+                                        e('div', { className: 'border-t-2 border-indigo-200 pt-2 flex justify-between' }, 
+                                            e('span', { className: 'font-black uppercase text-indigo-900' }, 'Total Cost of Production:'), 
+                                            e('span', { className: 'text-2xl font-black text-indigo-700 font-mono' }, `GHS ${totalProductionCost.toLocaleString(undefined, {minimumFractionDigits: 2})}`)
+                                        )
                                     ),
-                                    e('div', { className: 'item-row-header grid grid-cols-4' },
-                                        e('div', null, 'Description'), e('div', null, 'Ordered'), e('div', null, 'Received'), e('div', null, 'Status')
-                                    ),
-                                    [
-                                        {desc: 'Raw Material Type-A', ord: 500, unit: 'kg'},
-                                        {desc: 'Industrial Lubricant', ord: 20, unit: 'Liters'}
-                                    ].map((item, idx) => e('div', { key: idx, className: 'item-row' },
-                                        e('div', { className: 'text-sm font-bold' }, item.desc),
-                                        e('div', { className: 'text-xs' }, `${item.ord} ${item.unit}`),
-                                        e('input', { className: 'w-input mb-0 py-1', type: 'number', defaultValue: item.ord }),
-                                        e('div', null, e('span', { className: 'stock-badge' }, 'INSPECTED'))
-                                    ))
-                                ) : e('div', { className: 'py-10 text-center text-slate-400 font-bold italic' }, 
-                                    'Enter and Match a valid PO Reference to load expected items.')
+                                    e('div', null,
+                                        e('p', { className: 'field-label' }, 'GL Posting Preview'),
+                                        e('div', { className: 'ledger-preview' },
+                                            e('p', null, `DR [Inventory - Finished Goods] : `, e('span', {className: 'highlight-text'}, totalProductionCost.toFixed(2))),
+                                            e('p', {className: 'ml-4 mt-2'}, `CR [Inventory - Raw Materials] : `, e('span', {className: 'highlight-text'}, rawMaterialCost.toFixed(2))),
+                                            e('p', {className: 'ml-4'}, `CR [Labor Clearing Account] : `, e('span', {className: 'highlight-text'}, (laborHours * 45).toFixed(2))),
+                                            e('p', {className: 'ml-4'}, `CR [Manufacturing Overheads] : `, e('span', {className: 'highlight-text'}, (rawMaterialCost * 0.15).toFixed(2)))
+                                        )
+                                    )
+                                )
                             ),
 
                             e('div', { className: 'p-8 bg-slate-50 border-t flex justify-between items-center' },
                                 e('p', { className: 'text-[10px] font-bold text-slate-400 max-w-sm' }, 
-                                    'AUTHORIZATION: Clicking "Acknowledge Receipt" will update Bin Balances and trigger a Liability notification for Finance.'),
+                                    'VALUATION NOTICE: This BOM sets the standard cost for the Finished Good. Discrepancies will be captured in the Manufacturing Variance Report.'),
                                 e('div', { className: 'flex gap-4' },
-                                    e('button', { className: 'px-8 py-3 bg-white border border-slate-300 font-bold text-xs rounded' }, 'FLAG DISCREPANCY'),
-                                    e('button', { 
-                                        className: 'px-10 py-3 bg-orange-700 text-white font-bold text-xs rounded',
-                                        disabled: !isMatched
-                                    }, 'ACKNOWLEDGE RECEIPT')
+                                    e('button', { className: 'px-8 py-3 bg-white border border-slate-300 font-bold text-xs rounded' }, 'VERSION HISTORY'),
+                                    e('button', { className: 'px-10 py-3 bg-indigo-900 text-white font-bold text-xs rounded' }, 'APPROVE BOM')
                                 )
                             )
                         )
