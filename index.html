@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DE-TRUSTED PAINT ERP | Master Command</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;600;800&display=swap');
         
@@ -15,6 +17,8 @@
             background-color: #f8fafc;
             background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='32' font-weight='900' font-family='Montserrat, sans-serif' fill='%23e2e8f0' text-anchor='middle' opacity='0.4' transform='rotate(-30 200 200)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
             background-repeat: repeat;
+            margin: 0;
+            padding: 0;
         }
 
         .brand-title { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; font-size: 1.5rem; }
@@ -52,22 +56,18 @@
         const Dashboard = () => {
             const [currentDesk, setCurrentDesk] = useState('Executive');
 
-            // --- ALL DEPARTMENT MODULES ---
+            // --- DEPARTMENTS ---
             const ExecutiveDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Executive <span className="text-slate-500">Cockpit</span></h1>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                         <div className="bg-white p-6 shadow border-t-4 border-blue-600">
                             <p className="text-[10px] font-black text-slate-400 uppercase">Monthly Revenue</p>
-                            <p className="text-2xl font-black text-blue-600 tracking-tighter">GHS 842,500</p>
+                            <p className="text-2xl font-black text-blue-600">GHS 842,500</p>
                         </div>
                         <div className="bg-white p-6 shadow border-t-4 border-green-600">
                             <p className="text-[10px] font-black text-slate-400 uppercase">Production Yield</p>
-                            <p className="text-2xl font-black text-green-600 tracking-tighter">97.8%</p>
-                        </div>
-                        <div className="bg-white p-6 shadow border-t-4 border-slate-900">
-                            <p className="text-[10px] font-black text-slate-400 uppercase">Site Safety</p>
-                            <p className="text-2xl font-black text-slate-800 tracking-tighter">SECURE</p>
+                            <p className="text-2xl font-black text-green-600">97.8%</p>
                         </div>
                     </div>
                 </div>
@@ -78,16 +78,15 @@
                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Administration <span className="text-indigo-600">Desk</span></h1>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="locked-card p-6 border-indigo-500">
-                            <h3 className="font-black text-xs uppercase mb-4">GSA / EPA / Fire Regulatory</h3>
+                            <h3 className="font-black text-xs uppercase mb-4">GSA / EPA Regulatory</h3>
                             <div className="space-y-2 text-xs font-bold">
-                                <p className="flex justify-between border-b pb-1"><span>GSA Certificate</span><span className="text-green-600">VALID</span></p>
-                                <p className="flex justify-between border-b pb-1"><span>EPA Ghana Permit</span><span className="text-orange-500">PENDING RENEWAL</span></p>
+                                <p className="flex justify-between border-b pb-1"><span>GSA License</span><span className="text-green-600">VALID</span></p>
+                                <p className="flex justify-between border-b pb-1"><span>EPA Permit</span><span className="text-orange-500">RENEWAL</span></p>
                             </div>
                         </div>
                         <div className="locked-card p-6 border-slate-900">
-                            <h3 className="font-black text-xs uppercase mb-4">Memos & Meeting Minutes</h3>
-                            <p className="text-[10px] text-slate-500 mb-4">Last Minutes: Board Meeting 12.12.25</p>
-                            <button className="w-full bg-slate-900 text-white py-2 text-[10px] font-black uppercase">Open Archives</button>
+                            <h3 className="font-black text-xs uppercase mb-4">Maintenance & Filing</h3>
+                            <button className="w-full bg-slate-900 text-white py-2 text-[10px] font-black uppercase">Access Memos</button>
                         </div>
                     </div>
                 </div>
@@ -95,37 +94,12 @@
 
             const FinanceDesk = () => (
                 <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Finance <span className="text-emerald-600">Accounts</span></h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div className="bg-white p-6 border shadow-xl">
-                            <h3 className="text-[10px] font-black text-slate-400 uppercase mb-4">A-Z Accounting Snapshot</h3>
-                            <div className="space-y-2 text-sm font-black">
-                                <p className="flex justify-between"><span>Assets (Cash/Stock)</span><span>GHS 1.8M</span></p>
-                                <p className="flex justify-between text-red-600"><span>Tax Liabilities</span><span>GHS 118k</span></p>
-                            </div>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Finance <span className="text-emerald-600">Portal</span></h1>
+                    <div className="locked-card p-8 border-emerald-600">
+                        <div className="flex justify-between text-sm font-black border-b pb-4">
+                            <span>ACCOUNTS PAYABLE</span>
+                            <span className="text-red-600">GHS 84,200.00</span>
                         </div>
-                    </div>
-                </div>
-            );
-
-            const LogisticsDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Logistics <span className="text-blue-500">Fleet</span></h1>
-                    <div className="bg-white p-6 shadow border-l-8 border-blue-600">
-                        <h3 className="text-xs font-black uppercase mb-4">Raw Material Liaison</h3>
-                        <div className="p-3 bg-slate-50 border rounded text-[10px] font-black uppercase">
-                            Truck #001: Tema → Ashalaja (ETA 4 hrs)
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const ProcurementDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Procurement <span className="text-orange-600">Gate</span></h1>
-                    <div className="bg-white p-6 border shadow text-xs font-bold">
-                        <p className="uppercase text-slate-400 mb-2">Authorized Suppliers Only</p>
-                        <p>Global Pigments Ltd - Verified</p>
                     </div>
                 </div>
             );
@@ -133,115 +107,41 @@
             const ProductionDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Production <span className="text-blue-700">Line</span></h1>
-                    <div className="locked-card p-6 border-blue-700 font-black">
-                        GSA FORMULA LOCK ACTIVE: PREVENTING UNAUTHORIZED BATCHING
+                    <div className="locked-card p-8 bg-white">
+                        <p className="text-[10px] font-black uppercase text-slate-400">Process State</p>
+                        <h2 className="text-2xl font-black uppercase">Batching...</h2>
                     </div>
                 </div>
             );
 
-            const HRDesk = () => (
+            const LogisticsDesk = () => (
                 <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">HR & <span className="text-purple-600">Payroll</span></h1>
-                    <div className="bg-white border p-6 font-black uppercase text-xs">
-                        Employee Count: 24 | GRA PAYE Compliant
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Logistics <span className="text-blue-500">Liaison</span></h1>
+                    <div className="bg-white p-6 border shadow border-l-8 border-blue-500 font-black">
+                        TEMA PORT INBOUND: ACTIVE
                     </div>
+                </div>
+            );
+
+            const ProcurementDesk = () => (
+                <div className="fade-in">
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Procurement <span className="text-orange-600">Desk</span></h1>
+                    <div className="p-6 bg-white border">Supplier Audit Complete: 2025-12-30</div>
                 </div>
             );
 
             const SalesDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Sales <span className="text-pink-600">CRM</span></h1>
-                    <div className="bg-white p-6 border border-pink-600">
-                        <p className="font-black uppercase text-xs">Tinting Request Pending: #RAL-7016</p>
-                    </div>
+                    <div className="locked-card p-6 border-pink-500">Waybill Generator Ready</div>
                 </div>
             );
 
             const WarehouseDesk = () => (
                 <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Warehouse <span className="text-amber-600">Inventory</span></h1>
-                    <div className="p-6 bg-amber-50 border-2 border-amber-500 font-black text-sm uppercase">
-                        Current Stock: High | Space: 85%
-                    </div>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Warehouse <span className="text-amber-600">Stock</span></h1>
+                    <div className="bg-white p-6 border shadow font-black uppercase">Raw Materials: 100%</div>
                 </div>
             );
 
-            const ReceptionDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Reception <span className="text-pink-400">Desk</span></h1>
-                    <div className="bg-white p-6 shadow italic">Logging all visitors to Ashalaja Site...</div>
-                </div>
-            );
-
-            // --- SPECIAL CREDENTIAL TEMPLATE ---
-            const CredentialDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Staff <span className="text-blue-600">Access Keys</span></h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                            { desk: 'Production', auth: 'Shift Manager', key: 'DT-PROD-LOCKED' },
-                            { desk: 'Finance', auth: 'Chief Accountant', key: 'DT-FIN-SECURE' },
-                            { desk: 'Logistics', auth: 'Fleet Officer', key: 'DT-LOG-TRACK' },
-                            { desk: 'Admin', auth: 'HR/Admin Lead', key: 'DT-ADM-VAULT' }
-                        ].map(c => (
-                            <div key={c.desk} className="bg-white border-2 border-slate-900 p-6 flex flex-col justify-between h-48 rounded shadow-2xl">
-                                <div>
-                                    <p className="text-[10px] font-black text-blue-600 uppercase mb-1">Access Credential</p>
-                                    <h2 className="text-2xl font-black uppercase tracking-tighter">{c.desk} DESK</h2>
-                                </div>
-                                <div className="border-t pt-4">
-                                    <p className="text-[8px] font-black uppercase text-slate-400 mb-1">Assigned To</p>
-                                    <p className="text-xs font-bold text-slate-800 uppercase italic mb-2">{c.auth}</p>
-                                    <p className="bg-slate-100 p-2 font-mono text-[10px] text-center border">KEY: {c.key}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <button onClick={() => window.print()} className="mt-8 bg-blue-600 text-white px-8 py-4 font-black uppercase text-xs tracking-[0.2em] no-print">Print Staff Credential Sheets</button>
-                </div>
-            );
-
-            return (
-                <div className="flex h-screen overflow-hidden">
-                    <div className="w-72 sidebar-glass flex flex-col justify-between p-6 z-10 shadow-2xl overflow-y-auto custom-scroll">
-                        <div>
-                            <div className="mb-8">
-                                <h1 className="brand-title text-white">DE-TRUSTED <span className="text-blue-500 font-normal italic">PAINT</span></h1>
-                            </div>
-                            <SidebarItem name="Executive" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Administration" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Finance" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Logistics" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Procurement" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Production" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Sales" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Reception" active={currentDesk} onClick={setCurrentDesk} />
-                            <div className="my-4 border-t border-slate-700"></div>
-                            <SidebarItem name="Credentials" active={currentDesk} onClick={setCurrentDesk} />
-                        </div>
-                    </div>
-
-                    <main className="flex-1 overflow-y-auto p-16 relative">
-                        {currentDesk === 'Executive' && <ExecutiveDesk />}
-                        {currentDesk === 'Administration' && <AdminDesk />}
-                        {currentDesk === 'Finance' && <FinanceDesk />}
-                        {currentDesk === 'Logistics' && <LogisticsDesk />}
-                        {currentDesk === 'Procurement' && <ProcurementDesk />}
-                        {currentDesk === 'Production' && <ProductionDesk />}
-                        {currentDesk === 'Sales' && <SalesDesk />}
-                        {currentDesk === 'Warehouse' && <WarehouseDesk />}
-                        {currentDesk === 'HR' && <HRDesk />}
-                        {currentDesk === 'Reception' && <ReceptionDesk />}
-                        {currentDesk === 'Credentials' && <CredentialDesk />}
-                    </main>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Dashboard />);
-    </script>
-</body>
-</html>
+            const HRDesk = () => (
