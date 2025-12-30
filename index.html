@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Royal Executive Console</title>
+    <title>DE-TRUSTED ERP | ADM-COMP Module</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -16,39 +16,36 @@
             font-family: 'Inter', sans-serif; 
             margin: 0; 
             color: #1e293b;
-            /* Light Gold to White Gradient Background */
             background: linear-gradient(135deg, #ffffff 0%, #fefce8 100%);
             background-attachment: fixed;
-            /* DE-TRUSTED WATERMARK */
             background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Georgia' font-size='22' fill='rgba(184, 134, 11, 0.07)' text-anchor='middle' transform='rotate(-35, 150, 150)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
         }
 
         h1, h2, h3, .cambria { font-family: 'Cambria', 'Georgia', serif; }
         
-        /* Royal Blue Sidebar */
-        .sidebar-royal { background: #002366; min-height: 100vh; position: fixed; width: 240px; z-index: 50; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
+        .sidebar-royal { background: #002366; min-height: 100vh; position: fixed; width: 260px; z-index: 50; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
         .nav-btn { width: 100%; text-align: left; padding: 12px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #94a3b8; cursor: pointer; }
         .nav-btn.active { background: #001a4d; color: #fbbf24; border-left-color: #fbbf24; font-weight: 700; }
         
-        /* Navigation Links */
         .admin-sub-card { background: rgba(255, 255, 255, 0.9); border: 1px solid #eab308; border-radius: 12px; height: calc(100vh - 180px); overflow-y: auto; }
         .branch-label { font-size: 9px; font-weight: 900; color: #002366; padding: 18px 20px 8px 20px; text-transform: uppercase; letter-spacing: 0.15em; border-top: 1px solid #fef3c7; }
         
-        .sub-link { padding: 10px 20px; font-size: 12px; color: #475569; cursor: pointer; display: flex; align-items: center; border-left: 3px solid transparent; transition: 0.2s; }
+        .sub-link { padding: 10px 24px; font-size: 11px; color: #475569; cursor: pointer; display: flex; align-items: center; border-left: 3px solid transparent; transition: 0.2s; font-weight: 500; }
         .sub-link:hover { background: #fffbeb; color: #002366; }
         .sub-link.active { background: #fef3c7; color: #002366; font-weight: 700; border-left-color: #002366; }
 
-        /* Workspace Panels */
-        .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 750px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); }
+        .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 800px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); position: relative; }
         
+        /* Typography - Size 12 Intro */
         .intro-text { font-size: 12px; color: #002366; line-height: 1.8; font-weight: 500; }
         
         .field-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #002366; margin-bottom: 6px; display: block; }
-        .input-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; border-bottom: 2px solid #eab308; }
+        .input-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; border-bottom: 2px solid #eab308; transition: 0.3s; }
         .input-linked:focus { border-color: #002366; background: #fffdf5; }
 
         .strat-card { border-left: 4px solid #fbbf24; background: #fffbeb; padding: 15px; margin-bottom: 12px; border-radius: 0 8px 8px 0; }
         .royal-badge { font-size: 8px; font-weight: 900; padding: 3px 10px; border-radius: 20px; background: #002366; color: #fbbf24; }
+        .status-pill { font-size: 9px; font-weight: 800; padding: 4px 12px; border-radius: 100px; text-transform: uppercase; }
         
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -62,27 +59,54 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            const FULL_REGISTRY = {
-                "Department Purpose": { isWelcome: true, title: "PURPOSE AND STRATEGIC ROLE", table: "CORE_MANDATE" },
-                "GRA (Revenue)": { title: "GRA Compliance Desk", table: "DB_GRA_TAX", fields: ["VAT/NHIL Registered No.", "Tax Clearance Cert Ref", "WHT Deduction ID", "Monthly Filing Period"], desc: "Revenue management and statutory tax obligations." },
-                "SSNIT (Pension)": { title: "SSNIT Admin Portal", table: "DB_SSNIT_PENS", fields: ["Employer Registration #", "Last Contribution Date", "Staff SSNIT Registry ID", "Compliance Cert Serial"], desc: "Staff social security and pension contribution tracking." },
-                "FDA (Food & Drugs)": { title: "FDA Licensing Control", table: "DB_FDA_REGS", fields: ["Product Batch Registration", "Facility License Number", "Renewal Audit Code", "Standard Compliance ID"], desc: "Manufacturing quality and drug/chemical authority licensing." },
-                "GSA (Standards)": { title: "GSA Quality Registry", table: "DB_GSA_STD", fields: ["GS Standard Reference", "Batch Certificate Code", "Lab Test Report ID", "Validation Expiry"], desc: "Product standardization and quality verification." },
-                "EPA (Environmental)": { title: "EPA Environment Monitor", table: "DB_EPA_PERM", fields: ["Environmental Permit ID", "Site Effluent Log Ref", "Waste Disposal Serial", "Air Quality Audit ID"], desc: "Industrial environmental impact and permit management." },
-                "RGD (Registrar)": { title: "Registrar-General Legal", table: "DB_RGD_CORP", fields: ["Annual Return Year", "TIN Linked Reference", "Form 3/4 Serial ID", "Directorate Update Ref"], desc: "Corporate legal status and statutory filings." },
-                "Local Assembly": { title: "Municipal Operations Hub", table: "DB_LOCAL_GOV", fields: ["BOP License Number", "Property Rate Reference", "District Permit ID", "Assembly Fee Status"], desc: "Municipal operating permits and property rates." },
-                "Import (International)": { title: "Global Import Console", table: "DB_LOG_INTL", fields: ["Vessel/Air Waybill", "Consignee Ref ID", "ICUMS Entry Code", "Duty Payment Serial"], desc: "International procurement and customs clearance tracking." },
-                "Forex & Finance Support": { title: "Forex Admin Support", table: "DB_LOG_FOREX", fields: ["Letter of Credit (LC) Ref", "BoG Form M Reference", "Swift Transfer Code", "Administrative Cost Log"], desc: "Forex documentation and Bank of Ghana compliance." },
-                "Inbound (Raw Materials)": { title: "Site Intake Monitor", table: "DB_LOG_INBD", fields: ["Waybill Serial #", "Material Type Code", "Net Weight (MT)", "Gate Pass ID"], desc: "Ashalaja site raw material reception and weighing." },
-                "Local Distribution": { title: "Local Distribution Desk", table: "DB_LOG_LOCL", fields: ["Customer Invoice Link", "Truck Plate Number", "Regional Waybill ID", "Delivery Confirmation"], desc: "Domestic market supply chain and truck logistics." },
-                "Shipment Tracking": { title: "Fleet Asset Tracker", table: "DB_LOG_FLT", fields: ["Asset ID Number", "Live GPS Device ID", "Driver License Ref", "Transit Security Code"], desc: "Real-time movement tracking of company fleet." },
-                "Supplier Coordination": { title: "Supplier Liaison Hub", table: "DB_OPS_SUPP", fields: ["Vendor Master ID", "Contract Reference", "Due Diligence Level", "Payment Terms ID"], desc: "Coordination with international and local suppliers." },
-                "HSSE Command": { title: "HSSE Safety Control", table: "DB_OPS_HSSE", fields: ["Incident Report Serial", "PPE Inventory Code", "Safety Drill Reference", "Hazard Level ID"], desc: "Industrial health, safety, and environment protocols." }
+            // MODULE REGISTRY BASED ON ADM-COMP PRINCIPLES
+            const COMPLIANCE_REGISTRY = {
+                "Department Purpose": { 
+                    isWelcome: true, 
+                    title: "PURPOSE AND STRATEGIC ROLE", 
+                    table: "CORE_MANDATE" 
+                },
+                "Regulatory Master": { 
+                    title: "Regulatory Bodies (MASTER)", 
+                    table: "regulatory_bodies", 
+                    fields: ["Entity Name", "Governing Act", "Regulator Type", "Primary Contact", "Status (Active/Inactive)"], 
+                    desc: "Centralized directory of governing institutions (GRA, EPA, SSNIT, etc.)." 
+                },
+                "Statutory Setup": { 
+                    title: "Statutory Requirements", 
+                    table: "statutory_requirements", 
+                    fields: ["Requirement Name", "Legal Reference", "Renewal Cycle", "Risk Level (H/M/L)", "Mandatory (Y/N)"], 
+                    desc: "Specific legal mandates linked to regulatory bodies." 
+                },
+                "Permit Register": { 
+                    title: "License & Permit Register", 
+                    table: "licenses_permits", 
+                    fields: ["Permit Number", "Issue Date", "Expiry Date", "Responsible Dept", "Assigned User ID"], 
+                    desc: "Primary data entry for all active institutional certifications." 
+                },
+                "Renewal Console": { 
+                    title: "Renewal Transaction Hub", 
+                    table: "renewals", 
+                    fields: ["Last Renewal Date", "Next Due Date", "Reminder Buffer (Days)", "Evidence URL/File", "Approval Ref"], 
+                    desc: "Transaction logs tracking the continuity of corporate licenses." 
+                },
+                "Inspection Logs": { 
+                    title: "Site Inspection Records", 
+                    table: "inspections", 
+                    fields: ["Inspection Type", "Inspection Date", "Inspectors Present", "Risk Rating", "Corrective Actions"], 
+                    desc: "Tracking routine, follow-up, and incident-based regulatory visits." 
+                },
+                "Compliance Incidents": { 
+                    title: "Breach & Incident Registry", 
+                    table: "compliance_incidents", 
+                    fields: ["Incident Date", "Root Cause Analysis", "Immediate Action", "Management Approval", "Closure Status"], 
+                    desc: "Internal logs for handling regulatory threshold breaches." 
+                }
             };
 
             function AdministrationDesk() {
                 const [activeSub, setActiveSub] = useState('Department Purpose');
-                const schema = FULL_REGISTRY[activeSub];
+                const schema = COMPLIANCE_REGISTRY[activeSub];
 
                 const SubMenuLink = (name) => e('div', {
                     key: name,
@@ -94,10 +118,10 @@
                     e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
                         e('div', null,
                             e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Administration Desk'),
-                            e('p', { className: 'text-blue-700 text-sm font-medium' }, 'DE-TRUSTED Master Statutory Console')
+                            e('p', { className: 'text-blue-700 text-sm font-medium' }, 'ADM-COMP: Regulatory & Statutory Compliance Module')
                         ),
                         e('div', { className: 'flex items-center gap-3' },
-                            e('span', { className: 'royal-badge' }, 'SECURE_NODE_ALPHA'),
+                            e('span', { className: 'royal-badge' }, 'RBAC: ADMIN_ACCESS'),
                             e('div', { className: 'w-3 h-3 bg-blue-600 rounded-full animate-pulse' })
                         )
                     ),
@@ -107,12 +131,13 @@
                             e('div', { className: 'admin-sub-card shadow-lg' },
                                 e('div', { className: 'branch-label' }, 'Executive Overview'),
                                 ["Department Purpose"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Regulatory Hub'),
-                                ["GRA (Revenue)", "SSNIT (Pension)", "FDA (Food & Drugs)", "GSA (Standards)", "EPA (Environmental)", "RGD (Registrar)", "Local Assembly"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Logistics & Trade'),
-                                ["Import (International)", "Forex & Finance Support", "Inbound (Raw Materials)", "Local Distribution", "Shipment Tracking"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Operations & Safety'),
-                                ["Supplier Coordination", "HSSE Command"].map(SubMenuLink)
+                                e('div', { className: 'branch-label' }, 'Core Data Models'),
+                                ["Regulatory Master", "Statutory Setup", "Permit Register"].map(SubMenuLink),
+                                e('div', { className: 'branch-label' }, 'Transaction Hub'),
+                                ["Renewal Console", "Inspection Logs", "Compliance Incidents"].map(SubMenuLink),
+                                e('div', { className: 'branch-label' }, 'Reporting'),
+                                e('div', { className: 'sub-link' }, 'Compliance Dashboard'),
+                                e('div', { className: 'sub-link' }, 'Audit Trail (Full Logs)')
                             )
                         ),
 
@@ -129,24 +154,30 @@
                                     ),
                                     e('div', { className: 'strat-card shadow-sm' }, 
                                         e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The custodian of policies, records, and compliance'),
-                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Upholding statutory integrity.')
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Upholding statutory integrity and legal standing.')
                                     ),
                                     e('div', { className: 'strat-card shadow-sm' }, 
                                         e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The strategic interface'),
                                         e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Bridging management, regulators, and stakeholders.')
+                                    ),
+                                    e('div', { className: 'mt-12 p-6 bg-slate-50 border border-amber-200 rounded-xl' },
+                                        e('h5', { className: 'text-[10px] font-black text-amber-600 uppercase mb-3' }, 'Architectural Principles'),
+                                        e('ul', { className: 'text-[11px] grid grid-cols-2 gap-3 text-slate-500 font-medium' },
+                                            ['• Normalized Data Models', '• Master-Transaction Separation', '• Role-Based Access (RBAC)', '• Date-Driven Automation', '• Document Versioning', '• API-First Rest Design'].map(item => e('li', { key: item }, item))
+                                        )
                                     )
                                 ) : e('div', null,
                                     e('div', { className: 'flex justify-between items-start mb-10' },
                                         e('div', null,
                                             e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
                                             e('div', { className: 'flex gap-2 mt-2' }, 
-                                                e('span', { className: 'royal-badge' }, `DB_ID: ${schema.table}`),
-                                                e('span', { className: 'text-[9px] font-bold text-amber-600 uppercase' }, '• Active Protocol')
+                                                e('span', { className: 'royal-badge' }, `MODULE_ID: ADM-COMP`),
+                                                e('span', { className: 'royal-badge' }, `TABLE: ${schema.table}`)
                                             )
                                         ),
                                         e('div', { className: 'flex gap-2' },
-                                            e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-6 py-2.5 rounded-md hover:bg-blue-800 transition-all' }, 'Execute Save'),
-                                            e('button', { className: 'border border-amber-400 text-amber-700 text-[9px] font-bold uppercase px-6 py-2.5 rounded-md hover:bg-amber-50' }, 'Audit History')
+                                            e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-6 py-2.5 rounded-md hover:bg-blue-800 transition-all shadow-md' }, 'Add New Record'),
+                                            e('button', { className: 'border border-amber-400 text-amber-700 text-[9px] font-bold uppercase px-6 py-2.5 rounded-md' }, 'Generate Report')
                                         )
                                     ),
                                     e('div', { className: 'mb-8 p-4 bg-blue-50 border-l-4 border-blue-900 rounded-r-md' },
@@ -155,8 +186,27 @@
                                     e('div', { className: 'grid grid-cols-2 gap-x-8 gap-y-6' },
                                         schema.fields.map(label => e('div', { key: label },
                                             e('label', { className: 'field-label' }, label),
-                                            e('input', { className: 'input-linked', placeholder: `Database input for ${label}...` })
+                                            e('input', { className: 'input-linked', placeholder: `Enter ${label}...` })
                                         ))
+                                    ),
+                                    e('div', { className: 'mt-12 border-t pt-8' },
+                                        e('h3', { className: 'text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest' }, 'Recent Transaction Audit'),
+                                        e('table', { className: 'w-full text-left text-[11px]' },
+                                            e('thead', { className: 'bg-slate-50 text-slate-500 uppercase' },
+                                                e('tr', null,
+                                                    ['Transaction ID', 'User', 'Action', 'Timestamp', 'Status'].map(h => e('th', { className: 'p-3', key: h }, h))
+                                                )
+                                            ),
+                                            e('tbody', null,
+                                                e('tr', { className: 'border-b border-slate-100' },
+                                                    e('td', { className: 'p-3 font-mono' }, 'TX-9921-A'),
+                                                    e('td', { className: 'p-3' }, 'Admin_Officer'),
+                                                    e('td', { className: 'p-3' }, 'License_Renewal'),
+                                                    e('td', { className: 'p-3' }, '2025-12-30 08:45'),
+                                                    e('td', { className: 'p-3' }, e('span', { className: 'bg-emerald-100 text-emerald-700 px-2 py-1 rounded-sm font-bold' }, 'VERIFIED'))
+                                                )
+                                            )
+                                        )
                                     )
                                 )
                             )
@@ -183,7 +233,7 @@
                             }, name)
                         )
                     ),
-                    e('main', { className: 'flex-1 ml-[240px] min-h-screen p-16' },
+                    e('main', { className: 'flex-1 ml-[260px] min-h-screen p-16' },
                         currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'py-40 text-center opacity-10' }, e('h1', { className: 'text-8xl font-black text-blue-900' }, currentDesk))
                     )
                 );
