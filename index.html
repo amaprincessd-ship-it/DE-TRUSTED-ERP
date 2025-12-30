@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Hierarchical Command</title>
+    <title>DE-TRUSTED ERP | Total Administrative Integration</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -11,24 +11,24 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; color: #0f172a; }
-        h1, h2, h3, .cambria { font-family: 'Cambria', 'Georgia', serif; font-weight: 400; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; color: #0f172a; }
+        h1, h2, h3, .cambria { font-family: 'Cambria', 'Georgia', serif; }
         
-        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 260px; z-index: 50; border-right: 1px solid #1e293b; }
-        .nav-btn { width: 100%; text-align: left; padding: 14px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
+        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 240px; z-index: 50; }
+        .nav-btn { width: 100%; text-align: left; padding: 12px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
         .nav-btn.active { background: #0f172a; color: #3b82f6; border-left-color: #3b82f6; font-weight: 700; }
         
-        /* Dropdown Styling */
-        .dropdown-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .main-branch-header { background: #f1f5f9; padding: 15px 20px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #475569; display: flex; justify-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
-        .sub-menu-item { padding: 12px 25px; font-size: 13px; color: #64748b; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #f8fafc; display: flex; align-items: center; gap: 10px; }
-        .sub-menu-item:hover { background: #f8fafc; color: #2563eb; padding-left: 30px; }
-        .sub-menu-item.active { background: #eff6ff; color: #2563eb; font-weight: 700; border-left: 4px solid #2563eb; }
+        .admin-sub-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; height: calc(100vh - 180px); overflow-y: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .branch-label { font-size: 9px; font-weight: 900; color: #94a3b8; padding: 18px 20px 8px 20px; text-transform: uppercase; letter-spacing: 0.15em; border-top: 1px solid #f1f5f9; }
+        .branch-label:first-child { border-top: none; }
+        
+        .sub-link { padding: 10px 20px; font-size: 12px; color: #475569; cursor: pointer; display: flex; align-items: center; border-left: 3px solid transparent; transition: 0.2s; }
+        .sub-link:hover { background: #f8fafc; color: #2563eb; }
+        .sub-link.active { background: #eff6ff; color: #2563eb; font-weight: 700; border-left-color: #2563eb; }
 
-        .form-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .label-caps { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em; margin-bottom: 8px; display: block; }
-        .data-input-mock { background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 6px; font-size: 14px; color: #1e293b; min-height: 48px; }
-
+        .workspace-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2.5rem; min-height: 700px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .field-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 14px; color: #1e293b; }
+        
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -41,133 +41,89 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            // --- CENTRALIZED DATA MAPPING ---
-            const APP_DATA = {
-                "Inbound (Raw Materials)": { 
-                    title: "Inbound Supply Logistics", 
-                    fields: ["PO Reference", "Supplier Name", "Vessel/Vehicle ID", "Customs Status"],
-                    info: "Tracking raw material intake for Production from port or local chemical hubs."
-                },
-                "Outbound- Local distributions": { 
-                    title: "Domestic Distribution Command", 
-                    fields: ["Order Number", "Dealer/Client Name", "Delivery Vehicle", "Waybill Status"],
-                    info: "Regional logistics within Ghana (Accra, Kumasi, Takoradi)."
-                },
-                "Shipment": { 
-                    title: "Central Shipment Schedules", 
-                    fields: ["Logistics ID", "Mode of Transport", "Current Location", "Security Clearance"],
-                    info: "Real-time movement tracking of all fleet assets."
-                },
-                "Supplier Coordination": { 
-                    title: "Partner Liaison Console", 
-                    fields: ["Contract Ref", "Partner Category", "Due Diligence Status", "Last Contact"],
-                    info: "Official administrative coordination with licensed vendors."
-                },
-                "GSA (Standards)": { 
-                    title: "Ghana Standards Authority Hub", 
-                    fields: ["Batch Quality Cert", "Standard Code", "Lab Result Ref", "Expiry Date"],
-                    info: "Statutory product quality compliance and certification."
-                },
-                "EPA (Environmental)": { 
-                    title: "Environmental Protection Agency", 
-                    fields: ["Permit ID", "Discharge Audit", "Site Inspection Date", "Compliance Level"],
-                    info: "Industrial waste management and environmental audit tracking."
-                },
-                "RGD (Registrar)": { 
-                    title: "Registrar-General Filings", 
-                    fields: ["Annual Return Year", "Entity Code", "Status of Filing", "Legal Seal Ref"],
-                    info: "Corporate statutory standing and legal filings."
-                },
-                "HSSE Command": { 
-                    title: "Health, Safety, Security & Environment", 
-                    fields: ["Incident Log", "Safety Equipment Stock", "Inspection Score", "Drill History"],
-                    info: "Workplace safety monitoring and hazard control."
-                }
+            const COMPREHENSIVE_REGISTRY = {
+                // REGULATORY HUB
+                "GRA (Revenue)": { title: "Ghana Revenue Authority", fields: ["VAT/NHIL/GETFund Ref", "WHT Certificate", "CIT Filing Period", "Tax Clearance Status"], info: "Statutory tax compliance, monthly filings, and fiscal monitoring." },
+                "SSNIT (Pension)": { title: "Social Security & Nat. Insurance", fields: ["Employer Number", "Contribution Month", "Clearance Cert ID", "Staff Count Sync"], info: "Mandatory pension contributions and social security compliance." },
+                "FDA (Food & Drugs)": { title: "Food and Drugs Authority", fields: ["Product Reg. Number", "Facility License", "Expiry Date", "Batch Release Ref"], info: "Chemical and industrial product registration and safety certification." },
+                "GSA (Standards)": { title: "Ghana Standards Authority", fields: ["Batch Certificate", "GS-Code Compliance", "Lab Test Status", "Renewal Cycle"], info: "Product quality and standard certification management." },
+                "EPA (Environmental)": { title: "EPA Compliance Hub", fields: ["Environmental Permit #", "Effluent Test Date", "Waste Log Ref", "Audit Status"], info: "Industrial environmental impact and permit tracking." },
+                "RGD (Registrar)": { title: "Registrar-General Dept", fields: ["Company Return Year", "TIN Linked", "Legal Standing", "Form 3 Ref"], info: "Corporate legal and statutory standing." },
+                "Local Assembly": { title: "Municipal/Local Assembly", fields: ["Business Op. Permit", "Property Rate ID", "Assembly District", "Permit Validity"], info: "Municipal permits, operating licenses, and local property rates." },
+                
+                // LOGISTICS & TRADE
+                "Import (International)": { title: "Global Import Administration", fields: ["Vessel Name", "Bill of Lading", "Foreign Supplier", "ICUMS Ref"], info: "International raw material procurement and sea freight management." },
+                "Forex & Finance Support": { title: "Foreign Currency & Financial Admin", fields: ["LC/TT Ref", "BoG Compliance Check", "Transaction Documentation", "Admin Cost Tracker"], info: "Supports Finance with foreign currency documentation, Bank of Ghana requirements, and international payment confirmations." },
+                "Inbound (Raw Materials)": { title: "Site Intake Logistics", fields: ["Gate Entry Ref", "Material Type", "Quantity (MT)", "Warehouse Slot"], info: "Local and port-to-factory raw material movement." },
+                "Local Distribution": { title: "Local Distribution Channels", fields: ["Customer Name", "Regional Hub", "Delivery Truck ID", "Waybill Number"], info: "Ghanaian domestic market supply chain tracking." },
+                "Shipment Tracking": { title: "Fleet & Shipment Monitor", fields: ["Live GPS Ref", "Driver Contact", "Cargo Security Code", "ETA Ashalaja"], info: "Real-time movement of all company-managed transit." },
+                
+                // OPERATIONS & COORDINATION
+                "Supplier Coordination": { title: "International Partner Liaison", fields: ["Partner ID", "Service Category", "Due Diligence Level", "Contract Expiry"], info: "Administrative liaison between factory and external/international vendors." },
+                "HSSE Command": { title: "HSSE Control Center", fields: ["Safety Incident Log", "PPE Inventory", "Site Drill Date", "Health Officer"], info: "Industrial safety, health, and environmental security." }
             };
 
             function AdministrationDesk() {
-                const [selectedSub, setSelectedSub] = useState('Inbound (Raw Materials)');
-                const currentData = APP_DATA[selectedSub];
+                const [activeSub, setActiveSub] = useState('GRA (Revenue)');
+                const data = COMPREHENSIVE_REGISTRY[activeSub];
 
-                const MenuItem = (name) => e('div', {
-                    className: `sub-menu-item ${selectedSub === name ? 'active' : ''}`,
-                    onClick: () => setSelectedSub(name)
+                const SubMenuLink = (name) => e('div', {
+                    key: name,
+                    className: `sub-link ${activeSub === name ? 'active' : ''}`,
+                    onClick: () => setActiveSub(name)
                 }, name);
 
-                return e('div', { className: 'fade-in max-w-7xl mx-auto' },
-                    e('div', { className: 'mb-10 border-b pb-8' },
-                        e('h1', { className: 'text-5xl cambria text-slate-900' }, 'Administration Master Control'),
-                        e('p', { className: 'text-lg text-slate-500 mt-2' }, 'Hierarchical Site Operations & Regulatory Command')
+                return e('div', { className: 'fade-in' },
+                    e('div', { className: 'mb-8 border-b pb-6' },
+                        e('h1', { className: 'text-4xl cambria text-slate-900' }, 'Administration Desk'),
+                        e('p', { className: 'text-slate-500' }, 'Consolidated Statutory Hub, Global Trade & Site Logistics')
                     ),
 
-                    e('div', { className: 'grid grid-cols-12 gap-10' },
-                        // LEFT PANEL: THE BRANCHES & DROP-DOWN LISTS
-                        e('div', { className: 'col-span-4 space-y-6' },
-                            
-                            // BRANCH 1: LOGISTICS
-                            e('div', { className: 'dropdown-container' },
-                                e('div', { className: 'main-branch-header' }, 
-                                    e('span', null, 'Logistics Administration'),
-                                    e('span', { className: 'text-[8px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded' }, '4 SUB-MODULES')
-                                ),
-                                MenuItem('Inbound (Raw Materials)'),
-                                MenuItem('Outbound- Local distributions'),
-                                MenuItem('Shipment'),
-                                MenuItem('Supplier Coordination')
-                            ),
-
-                            // BRANCH 2: REGULATORY
-                            e('div', { className: 'dropdown-container' },
-                                e('div', { className: 'main-branch-header' }, 
-                                    e('span', null, 'Regulatory Hub'),
-                                    e('span', { className: 'text-[8px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded' }, 'STATUTORY')
-                                ),
-                                MenuItem('GSA (Standards)'),
-                                MenuItem('EPA (Environmental)'),
-                                MenuItem('RGD (Registrar)')
-                            ),
-
-                            // BRANCH 3: SAFETY
-                            e('div', { className: 'dropdown-container' },
-                                e('div', { className: 'main-branch-header' }, 'Health & Safety'),
-                                MenuItem('HSSE Command')
+                    e('div', { className: 'grid grid-cols-12 gap-8' },
+                        e('div', { className: 'col-span-3' },
+                            e('div', { className: 'admin-sub-card' },
+                                e('div', { className: 'branch-label' }, 'Regulatory Hub'),
+                                ["GRA (Revenue)", "SSNIT (Pension)", "FDA (Food & Drugs)", "GSA (Standards)", "EPA (Environmental)", "RGD (Registrar)", "Local Assembly"].map(SubMenuLink),
+                                
+                                e('div', { className: 'branch-label' }, 'Logistics & Trade'),
+                                ["Import (International)", "Forex & Finance Support", "Inbound (Raw Materials)", "Local Distribution", "Shipment Tracking"].map(SubMenuLink),
+                                
+                                e('div', { className: 'branch-label' }, 'Operations & Safety'),
+                                ["Supplier Coordination", "HSSE Command"].map(SubMenuLink)
                             )
                         ),
 
-                        // RIGHT PANEL: THE LINKED FORMS AND INFO
-                        e('div', { className: 'col-span-8' },
-                            e('div', { className: 'form-card fade-in', key: selectedSub },
-                                e('div', { className: 'flex justify-between items-start mb-10 border-b pb-6' },
+                        e('div', { className: 'col-span-9' },
+                            e('div', { className: 'workspace-card fade-in', key: activeSub },
+                                e('div', { className: 'flex justify-between items-start mb-10' },
                                     e('div', null,
-                                        e('h2', { className: 'text-3xl cambria text-slate-900' }, currentData.title),
-                                        e('p', { className: 'text-xs text-blue-600 font-bold uppercase mt-2 tracking-widest' }, 'Linked Administrative Form')
+                                        e('h2', { className: 'text-3xl font-bold text-slate-800' }, data.title),
+                                        e('p', { className: 'text-blue-600 text-xs font-bold uppercase mt-1 tracking-widest' }, 'Active Command Module')
                                     ),
-                                    e('button', { 
-                                        className: 'px-6 py-3 bg-slate-900 text-white text-[10px] font-bold uppercase rounded-lg shadow-xl',
-                                        onClick: () => window.print()
-                                    }, 'Generate Document')
-                                ),
-
-                                e('div', { className: 'mb-10' },
-                                    e('span', { className: 'label-caps' }, 'Executive Summary / Info'),
-                                    e('p', { className: 'text-slate-600 text-sm italic leading-relaxed' }, currentData.info)
-                                ),
-
-                                e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
-                                    currentData.fields.map(label => 
-                                        e('div', { key: label },
-                                            e('span', { className: 'label-caps' }, label),
-                                            e('div', { className: 'data-input-mock' }, `Pulling data for ${label}...`)
-                                        )
+                                    e('div', { className: 'flex gap-2' },
+                                        e('button', { className: 'bg-slate-900 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg hover:bg-slate-800 transition-all' }, 'Print Official Form'),
+                                        e('button', { className: 'bg-blue-600 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg' }, 'Analyze Compliance')
                                     )
                                 ),
 
-                                e('div', { className: 'mt-10 p-6 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between' },
-                                    e('div', null,
-                                        e('p', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, 'Form Status'),
-                                        e('p', { className: 'text-xs font-bold text-emerald-600' }, 'Ready for Analysis / Sync Active')
+                                e('div', { className: 'mb-10 p-6 bg-slate-50 border-l-4 border-blue-600 rounded-r-lg shadow-sm' },
+                                    e('h4', { className: 'text-[10px] font-black text-blue-800 uppercase mb-1' }, 'Executive Overview'),
+                                    e('p', { className: 'text-sm text-slate-800 leading-relaxed font-medium' }, data.info)
+                                ),
+
+                                e('div', { className: 'grid grid-cols-2 gap-8 mb-10' },
+                                    data.fields.map(label => e('div', { key: label },
+                                        e('label', { className: 'text-[9px] font-black text-slate-400 uppercase mb-2 block' }, label),
+                                        e('div', { className: 'field-box' }, `Pulling records for ${label}...`)
+                                    ))
+                                ),
+
+                                e('div', { className: 'mt-20 border-t pt-8 flex justify-between items-center' },
+                                    e('div', { className: 'flex items-center gap-2' },
+                                        e('div', { className: 'w-2 h-2 bg-emerald-500 rounded-full animate-pulse' }),
+                                        e('span', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, 'System Link Synchronized')
                                     ),
-                                    e('button', { className: 'text-blue-600 text-[10px] font-bold uppercase underline' }, 'Attach Supporting PDF')
+                                    e('p', { className: 'text-[10px] text-slate-400 font-mono italic' }, `Record Hash: DT-MASTER-${activeSub.substring(0,3).toUpperCase()}-2025`)
                                 )
                             )
                         )
@@ -181,9 +137,9 @@
 
                 return e('div', { className: 'flex' },
                     e('div', { className: 'sidebar-executive' },
-                        e('div', { className: 'p-10 mb-6' },
+                        e('div', { className: 'p-8 mb-6' },
                             e('h1', { className: 'cambria text-white text-3xl' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[9px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Master Command')
+                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.2em] mt-2' }, 'Admin Command')
                         ),
                         desks.map(name => 
                             e('button', {
@@ -193,8 +149,8 @@
                             }, name)
                         )
                     ),
-                    e('main', { className: 'flex-1 ml-[260px] min-h-screen p-20 bg-slate-50' },
-                        currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'text-center py-40 opacity-20' }, e('h1', { className: 'text-6xl cambria' }, currentDesk))
+                    e('main', { className: 'flex-1 ml-[240px] min-h-screen p-16' },
+                        currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'py-40 text-center opacity-20' }, e('h1', { className: 'text-6xl cambria' }, currentDesk))
                     )
                 );
             }
