@@ -19,21 +19,12 @@
         body { 
             background-color: var(--bg-color); 
             background-image: var(--bg-image);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: var(--text-color); 
-            font-family: var(--font-main); 
-            transition: all 0.3s ease; 
-            margin: 0; 
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: var(--text-color); font-family: var(--font-main); margin: 0; overflow-x: hidden;
         }
-        /* WALLPAPER BLUR OVERLAY */
         body::before {
-            content: "";
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); /* Darkens the image for text clarity */
-            backdrop-filter: blur(8px); /* Smooth professional blur */
-            z-index: -1;
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55); backdrop-filter: blur(12px); z-index: -1;
         }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 260px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; position: relative; z-index: 10; }
@@ -44,9 +35,11 @@
             background: #020617 !important; z-index: 2147483647 !important;
             display: flex; align-items: center; justify-content: center;
         }
-        .glass-card { background: rgba(255,255,255,0.07); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 25px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); }
-        .input-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px; border-radius: 6px; width: 100%; outline: none; }
-        .btn-accent { background: var(--accent-color); color: #000; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; font-size: 11px; }
+        .glass-card { background: rgba(255,255,255,0.06); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 22px; }
+        .input-box { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 12px; border-radius: 6px; width: 100%; outline: none; font-size: 13px; }
+        .btn-accent { background: var(--accent-color); color: #000; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; font-size: 11px; border: none; transition: 0.2s; }
+        .btn-accent:hover { opacity: 0.8; transform: scale(0.98); }
+        .stat-val { font-size: 24px; font-weight: 900; color: var(--accent-color); font-family: 'Roboto Mono', monospace; }
     </style>
 </head>
 <body>
@@ -54,10 +47,10 @@
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center">
             <div id="gate-logo-area" class="mb-4 flex justify-center"></div>
-            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">SYSTEM LOGIN</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Private Command</p>
+            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">FLEET INTELLIGENCE</h1>
+            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Auth Required</p>
             <input type="password" id="master-key-input" class="input-box text-center mb-6 text-2xl" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent">Initialize ERP</button>
+            <button onclick="checkAccess()" class="btn-accent">Unlock Logistics Hub</button>
         </div>
     </div>
 
@@ -77,7 +70,8 @@
             const { useState, useEffect } = React;
 
             function App() {
-                const [view, setView] = useState('VISUALS');
+                const [view, setView] = useState('LOGS');
+                const [expense, setExpense] = useState({ vehicle: '', amount: '', odometer: '', receipt: '' });
                 const [theme, setTheme] = useState({
                     name: getSaved('erp_name', 'DE-TRUSTED'),
                     logo: getSaved('erp_logo', ''),
@@ -95,7 +89,70 @@
                     root.style.setProperty('--text-color', theme.text);
                     root.style.setProperty('--font-main', theme.font);
                     root.style.setProperty('--bg-image', theme.wallpaper ? `url('${theme.wallpaper}')` : 'none');
-                    
                     document.getElementById('gate-brand-text').innerText = theme.name;
-                    if(theme.logo) {
-                        document.getElementById('gate-logo-area').innerHTML = `<img src="${
+                    if(theme.logo) document.getElementById('gate-logo-area').innerHTML = `<img src="${theme.logo}" class="max-h-16">`;
+                }, [theme]);
+
+                return e('div', { className: 'flex' },
+                    e('aside', { className: 'sidebar flex flex-col' },
+                        e('div', { className: 'p-8 border-b border-white/5 text-center' }, 
+                            theme.logo && e('img', { src: theme.logo, className: 'max-h-10 mx-auto mb-2' }),
+                            e('h1', { className: 'text-lg font-black italic text-yellow-500' }, theme.name)
+                        ),
+                        e('nav', { className: 'mt-6 text-[10px] font-bold uppercase flex-1' },
+                            e('div', { onClick:()=>setView('FLEET'), className:`p-4 cursor-pointer ${view==='FLEET'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🚛 Fleet Tracking'),
+                            e('div', { onClick:()=>setView('LOGS'), className:`p-4 cursor-pointer ${view==='LOGS'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '⛽ Fuel & Expenses'),
+                            e('div', { onClick:()=>setView('VISUALS'), className:`p-4 cursor-pointer ${view==='VISUALS'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🖼️ Settings')
+                        )
+                    ),
+
+                    e('main', { className: 'main-content flex-1' },
+                        
+                        view === 'LOGS' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Expense Intelligence'),
+                            e('div', {className:'grid grid-cols-2 gap-8'},
+                                e('div', {className:'glass-card space-y-4'},
+                                    e('h3', {className:'text-xs font-bold text-yellow-500 uppercase'}, 'New Fuel Entry'),
+                                    e('select', {className:'input-box', value: expense.vehicle, onChange: (v)=>setExpense({...expense, vehicle: v.target.value})},
+                                        e('option', null, 'Select Vehicle...'),
+                                        e('option', null, 'VAN-01 (K. Mensah)'),
+                                        e('option', null, 'TRK-05 (A. Boateng)')
+                                    ),
+                                    e('div', {className:'grid grid-cols-2 gap-4'},
+                                        e('input', {className:'input-box', placeholder:'Amount (GHS)', value: expense.amount, onChange: (v)=>setExpense({...expense, amount: v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Odometer Reading', value: expense.odometer, onChange: (v)=>setExpense({...expense, odometer: v.target.value})})
+                                    ),
+                                    e('div', {className:'border-2 border-dashed border-white/10 p-4 text-center rounded text-xs opacity-50 cursor-pointer'}, '📸 Click to Upload Receipt Photo'),
+                                    e('button', {className:'btn-accent', onClick:()=>alert("Log Saved. CPK updated.")}, 'Submit Log')
+                                ),
+                                e('div', {className:'space-y-4'},
+                                    e('div', {className:'glass-card text-center'}, 
+                                        e('p', {className:'text-[10px] opacity-50 font-bold uppercase'}, 'Current Avg. Cost-Per-KM'),
+                                        e('p', {className:'stat-val'}, 'GHS 1.42')
+                                    ),
+                                    e('div', {className:'glass-card text-center'}, 
+                                        e('p', {className:'text-[10px] opacity-50 font-bold uppercase'}, 'Total Fleet Spend (Monthly)'),
+                                        e('p', {className:'stat-val text-white'}, 'GHS 14,290')
+                                    )
+                                )
+                            )
+                        ),
+
+                        view === 'FLEET' && e('div', {className:'text-center p-20 opacity-30 italic text-2xl font-black'}, 'FLEET TRACKING ENGINE ACTIVE'),
+
+                        view === 'VISUALS' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase text-yellow-500'}, 'Identity Settings'),
+                            e('div', {className:'glass-card max-w-md space-y-4'},
+                                e('input', {className:'input-box', value:theme.name, placeholder:'System Name', onChange:(v)=>update('name', v.target.value)}),
+                                e('input', {className:'input-box', value:theme.logo, placeholder:'Logo URL', onChange:(v)=>update('logo', v.target.value)}),
+                                e('input', {className:'input-box', value:theme.wallpaper, placeholder:'Wallpaper URL', onChange:(v)=>update('wallpaper', v.target.value)})
+                            )
+                        )
+                    )
+                );
+            }
+            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+        };
+    </script>
+</body>
+</html>
