@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | WAREHOUSE & LOGISTICS</title>
+    <title>DE-TRUSTED ERP | TOTAL INTEGRATION MAP</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,22 +12,22 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        :root { --navy: #001f3f; --gold: #fbbf24; --warehouse-orange: #f97316; --logistics-blue: #0ea5e9; }
-        body { font-family: 'Ubuntu', sans-serif; background: #f8fafc; margin: 0; }
+        :root { --navy: #020617; --gold: #fbbf24; --connection: #334155; }
+        body { font-family: 'Ubuntu', sans-serif; background: #0f172a; color: #f8fafc; margin: 0; overflow-x: hidden; }
 
-        .sidebar { background: var(--navy); height: 100vh; width: 260px; position: fixed; border-right: 4px solid var(--gold); }
-        .workspace { margin-left: 260px; padding: 40px; }
+        .integration-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 40px; }
+        .desk-node { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 12px; position: relative; transition: 0.3s; }
+        .desk-node:hover { border-color: var(--gold); background: #1e293b; }
         
-        .card { background: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 30px; overflow: hidden; }
-        .header { padding: 20px 30px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .node-title { font-size: 11px; font-weight: 900; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .data-stream { font-family: 'Roboto Mono', monospace; font-size: 10px; color: #94a3b8; line-height: 1.6; }
         
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 25px; }
-        .label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; }
-        .input-box { width: 100%; border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; font-size: 14px; background: #fff; }
-        
-        .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 800; }
-        .in-transit { background: #e0f2fe; color: #0369a1; }
-        .stock-low { background: #fef2f2; color: #991b1b; }
+        .connector-line { height: 2px; background: var(--connection); position: absolute; top: 50%; width: 20px; right: -21px; }
+        .arrow-right { border: solid #334155; border-width: 0 2px 2px 0; display: inline-block; padding: 3px; transform: rotate(-45deg); position: absolute; right: -20px; top: 48%; }
+
+        .flow-card { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 15px; margin-top: 20px; }
+        .pulse { animation: pulse-animation 2s infinite; }
+        @keyframes pulse-animation { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
     </style>
 </head>
 <body>
@@ -36,89 +36,71 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState } = React;
 
             function App() {
-                const [activeTab, setActiveTab] = useState('WH'); // WH or LOG
+                const desks = [
+                    { name: 'HR & Payroll', out: '➜ Employee IDs \n➜ Pay Grades \n➜ Tax Brackets' },
+                    { name: 'Procurement', out: '➜ Purchase Orders \n➜ Vendor Contracts \n➜ Commitments' },
+                    { name: 'Warehouse', out: '➜ GRN Records \n➜ Stock Balances \n➜ Bin Locations' },
+                    { name: 'Production', out: '➜ Finished Goods \n➜ Unit Costing \n➜ Batch Logs' },
+                    { name: 'Sales & Mktg', out: '➜ Tax Invoices \n➜ Revenue \n➜ Lead ROI' }
+                ];
 
-                return e('div', { className: 'flex' },
-                    // SIDEBAR
-                    e('aside', { className: 'sidebar p-6' },
-                        e('h1', { className: 'text-white text-xl font-black mb-10' }, 'DE-TRUSTED ERP'),
-                        ['Inventory Audit', 'Bin Locations', 'Goods Inward', 'Dispatch Board', 'Fleet Registry', 'Fuel Tracking'].map(i => 
-                            e('div', { key: i, className: 'text-slate-400 text-[11px] font-black py-4 border-b border-white/5 cursor-pointer hover:text-white' }, i.toUpperCase())
+                const support = [
+                    { name: 'Legal', out: '➜ Compliance Audit \n➜ Risk Mitigation' },
+                    { name: 'Maintenance', out: '➜ Asset Lifespan \n➜ Repair Costs' },
+                    { name: 'QA', out: '➜ Defect Rates \n➜ Grade Approval' },
+                    { name: 'Logistics', out: '➜ Waybill Tracking \n➜ Fleet Ops' },
+                    { name: 'Finance', out: '➜ THE LEDGER \n➜ Profit & Loss' }
+                ];
+
+                return e('div', { className: 'p-10' },
+                    e('header', { className: 'mb-12 border-b border-slate-800 pb-8' },
+                        e('h1', { className: 'text-4xl font-black mb-2 tracking-tighter' }, 'DE-TRUSTED ERP: TOTAL INTEGRATION MAP'),
+                        e('p', { className: 'text-slate-400 font-mono text-xs uppercase tracking-widest pulse' }, 'System Connectivity: 100% | Desks Operational: 10/10')
+                    ),
+
+                    e('div', { className: 'integration-grid' },
+                        desks.map((d, i) => e('div', { key: i, className: 'desk-node' },
+                            e('span', { className: 'node-title' }, d.name),
+                            e('pre', { className: 'data-stream' }, d.out),
+                            i < 4 && e('div', { className: 'connector-line' }),
+                            i < 4 && e('div', { className: 'arrow-right' })
+                        ))
+                    ),
+
+                    e('div', { className: 'integration-grid mt-10' },
+                        support.map((d, i) => e('div', { key: i, className: 'desk-node' },
+                            e('span', { className: 'node-title' }, d.name),
+                            e('pre', { className: 'data-stream' }, d.out),
+                            i < 4 && e('div', { className: 'connector-line' }),
+                            i < 4 && e('div', { className: 'arrow-right' })
+                        ))
+                    ),
+
+                    
+
+                    e('div', { className: 'mt-12 grid grid-cols-2 gap-10' },
+                        e('div', { className: 'flow-card' },
+                            e('h3', { className: 'text-sky-400 font-black text-xs mb-4 uppercase' }, 'Primary Revenue Flow'),
+                            e('div', { className: 'text-[10px] font-mono leading-relaxed' }, 
+                                'Marketing Lead ➜ Sales Order ➜ Production Work Order ➜ Warehouse Picking ➜ Logistics Dispatch ➜ Tax Invoice ➜ Accounts Receivable ➜ General Ledger Credit'
+                            )
+                        ),
+                        e('div', { className: 'flow-card border-emerald-900/30 bg-emerald-900/10' },
+                            e('h3', { className: 'text-emerald-400 font-black text-xs mb-4 uppercase' }, 'Asset Preservation Flow'),
+                            e('div', { className: 'text-[10px] font-mono leading-relaxed text-emerald-100' }, 
+                                'Procurement PO ➜ Warehouse GRN ➜ Asset Registry ➜ Maintenance Schedule ➜ QA Inspection ➜ Depreciation Entry ➜ Balance Sheet Asset Recognition'
+                            )
                         )
                     ),
 
-                    e('main', { className: 'workspace flex-1' },
-                        
-                        // TAB SELECTOR
-                        e('div', { className: 'flex gap-4 mb-8' },
-                            e('button', { 
-                                onClick: () => setActiveTab('WH'),
-                                className: `px-6 py-2 rounded-full font-bold text-xs ${activeTab === 'WH' ? 'bg-orange-600 text-white' : 'bg-white text-slate-500 border'}`
-                            }, 'WAREHOUSE DESK'),
-                            e('button', { 
-                                onClick: () => setActiveTab('LOG'),
-                                className: `px-6 py-2 rounded-full font-bold text-xs ${activeTab === 'LOG' ? 'bg-sky-600 text-white' : 'bg-white text-slate-500 border'}`
-                            }, 'LOGISTICS & FLEET')
+                    e('footer', { className: 'mt-16 flex justify-between items-center bg-slate-800/50 p-6 rounded-lg' },
+                        e('div', null,
+                            e('p', { className: 'text-xs font-bold' }, 'DEVELOPMENT PHASE: LOGIC READY'),
+                            e('p', { className: 'text-[10px] text-slate-500 uppercase' }, 'All validation gates, statutory engines, and departmental forms architected.')
                         ),
-
-                        // WAREHOUSE SECTION
-                        activeTab === 'WH' && e('div', { className: 'card' },
-                            e('div', { className: 'header bg-orange-600' },
-                                e('div', null, e('h2', { className: 'text-xl font-black' }, 'Stock Control & Bin Management'), e('p', { className: 'text-xs opacity-80' }, 'Real-time Inventory Balancing')),
-                                e('span', { className: 'status-badge bg-white text-orange-700' }, 'Warehouse: Main Zone A')
-                            ),
-                            e('div', { className: 'grid-3' },
-                                e('div', null, e('label', { className: 'label' }, 'Item SKU'), e('input', { className: 'input-box', defaultValue: 'FG-STEEL-001' })),
-                                e('div', null, e('label', { className: 'label' }, 'Current Bin Location'), e('select', { className: 'input-box' }, ['Aisle 1 - Shelf B', 'Cold Storage 2', 'Bulk Zone'].map(b => e('option', {key:b}, b)))),
-                                e('div', null, e('label', { className: 'label' }, 'Current Balance'), e('input', { className: 'input-box font-bold', value: '450 Units', readOnly: true }))
-                            ),
-                            e('div', { className: 'p-6 bg-slate-50 border-t' },
-                                e('h3', { className: 'text-xs font-black text-slate-500 mb-4' }, 'CRITICAL RE-ORDER ALERTS'),
-                                e('div', { className: 'flex justify-between items-center p-3 bg-white border border-red-100 rounded' },
-                                    e('span', { className: 'text-xs font-bold' }, 'RM-WELD-WIRE-02 (Welding Wire)'),
-                                    e('span', { className: 'status-badge stock-low' }, 'Stock Level: 12kg (Min: 50kg)')
-                                )
-                            )
-                        ),
-
-                        // LOGISTICS SECTION
-                        activeTab === 'LOG' && e('div', { className: 'card' },
-                            e('div', { className: 'header bg-sky-600' },
-                                e('div', null, e('h2', { className: 'text-xl font-black' }, 'Fleet Dispatch & Waybilling'), e('p', { className: 'text-xs opacity-80' }, 'Outbound Logistics Control')),
-                                e('div', { className: 'text-right font-mono text-xl font-bold' }, 'TRK-2025-09')
-                            ),
-                            e('div', { className: 'grid-3' },
-                                e('div', null, e('label', { className: 'label' }, 'Linked Sales Invoice'), e('input', { className: 'input-box', value: 'INV-2025-8801', readOnly: true })),
-                                e('div', null, e('label', { className: 'label' }, 'Assigned Vehicle'), e('select', { className: 'input-box' }, ['Truck GH-202-23', 'Van GH-990-21', 'External Courier'].map(v => e('option', {key:v}, v)))),
-                                e('div', null, e('label', { className: 'label' }, 'Driver Name (from HR)'), e('input', { className: 'input-box', value: 'EMP-3301 | Kofi Adu', readOnly: true }))
-                            ),
-                            
-                            e('div', { className: 'p-6 border-t' },
-                                e('label', { className: 'label' }, 'Delivery Destination & GPS Coordinates'),
-                                e('input', { className: 'input-box mb-4', placeholder: 'Drop-off Location Address...' }),
-                                e('div', { className: 'flex justify-between items-center' },
-                                    e('span', { className: 'status-badge in-transit' }, 'Status: Ready for Loading'),
-                                    e('button', { className: 'bg-sky-600 text-white px-8 py-3 rounded font-black text-xs' }, 'GENERATE WAYBILL & GATE PASS')
-                                )
-                            )
-                        ),
-
-                        // GLOBAL VIEW
-                        e('div', { className: 'mt-10 grid grid-cols-2 gap-8' },
-                            e('div', { className: 'card p-6 border-l-4 border-orange-500' },
-                                e('h3', { className: 'text-xs font-black text-slate-400 uppercase mb-4' }, 'Inventory Value (GL Link)'),
-                                e('p', { className: 'text-3xl font-black text-slate-800 font-mono' }, 'GHS 1,240,500.00'),
-                                e('p', { className: 'text-[10px] text-slate-400 mt-2 italic' }, 'Asset Value recognized in Finance Ledger')
-                            ),
-                            e('div', { className: 'card p-6 border-l-4 border-sky-500' },
-                                e('h3', { className: 'text-xs font-black text-slate-400 uppercase mb-4' }, 'Fleet Efficiency'),
-                                e('p', { className: 'text-3xl font-black text-slate-800 font-mono' }, '94.2%'),
-                                e('p', { className: 'text-[10px] text-slate-400 mt-2 italic' }, 'Average Delivery Success Rate (YTD)')
-                            )
-                        )
+                        e('button', { className: 'bg-gold text-navy px-8 py-3 font-black text-xs rounded uppercase' }, 'Begin Database Deployment (SQL)')
                     )
                 );
             }
