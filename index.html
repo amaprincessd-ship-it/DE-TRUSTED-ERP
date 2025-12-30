@@ -1,111 +1,44 @@
--- DE-TRUSTED ERP: CONSOLIDATED MASTER SCHEMA
--- DATE: 2025-12-30
--- TARGET: PostgreSQL 15+
+-- INSERT SCRIPT FOR CHART OF ACCOUNTS
+-- Categorization: 1000 (Assets), 2000 (Liabilities), 3000 (Equity), 4000 (Revenue), 5000 (Expenses)
 
-BEGIN;
+INSERT INTO chart_of_accounts (account_code, account_name, account_type) VALUES
+-- 1000: ASSETS (What the Company Owns)
+(1001, 'Cash at Bank - Operating Account', 'ASSET'),
+(1002, 'Petty Cash Float', 'ASSET'),
+(1010, 'Accounts Receivable (Trade)', 'ASSET'),
+(1050, 'Inventory - Raw Materials', 'ASSET'),
+(1051, 'Inventory - Finished Goods', 'ASSET'),
+(1100, 'Fixed Assets - Plant & Machinery', 'ASSET'),
+(1101, 'Fixed Assets - Fleet/Vehicles', 'ASSET'),
+(1150, 'Accumulated Depreciation', 'ASSET'),
 
------------------------------------------------------------
--- 1. THE FOUNDATION: HR & EMPLOYEES
------------------------------------------------------------
-CREATE TABLE departments (
-    dept_id SERIAL PRIMARY KEY,
-    dept_name VARCHAR(100) NOT NULL UNIQUE,
-    budget_ceiling DECIMAL(15,2) DEFAULT 0.00
-);
+-- 2000: LIABILITIES (What the Company Owes)
+(2001, 'Accounts Payable (Trade Vendors)', 'LIABILITY'),
+(2010, 'Accrued Salaries & Wages', 'LIABILITY'),
+(2020, 'SSNIT Payable (5.5% Employee + 13% Employer)', 'LIABILITY'),
+(2021, 'P.A.Y.E Tax Payable (GRA)', 'LIABILITY'),
+(2022, 'VAT & Levies Payable (Output VAT)', 'LIABILITY'),
+(2023, 'Withholding Tax Payable', 'LIABILITY'),
+(2050, 'Short-term Bank Loans', 'LIABILITY'),
 
-CREATE TABLE employees (
-    emp_id VARCHAR(20) PRIMARY KEY, -- e.g., EMP-2025-001
-    full_name VARCHAR(255) NOT NULL,
-    dept_id INT REFERENCES departments(dept_id),
-    tin_number VARCHAR(50) UNIQUE,
-    basic_salary DECIMAL(15,2) NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- 3000: EQUITY (The Value of the Business)
+(3001, 'Shareholders Capital', 'EQUITY'),
+(3010, 'Retained Earnings', 'EQUITY'),
+(3020, 'Owner Drawings / Dividends', 'EQUITY'),
 
------------------------------------------------------------
--- 2. THE FLOW: PROCUREMENT & WAREHOUSE
------------------------------------------------------------
-CREATE TABLE suppliers (
-    supplier_id SERIAL PRIMARY KEY,
-    company_name VARCHAR(255) NOT NULL,
-    tax_id VARCHAR(50),
-    rating INT DEFAULT 5 -- Vendor Performance
-);
+-- 4000: REVENUE (Income Generated)
+(4001, 'Product Sales Revenue', 'REVENUE'),
+(4005, 'Service Income', 'REVENUE'),
+(4010, 'Other Operating Income', 'REVENUE'),
+(4020, 'Discounts Allowed', 'REVENUE'), -- Contra-revenue
 
-CREATE TABLE inventory_master (
-    sku VARCHAR(50) PRIMARY KEY,
-    item_name VARCHAR(255) NOT NULL,
-    unit_measure VARCHAR(20), -- KG, Ltr, Units
-    current_balance DECIMAL(15,2) DEFAULT 0.00,
-    reorder_level DECIMAL(15,2) DEFAULT 10.00
-);
-
-CREATE TABLE purchase_orders (
-    po_id VARCHAR(50) PRIMARY KEY, -- e.g., PO-2025-XXXX
-    supplier_id INT REFERENCES suppliers(supplier_id),
-    requester_id VARCHAR(20) REFERENCES employees(emp_id),
-    total_value DECIMAL(15,2),
-    po_status VARCHAR(20) DEFAULT 'DRAFT', -- DRAFT, APPROVED, RECEIVED
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
------------------------------------------------------------
--- 3. THE REVENUE: SALES & LOGISTICS
------------------------------------------------------------
-CREATE TABLE customers (
-    customer_id SERIAL PRIMARY KEY,
-    customer_name VARCHAR(255) NOT NULL,
-    customer_tin VARCHAR(50)
-);
-
-CREATE TABLE sales_invoices (
-    invoice_id VARCHAR(50) PRIMARY KEY,
-    customer_id INT REFERENCES customers(customer_id),
-    sales_rep_id VARCHAR(20) REFERENCES employees(emp_id),
-    subtotal DECIMAL(15,2),
-    vat_amount DECIMAL(15,2),
-    levies_amount DECIMAL(15,2),
-    grand_total DECIMAL(15,2),
-    payment_status VARCHAR(20) DEFAULT 'UNPAID'
-);
-
-CREATE TABLE logistics_fleet (
-    vehicle_id SERIAL PRIMARY KEY,
-    license_plate VARCHAR(20) UNIQUE,
-    driver_id VARCHAR(20) REFERENCES employees(emp_id),
-    status VARCHAR(20) DEFAULT 'AVAILABLE'
-);
-
------------------------------------------------------------
--- 4. THE CORE: FINANCE & GENERAL LEDGER
------------------------------------------------------------
-CREATE TABLE chart_of_accounts (
-    account_code INT PRIMARY KEY,
-    account_name VARCHAR(100) NOT NULL,
-    account_type VARCHAR(50) -- ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
-);
-
-CREATE TABLE general_ledger (
-    ledger_id SERIAL PRIMARY KEY,
-    transaction_date DATE DEFAULT CURRENT_DATE,
-    account_code INT REFERENCES chart_of_accounts(account_code),
-    debit_amount DECIMAL(15,2) DEFAULT 0.00,
-    credit_amount DECIMAL(15,2) DEFAULT 0.00,
-    reference_id VARCHAR(50), -- Links back to PO_ID or INVOICE_ID
-    trace_id UUID DEFAULT gen_random_uuid(), -- For Forensic Audits
-    description TEXT
-);
-
------------------------------------------------------------
--- 5. THE PRODUCTION & QA
------------------------------------------------------------
-CREATE TABLE production_work_orders (
-    wo_id VARCHAR(50) PRIMARY KEY,
-    sku_to_build VARCHAR(50) REFERENCES inventory_master(sku),
-    quantity_planned DECIMAL(15,2),
-    actual_cost DECIMAL(15,2),
-    qa_status VARCHAR(20) DEFAULT 'PENDING' -- PENDING, PASSED, REJECTED
-);
-
-COMMIT;
+-- 5000: EXPENSES (Cost of Doing Business)
+(5001, 'Cost of Goods Sold (COGS)', 'EXPENSE'),
+(5010, 'Staff Salaries & Allowances', 'EXPENSE'),
+(5011, 'Employer SSNIT Contribution (13%)', 'EXPENSE'),
+(5020, 'Electricity & Utilities', 'EXPENSE'),
+(5030, 'Fleet Fuel & Maintenance', 'EXPENSE'),
+(5040, 'Rent & Rates', 'EXPENSE'),
+(5050, 'Marketing & Advertising', 'EXPENSE'),
+(5060, 'Legal & Professional Fees', 'EXPENSE'),
+(5090, 'Depreciation Expense', 'EXPENSE');
