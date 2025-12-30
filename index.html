@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Finance & Operations Suite</title>
+    <title>DE-TRUSTED ERP | Unified Admin & Finance Hub</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -35,10 +35,10 @@
         .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 850px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); }
         .field-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #002366; margin-bottom: 6px; display: block; }
         .input-linked, .select-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; border-bottom: 2px solid #eab308; transition: 0.3s; }
-        .input-linked:focus, .select-linked:focus { border-color: #002366; background: #fffdf5; }
-
-        .finance-summary { background: #002366; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .prepared-by { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-top: 20px; }
+        
+        .finance-header { background: #002366; color: #fbbf24; padding: 15px 25px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #eab308; display: flex; justify-content: space-between; align-items: center; }
+        .prepared-by { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-top: 30px; display: flex; justify-content: space-between; }
+        .royal-badge { font-size: 8px; font-weight: 900; padding: 3px 10px; border-radius: 20px; background: #002366; color: #fbbf24; }
     </style>
 </head>
 <body>
@@ -49,73 +49,87 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            const FULL_SCHEMA = {
-                // FINANCE DESK - GENERAL LEDGER
-                "General Ledger": { 
-                    title: "General Ledger Entry Console", table: "finance_gl", 
-                    fields: ["Entry ID (Auto)", "Date", "Transaction Type (Dropdown)", "Account Code (CoA)", "Account Name", "Debit Amount", "Credit Amount", "Currency", "Exchange Rate", "Reference No.", "Prepared By", "Approved By", "Status (Dropdown)", "Description / Narration"], 
-                    desc: "Centralized financial transaction hub with automated dual-entry verification.",
-                    isFinance: true
-                },
-                // PREVIOUS MODULES (MANDATORY RECALL)
-                "RM Receipt (GRN)": { title: "Raw Material Goods Receipt", table: "raw_material_grn", fields: ["Reference No.", "Source Type (Dropdown)", "Supplier Name", "Raw Material", "Batch Number", "Quantity Received", "Unit Cost", "Warehouse Location", "Inspection Status", "GPS Address", "Remarks"] },
-                "Import Costing": { title: "Duty & Landed Costing", table: "import_costing", fields: ["Import ID (Ref)", "FOB Value", "Freight Cost", "Insurance Cost", "Import Duty (GRA)", "VAT", "Total Landed Cost", "Cost Allocation Method", "Remarks"] },
-                "Dispatch Form": { title: "Delivery & Dispatch", table: "dispatch_logs", fields: ["Dispatch ID", "Sales Order Ref", "Vehicle No.", "Driver Name", "Quantity Dispatched", "GPS Address", "POD Upload (Ref)", "Remarks"] }
+            const GH_AGENCIES = ["GRA", "EPA", "FDA", "GSA", "SSNIT", "RGD", "GFS", "FID", "Municipal Assembly"];
+            const CURRENCIES = ["GHS", "USD", "EUR", "GBP"];
+
+            const SYSTEM_REGISTRY = {
+                // ADMINISTRATION DESK (ADM-COMP)
+                "Department Purpose": { isWelcome: true, desk: "Administration" },
+                "Regulatory Master": { desk: "Administration", title: "Regulatory Agency Master", table: "regulatory_bodies", fields: ["Agency Name (Dropdown)", "Contact Person Name", "Rank/Designation", "Phone Number", "GPS Address", "Status (Active/Inactive)", "Remarks"] },
+                "Permit Register": { desk: "Administration", title: "Statutory License Register", table: "licenses_permits", fields: ["Agency Name (Dropdown)", "Reference No.", "Permit Serial #", "Issue Date", "Expiry Date", "GPS Address", "Remarks"] },
+                "Site Inspections": { desk: "Administration", title: "Regulatory Inspection Log", table: "inspections", fields: ["Agency Name (Dropdown)", "Reference No.", "Inspection Type", "Inspectors Present", "Compliance Findings", "GPS Address", "Remarks"] },
+                
+                // FINANCE DESK
+                "General Ledger": { desk: "Finance", title: "General Ledger Entry", table: "finance_gl", fields: ["Entry ID (Auto)", "Transaction Date", "Type (Journal/Accrual)", "Account Code (CoA)", "Debit Amount", "Credit Amount", "Currency", "Exchange Rate", "Reference No.", "Approved By", "Description / Narration"] },
+                "Import Costing": { desk: "Finance", title: "Duty & Landed Cost Breakdown", table: "import_costing", fields: ["Import ID (Ref)", "FOB Value", "Freight Cost", "Insurance Cost", "Import Duty (GRA)", "VAT", "Total Landed Cost", "Cost Allocation Method"] },
+                
+                // LOGISTICS & SUPPLY
+                "RM Receipt (GRN)": { desk: "Logistics", title: "Raw Material Receipt (GRN)", table: "raw_material_grn", fields: ["GRN ID", "Source Type", "Supplier Name", "Raw Material", "Batch Number", "Quantity Received", "Unit Cost", "Warehouse Location", "GPS Address"] },
+                "Dispatch Form": { desk: "Logistics", title: "Distribution Dispatch Note", table: "dispatch_logs", fields: ["Dispatch ID", "Sales Order Ref", "Vehicle No.", "Driver Name", "Quantity Dispatched", "GPS Address", "Customer Acknowledgement"] }
             };
 
-            function DeskRenderer({ activeSub, setActiveSub }) {
-                const schema = FULL_SCHEMA[activeSub];
+            function DeskRenderer({ activeSub, setActiveSub, currentDesk }) {
+                const schema = SYSTEM_REGISTRY[activeSub];
 
-                const SubMenuLink = (name) => e('div', {
-                    key: name,
-                    className: `sub-link ${activeSub === name ? 'active' : ''}`,
-                    onClick: () => setActiveSub(name)
-                }, name);
+                const renderField = (label) => {
+                    const isSelect = label.includes("Dropdown") || label.includes("Agency") || label.includes("Type") || label === "Currency" || label.includes("Account Code");
+                    const isFullWidth = label === "Description / Narration" || label === "Remarks" || label === "Compliance Findings";
+
+                    return e('div', { key: label, className: isFullWidth ? "col-span-2" : "" },
+                        e('label', { className: 'field-label' }, label),
+                        isSelect ? 
+                            e('select', { className: 'select-linked' }, 
+                                e('option', null, `-- Select ${label} --`),
+                                label.includes("Agency") ? GH_AGENCIES.map(a => e('option', {key:a}, a)) :
+                                label === "Currency" ? CURRENCIES.map(c => e('option', {key:c}, c)) :
+                                ["Standard Selection 1", "Standard Selection 2"].map(o => e('option', {key:o}, o))
+                            ) :
+                        isFullWidth ? 
+                            e('textarea', { className: 'input-linked h-24', placeholder: `Enter ${label}...` }) :
+                            e('input', { className: 'input-linked', placeholder: `Enter ${label}...`, type: label.includes("Date") ? "date" : label.includes("Amount") ? "number" : "text" })
+                    );
+                };
 
                 return e('div', { className: 'fade-in' },
                     e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
-                        e('div', null, e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Finance & Admin Command'), e('p', { className: 'text-blue-700 text-sm font-medium' }, 'Unified ERP Ecosystem'))
+                        e('div', null, 
+                            e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, `${currentDesk} Desk`),
+                            e('p', { className: 'text-blue-700 text-sm font-medium' }, `Integrated Enterprise Resource Planning | 2025`)
+                        ),
+                        e('div', { className: 'flex gap-2' }, e('span', { className: 'royal-badge' }, 'AUTH: SECURE_POST'), e('span', { className: 'royal-badge' }, 'REGION: GHANA'))
                     ),
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
                             e('div', { className: 'admin-sub-card shadow-lg' },
-                                e('div', { className: 'branch-label' }, 'Finance Desk'),
-                                ["General Ledger"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Logistics & Supply'),
-                                ["RM Receipt (GRN)", "Import Costing", "Dispatch Form"].map(SubMenuLink)
+                                Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk || SYSTEM_REGISTRY[k].isWelcome).map(name => 
+                                    e('div', { 
+                                        key: name, 
+                                        className: `sub-link ${activeSub === name ? 'active' : ''}`,
+                                        onClick: () => setActiveSub(name)
+                                    }, name)
+                                )
                             )
                         ),
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card fade-in', key: activeSub },
-                                schema.isFinance && e('div', { className: 'finance-summary' }, 
-                                    e('div', null, e('p', { className: 'text-[10px] uppercase font-bold text-blue-200' }, 'Trial Balance Status'), e('p', { className: 'text-xl font-black' }, 'BALANCED')),
-                                    e('div', { className: 'text-right' }, e('p', { className: 'text-[10px] uppercase font-bold text-blue-200' }, 'Base Currency'), e('p', { className: 'text-xl font-black' }, 'GHS'))
-                                ),
-                                e('div', { className: 'flex justify-between items-start mb-10' },
-                                    e('div', null,
-                                        e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
-                                        e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `SUBSIDIARY LINK: ${schema.table}`)
+                                schema.isWelcome ? e('div', null,
+                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Strategic Purpose'),
+                                    e('p', { className: 'intro-text mb-8' }, "The Administration & Finance backbone of De-Trusted Paint is responsible for organizational efficiency, statutory integrity, and robust financial control..."),
+                                    e('div', { className: 'strat-card border-l-4 border-amber-400 bg-amber-50 p-4' }, e('p', { className: 'text-xs font-bold text-blue-900' }, 'Institutional Integrity & Governance Module Enabled'))
+                                ) : e('div', null,
+                                    currentDesk === 'Finance' && e('div', { className: 'finance-header' }, 
+                                        e('div', null, e('p', { className: 'text-[9px] uppercase' }, 'GL Balance Status'), e('p', { className: 'text-xl font-black' }, 'BALANCED')),
+                                        e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] uppercase' }, 'System Currency'), e('p', { className: 'text-xl font-black' }, 'GHS'))
                                     ),
-                                    e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, schema.isFinance ? 'Post to Ledger' : 'Commit Entry')
-                                ),
-                                e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' },
-                                    schema.fields.map(label => e('div', { key: label, className: label === "Description / Narration" ? "col-span-2" : "" },
-                                        e('label', { className: 'field-label' }, label),
-                                        label.includes("(Dropdown)") || label.includes("(CoA)") || label === "Status (Dropdown)" || label === "Currency" ? 
-                                            e('select', { className: 'select-linked' }, 
-                                                e('option', null, `-- Select ${label} --`),
-                                                label === "Currency" ? ["GHS", "USD", "EUR", "GBP"].map(o => e('option', { key: o }, o)) : 
-                                                label === "Status (Dropdown)" ? ["Draft", "Approved", "Posted"].map(o => e('option', { key: o }, o)) :
-                                                ["1001 - Cash at Bank", "2001 - Raw Materials Inventory", "4001 - Sales Revenue", "5001 - Import Duties"].map(o => e('option', { key: o }, o))
-                                            ) : 
-                                        label === "Description / Narration" ? 
-                                            e('textarea', { className: 'input-linked h-24', placeholder: "Mandatory transaction narration..." }) :
-                                            e('input', { className: 'input-linked', type: label.includes("Amount") ? "number" : "text", placeholder: `Enter ${label}...` })
-                                    ))
-                                ),
-                                e('div', { className: 'prepared-by flex justify-between items-center mt-12' },
-                                    e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'PREPARED BY'), e('p', { className: 'text-[13px] font-bold' }, 'Finance Manager')),
-                                    e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'SYSTEM DATE'), e('p', { className: 'text-[13px] font-bold' }, '2025-12-30'))
+                                    e('div', { className: 'flex justify-between items-start mb-10' },
+                                        e('div', null, e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title), e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `DATABASE: ${schema.table}`)),
+                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Post Record')
+                                    ),
+                                    e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-6' }, schema.fields.map(renderField)),
+                                    e('div', { className: 'prepared-by' },
+                                        e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'PREPARED BY (AUTH_LOG)'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, 'Executive Command Console')),
+                                        e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'TIMESTAMP'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, '2025-12-30 | 14:00 GMT'))
+                                    )
                                 )
                             )
                         )
@@ -124,19 +138,21 @@
             }
 
             function App() {
-                const [currentDesk, setCurrentDesk] = useState('Finance');
-                const [activeSub, setActiveSub] = useState('General Ledger');
-                const desks = ['Executive', 'Administration', 'Finance', 'Production', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'HR', 'Reception'];
+                const [currentDesk, setCurrentDesk] = useState('Administration');
+                const [activeSub, setActiveSub] = useState('Department Purpose');
+                const desks = ['Executive', 'Administration', 'Finance', 'Logistics', 'Procurement', 'Production', 'Sales', 'HR'];
 
                 return e('div', { className: 'flex' },
                     e('div', { className: 'sidebar-royal' },
                         e('div', { className: 'p-8 mb-6 border-b border-blue-800' }, e('h1', { className: 'cambria text-white text-2xl font-bold' }, 'DE-TRUSTED')),
-                        desks.map(name => e('button', { key: name, onClick: () => setCurrentDesk(name), className: `nav-btn ${currentDesk === name ? 'active' : ''}` }, name))
+                        desks.map(name => e('button', { 
+                            key: name, 
+                            onClick: () => { setCurrentDesk(name); setActiveSub(name === 'Administration' ? 'Department Purpose' : Object.keys(SYSTEM_REGISTRY).find(k => SYSTEM_REGISTRY[k].desk === name)); }, 
+                            className: `nav-btn ${currentDesk === name ? 'active' : ''}` 
+                        }, name))
                     ),
                     e('main', { className: 'flex-1 ml-[260px] min-h-screen p-16' },
-                        currentDesk === 'Finance' || currentDesk === 'Administration' ? 
-                        e(DeskRenderer, { activeSub, setActiveSub }) : 
-                        e('div', { className: 'py-40 text-center opacity-10' }, e('h1', { className: 'text-8xl font-black text-blue-900' }, currentDesk))
+                        e(DeskRenderer, { activeSub, setActiveSub, currentDesk })
                     )
                 );
             }
