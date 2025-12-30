@@ -13,7 +13,7 @@
         .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; }
         .main { margin-left: 260px; padding: 40px; }
         .desk-card { background: #1e293b; border: 1px solid #334155; transition: 0.3s; cursor: pointer; }
-        .desk-card:hover { border-color: #fbbf24; background: #1e293b; transform: translateY(-3px); }
+        .desk-card:hover { border-color: #fbbf24; background: #1e293b; transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4); }
     </style>
 </head>
 <body>
@@ -24,46 +24,57 @@
             const { useState } = React;
 
             function App() {
+                // This array tracks all the desks we built
                 const desks = [
-                    { id: 'FIN', n: 'Finance', i: '💰', color: 'text-emerald-400' },
-                    { id: 'HR', n: 'HR & Payroll', i: '👥', color: 'text-blue-400' },
-                    { id: 'WH', n: 'Warehouse', i: '📦', color: 'text-orange-400' },
-                    { id: 'PROD', n: 'Production', i: '⚙️', color: 'text-purple-400' },
-                    { id: 'SALE', n: 'Sales', i: '📈', color: 'text-yellow-400' },
-                    { id: 'LOG', n: 'Logistics', i: '🚛', color: 'text-sky-400' },
-                    { id: 'LEG', n: 'Legal', i: '⚖️', color: 'text-red-400' },
-                    { id: 'MAIN', n: 'Maintenance', i: '🛠️', color: 'text-slate-400' },
-                    { id: 'QA', n: 'Quality Control', i: '✅', color: 'text-teal-400' },
-                    { id: 'EXEC', n: 'Executive Dashboard', i: '📊', color: 'text-gold' }
+                    { id: 'FIN', n: 'Finance', i: '💰', color: 'text-emerald-400', link: 'finance.html' },
+                    { id: 'HR', n: 'HR & Payroll', i: '👥', color: 'text-blue-400', link: 'hr.html' },
+                    { id: 'WH', n: 'Warehouse', i: '📦', color: 'text-orange-400', link: 'warehouse.html' },
+                    { id: 'PROD', n: 'Production', i: '⚙️', color: 'text-purple-400', link: 'production.html' },
+                    { id: 'SALE', n: 'Sales', i: '📈', color: 'text-yellow-400', link: 'sales.html' },
+                    { id: 'LOG', n: 'Logistics', i: '🚛', color: 'text-sky-400', link: 'logistics.html' },
+                    { id: 'LEG', n: 'Legal', i: '⚖️', color: 'text-red-400', link: 'legal.html' },
+                    { id: 'MAIN', n: 'Maintenance', i: '🛠️', color: 'text-slate-400', link: 'maintenance.html' },
+                    { id: 'QA', n: 'Quality Control', i: '✅', color: 'text-teal-400', link: 'qa.html' },
+                    { id: 'EXEC', n: 'Executive Dashboard', i: '📊', color: 'text-gold', link: 'dashboard.html' }
                 ];
 
                 return e('div', { className: 'flex' },
                     // SIDEBAR
                     e('aside', { className: 'sidebar p-8 flex flex-col justify-between' },
                         e('div', null,
-                            e('h1', { className: 'text-2xl font-black italic tracking-tighter mb-1' }, 'DE-TRUSTED'),
+                            e('h1', { className: 'text-2xl font-black italic tracking-tighter mb-1 text-white' }, 'DE-TRUSTED'),
                             e('p', { className: 'text-[10px] text-yellow-500 font-bold uppercase mb-10' }, 'Master Commander'),
                             e('nav', { className: 'space-y-4' },
                                 ['Dashboard', 'Audit Logs', 'Reports', 'Settings'].map(item => 
-                                    e('div', { key: item, className: 'text-xs font-bold text-slate-500 hover:text-white cursor-pointer' }, item.toUpperCase())
+                                    e('div', { key: item, className: 'text-xs font-bold text-slate-500 hover:text-white cursor-pointer transition' }, item.toUpperCase())
                                 )
                             )
                         ),
                         e('div', { className: 'bg-slate-900 p-4 rounded border border-slate-800' },
                             e('p', { className: 'text-[10px] text-slate-500' }, 'SYSTEM STATUS'),
-                            e('p', { className: 'text-xs text-emerald-500 font-bold' }, '● ALL DESKS LIVE')
+                            e('p', { className: 'text-xs text-emerald-500 font-bold' }, '● ONLINE & SECURE')
                         )
                     ),
 
                     // MAIN AREA
                     e('main', { className: 'main flex-1' },
-                        e('header', { className: 'mb-12' },
-                            e('h2', { className: 'text-4xl font-black mb-2' }, 'Enterprise Control Hub'),
-                            e('p', { className: 'text-slate-400 text-sm' }, 'Welcome, Commander. Select a department to begin operations.')
+                        e('header', { className: 'mb-12 flex justify-between items-end' },
+                            e('div', null,
+                                e('h2', { className: 'text-4xl font-black mb-2' }, 'Enterprise Control Hub'),
+                                e('p', { className: 'text-slate-400 text-sm' }, 'Welcome, Commander. Select a department to begin operations.')
+                            ),
+                            e('div', { className: 'text-right' },
+                                e('p', { className: 'text-[10px] text-slate-500 font-bold' }, 'SESSION ID'),
+                                e('p', { className: 'font-mono text-xs text-yellow-500' }, 'AUTH-SYS-7729-X')
+                            )
                         ),
 
                         e('div', { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6' },
-                            desks.map(d => e('div', { key: d.id, className: 'desk-card p-6 rounded-xl text-center' },
+                            desks.map(d => e('div', { 
+                                key: d.id, 
+                                onClick: () => alert(`Opening ${d.n} Module...\n(Ensure ${d.link} is saved in the same folder)`),
+                                className: 'desk-card p-6 rounded-xl text-center' 
+                            },
                                 e('span', { className: 'text-4xl mb-4 block' }, d.i),
                                 e('h3', { className: `text-xs font-black uppercase mb-1 ${d.color}` }, d.n),
                                 e('p', { className: 'text-[9px] text-slate-500' }, 'Click to Initialize')
@@ -72,10 +83,13 @@
 
                         e('div', { className: 'mt-12 p-8 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center justify-between' },
                             e('div', null,
-                                e('h4', { className: 'font-bold' }, 'Daily Progress Snapshot'),
-                                e('p', { className: 'text-xs text-slate-500' }, 'Total Transactions Today: 142')
+                                e('h4', { className: 'font-bold' }, 'Global Health Status'),
+                                e('p', { className: 'text-xs text-slate-500' }, 'Connectivity: 100% | Database: Synchronized')
                             ),
-                            e('button', { className: 'bg-yellow-500 text-black px-8 py-3 rounded-lg font-black text-xs' }, 'GENERATE MASTER REPORT')
+                            e('div', { className: 'flex gap-4' },
+                                e('button', { className: 'bg-slate-800 text-white px-6 py-3 rounded-lg font-bold text-xs' }, 'SYSTEM AUDIT'),
+                                e('button', { className: 'bg-yellow-500 text-black px-8 py-3 rounded-lg font-black text-xs' }, 'MASTER REPORT')
+                            )
                         )
                     )
                 );
