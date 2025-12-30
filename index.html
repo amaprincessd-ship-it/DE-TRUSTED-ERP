@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Logistics Administration Console</title>
+    <title>DE-TRUSTED ERP | Unified Master Console</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -11,30 +11,29 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; color: #0f172a; }
-        h1, h2, h3, .cambria-light { font-family: 'Cambria', 'Georgia', serif; font-weight: 400 !important; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; color: #0f172a; }
+        h1, h2, h3, .cambria { font-family: 'Cambria', 'Georgia', serif; font-weight: 400; }
         
-        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 260px; z-index: 50; }
-        .nav-btn { width: 100%; text-align: left; padding: 14px 24px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
+        /* Sidebar Design */
+        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 240px; z-index: 50; border-right: 1px solid #1e293b; }
+        .nav-btn { width: 100%; text-align: left; padding: 14px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
         .nav-btn.active { background: #0f172a; color: #3b82f6; border-left-color: #3b82f6; font-weight: 700; }
         
-        .sub-nav-btn { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 16px; border-radius: 6px; transition: 0.2s; border: 1px solid transparent; }
-        .sub-nav-btn.active { background: white; color: #2563eb; border-color: #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        
-        .console-layer { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .shipment-card { cursor: pointer; transition: 0.2s; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 8px; background: white; }
-        .shipment-card:hover { border-color: #2563eb; background: #f8fafc; }
-        .shipment-card.selected { border-color: #2563eb; background: #eff6ff; border-left: 4px solid #2563eb; }
+        /* Ribbon Navigation */
+        .ribbon-btn { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 12px 20px; border-radius: 8px; transition: 0.2s; white-space: nowrap; }
+        .ribbon-btn.active { background: #2563eb; color: white; shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+        .ribbon-btn.inactive { background: white; color: #64748b; border: 1px solid #e2e8f0; }
+        .ribbon-btn.inactive:hover { background: #f1f5f9; color: #1e293b; }
 
-        .label-caps { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em; margin-bottom: 6px; display: block; }
-        .data-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #334155; }
-        
-        .status-pill { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .pill-blue { background: #eff6ff; color: #1e40af; }
-        .pill-amber { background: #fffbeb; color: #92400e; }
-        
+        /* Content Cards */
+        .glass-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .data-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em; margin-bottom: 6px; display: block; }
+        .data-value { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #1e293b; }
+
         .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media print { .no-print { display: none !important; } .ml-60 { margin-left: 0 !important; } }
     </style>
 </head>
 <body>
@@ -45,128 +44,103 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            // --- MULTI-LAYER LOGISTICS DATABASE ---
-            const LOGISTICS_DB = {
-                "Inbound (Raw Materials)": [
-                    { id: "SHP-772", ref: "BL-MAEU-9901", origin: "Antwerp, BE", status: "Customs Clearing", port: "Tema", broker: "Apex Clearing Ltd", unit_sync: "Warehouse 1 (Ashalaja) Ready", ETA: "2025-12-31" },
-                    { id: "SHP-804", ref: "BL-MSC-4432", origin: "Houston, USA", status: "At Sea", port: "Tema", broker: "Apex Clearing Ltd", unit_sync: "Production Requisition Link Active", ETA: "2026-01-12" }
+            // --- ALL-IN-ONE DATA REPOSITORY ---
+            const MASTER_DATA = {
+                "Compliance": [
+                    { id: "REG-01", title: "GSA Paint Certification", detail: "Quality Standard: GS 147:2020", status: "Active", ref: "GSA/ASH/25" },
+                    { id: "REG-02", title: "EPA Environmental Permit", detail: "Industrial Effluent Discharge", status: "Pending Renewal", ref: "EPA-2025-V1" }
                 ],
-                "Outbound (ECOWAS Exports)": [
-                    { id: "EXP-102", ref: "COO-ETLS-044", destination: "Lagos, NG", status: "Transit (Border)", port: "Aflao Border", broker: "Direct Admin Liaison", unit_sync: "Sales Waybill Issued", ETA: "2025-12-30" },
-                    { id: "EXP-105", ref: "COO-ETLS-051", destination: "Abidjan, CI", status: "Loading (Site)", port: "Tema", broker: "Logistics Admin", unit_sync: "Final Packing List Verified", ETA: "2026-01-05" }
+                "Global Logistics": [
+                    { id: "LOG-01", title: "Tema Inbound: Resin", detail: "Carrier: Maersk | Port: Tema", status: "Customs Clearing", ref: "BL-MAEU-44" },
+                    { id: "LOG-02", title: "Export: Nigeria Gloss", detail: "Liaison: Lagos Agent | Mode: Road", status: "Border Transit", ref: "ETLS-GH-01" }
+                ],
+                "Infrastructure": [
+                    { id: "UTL-01", title: "Ashalaja Power Gen-Set", detail: "Fuel Level: 85% | Hours: 1,240", status: "Operational", ref: "ENG-CAT-400" },
+                    { id: "UTL-02", title: "Water Treatment Plant", detail: "Filtration Pressure: Normal", status: "Operational", ref: "WTP-01" }
+                ],
+                "Maintenance": [
+                    { id: "MNT-01", title: "Mixer A-1 Calibration", detail: "Next Service: Jan 15, 2026", status: "Scheduled", ref: "PMC-MIX-A1" },
+                    { id: "MNT-02", title: "Forklift Fleet Service", detail: "Unit 3 Repairing (Hydraulic)", status: "In-Progress", ref: "FORK-L3" }
                 ]
             };
 
             function AdministrationDesk() {
-                const [activeSub, setActiveSub] = useState('Logistics Administration');
-                const [selectedLayer, setSelectedLayer] = useState('Inbound (Raw Materials)');
-                const [selectedShipID, setSelectedShipID] = useState('SHP-772');
+                const [activeSub, setActiveSub] = useState('Compliance');
+                const [selectedID, setSelectedID] = useState(MASTER_DATA['Compliance'][0].id);
 
-                const currentShipment = LOGISTICS_DB[selectedLayer].find(s => s.id === selectedShipID) || LOGISTICS_DB[selectedLayer][0];
+                const currentSelection = MASTER_DATA[activeSub].find(i => i.id === selectedID) || MASTER_DATA[activeSub][0];
 
-                return e('div', { className: 'fade-in max-w-7xl mx-auto' },
-                    // HEADER
-                    e('div', { className: 'mb-8 border-b border-slate-300 pb-8 flex justify-between items-end' },
+                return e('div', { className: 'fade-in' },
+                    // 1. TOP EXECUTIVE HEADER
+                    e('div', { className: 'mb-8 border-b border-slate-200 pb-8 flex justify-between items-end' },
                         e('div', null,
-                            e('h1', { className: 'text-4xl cambria-light text-slate-900' }, 'Export & Import Logistics Administration'),
-                            e('p', { className: 'text-md text-slate-500 mt-1' }, 'Site Coordination: Shipment Schedules, Customs Clearance & Port Liaison')
+                            e('h1', { className: 'text-4xl cambria text-slate-900 mb-1' }, 'Administration Desk'),
+                            e('p', { className: 'text-sm text-slate-500 font-medium' }, 'Central Command: Ashalaja Industrial Complex')
                         ),
-                        e('div', { className: 'flex gap-3' },
-                            e('button', { className: 'bg-slate-900 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg' }, 'ICUMS Filing'),
-                            e('button', { className: 'bg-blue-600 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg' }, 'New Waybill')
+                        e('div', { className: 'flex gap-3 no-print' },
+                            e('button', { className: 'px-5 py-2.5 bg-slate-900 text-white text-[10px] font-bold uppercase rounded-lg shadow-lg' }, 'System Audit'),
+                            e('button', { className: 'px-5 py-2.5 bg-blue-600 text-white text-[10px] font-bold uppercase rounded-lg shadow-lg' }, 'Master Print')
                         )
                     ),
 
-                    // SUB-HEADING LAYER
-                    e('nav', { className: 'flex gap-2 bg-slate-200 p-1 rounded-xl mb-8' },
-                        ['Logistics Administration', 'Supplier Coordination', 'Regulatory Hub', 'HSSE Command'].map(tab => 
+                    // 2. THE MULTI-LAYER RIBBON (All previous modules are here)
+                    e('div', { className: 'no-print flex gap-3 overflow-x-auto pb-4 mb-8' },
+                        Object.keys(MASTER_DATA).map(tab => 
                             e('button', {
                                 key: tab,
-                                onClick: () => setActiveSub(tab),
-                                className: `sub-nav-btn flex-1 ${activeSub === tab ? 'active' : 'inactive'}`
+                                onClick: () => { setActiveSub(tab); setSelectedID(MASTER_DATA[tab][0].id); },
+                                className: `ribbon-btn ${activeSub === tab ? 'active' : 'inactive'}`
                             }, tab)
-                        )
+                        ),
+                        e('button', { className: 'ribbon-btn inactive' }, 'Vendor Due Diligence'),
+                        e('button', { className: 'ribbon-btn inactive' }, 'HSSE Command')
                     ),
 
-                    activeSub === 'Logistics Administration' ? e('div', { className: 'grid grid-cols-12 gap-8 fade-in' },
-                        // LAYER 1: SHIPMENT CATEGORY
-                        e('div', { className: 'col-span-3 space-y-6' },
-                            e('div', null,
-                                e('span', { className: 'label-caps' }, 'Operational Stream'),
-                                e('div', { className: 'flex flex-col gap-2' },
-                                    Object.keys(LOGISTICS_DB).map(cat => 
-                                        e('button', {
-                                            key: cat,
-                                            onClick: () => { setSelectedLayer(cat); setSelectedShipID(LOGISTICS_DB[cat][0].id); },
-                                            className: `text-left px-4 py-3 rounded-lg text-[11px] font-bold border transition-all ${selectedLayer === cat ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200'}`
-                                        }, cat)
-                                    )
-                                )
-                            ),
-                            // LAYER 2: SHIPMENT SELECTOR
-                            e('div', null,
-                                e('span', { className: 'label-caps' }, `Active Shipments`),
-                                LOGISTICS_DB[selectedLayer].map(ship => 
-                                    e('div', {
-                                        key: ship.id,
-                                        onClick: () => setSelectedShipID(ship.id),
-                                        className: `shipment-card ${selectedShipID === ship.id ? 'selected' : ''}`
-                                    },
-                                        e('div', { className: 'flex justify-between items-start' },
-                                            e('h4', { className: 'text-xs font-bold' }, ship.id),
-                                            e('span', { className: 'text-[9px] font-bold text-blue-600' }, ship.port)
-                                        ),
-                                        e('p', { className: 'text-[10px] text-slate-500 mt-1 font-medium' }, ship.origin || ship.destination)
-                                    )
+                    // 3. THE INTERACTIVE WORKSPACE
+                    e('div', { className: 'grid grid-cols-12 gap-8' },
+                        // List of items under selected ribbon category
+                        e('div', { className: 'col-span-4 space-y-3 no-print' },
+                            e('span', { className: 'data-label' }, `Linked ${activeSub} Entries`),
+                            MASTER_DATA[activeSub].map(item => 
+                                e('div', {
+                                    key: item.id,
+                                    onClick: () => setSelectedID(item.id),
+                                    className: `p-4 glass-card cursor-pointer transition-all border-l-4 ${selectedID === item.id ? 'border-l-blue-600 bg-blue-50' : 'border-l-transparent hover:bg-slate-50'}`
+                                },
+                                    e('h4', { className: 'text-sm font-bold text-slate-800' }, item.title),
+                                    e('p', { className: 'text-[10px] text-slate-500 mt-1' }, `Ref: ${item.ref}`)
                                 )
                             )
                         ),
 
-                        // LAYER 3: DETAILED ADMINISTRATIVE CONSOLE
-                        e('div', { className: 'col-span-9' },
-                            e('div', { className: 'console-layer fade-in', key: selectedShipID },
+                        // The Detail Display (Automatically pulls data)
+                        e('div', { className: 'col-span-8' },
+                            e('div', { className: 'glass-card p-10 fade-in', key: selectedID },
                                 e('div', { className: 'flex justify-between items-start mb-8 border-b pb-6' },
                                     e('div', null,
-                                        e('h2', { className: 'text-2xl font-bold text-slate-800' }, `Schedule: ${currentShipment.id}`),
-                                        e('p', { className: 'text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest' }, `Reference: ${currentShipment.ref}`)
+                                        e('h2', { className: 'text-2xl font-bold text-slate-900' }, currentSelection.title),
+                                        e('p', { className: 'text-xs text-blue-600 font-bold uppercase mt-1 tracking-widest' }, `${activeSub} Record`)
                                     ),
-                                    e('div', null, e('span', { className: 'status-pill pill-blue' }, currentShipment.status))
+                                    e('span', { className: 'px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase rounded' }, currentSelection.status)
                                 ),
 
-                                e('div', { className: 'grid grid-cols-3 gap-6 mb-8' },
-                                    e('div', null, e('span', { className: 'label-caps' }, 'Authorized Broker'), e('div', { className: 'data-box' }, currentShipment.broker)),
-                                    e('div', null, e('span', { className: 'label-caps' }, 'Port / Clearance Point'), e('div', { className: 'data-box' }, currentShipment.port)),
-                                    e('div', null, e('span', { className: 'label-caps' }, 'Target Delivery/ETA'), e('div', { className: 'data-box font-bold text-blue-700' }, currentShipment.ETA))
+                                e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
+                                    e('div', null, e('span', { className: 'data-label' }, 'Identification Code'), e('div', { className: 'data-value font-mono' }, currentSelection.id)),
+                                    e('div', null, e('span', { className: 'data-label' }, 'Internal Reference'), e('div', { className: 'data-value' }, currentSelection.ref))
                                 ),
 
-                                e('div', { className: 'mb-8 grid grid-cols-2 gap-6' },
-                                    e('div', null, 
-                                        e('span', { className: 'label-caps' }, 'Unit Synchronization Status'), 
-                                        e('div', { className: 'data-box bg-emerald-50 text-emerald-800 border-emerald-100' }, currentShipment.unit_sync)
-                                    ),
-                                    e('div', null, 
-                                        e('span', { className: 'label-caps' }, 'Required Documentation'), 
-                                        e('div', { className: 'data-box flex items-center justify-between' }, 
-                                            e('span', null, 'Bill of Lading / COO'), 
-                                            e('span', { className: 'text-[10px] text-blue-500 underline cursor-pointer' }, 'View PDF')
-                                        )
-                                    )
+                                e('div', { className: 'mb-8' },
+                                    e('span', { className: 'data-label' }, 'Current Status / Brief Analysis'),
+                                    e('div', { className: 'data-value h-auto leading-relaxed' }, currentSelection.detail)
                                 ),
 
-                                e('div', null,
-                                    e('span', { className: 'label-caps' }, 'Administrative Action & Logistics Note'),
-                                    e('div', { className: 'data-box h-auto py-4 bg-slate-50 leading-relaxed italic' }, 
-                                        "Coordinating with customs broker for final duty assessment. Warehouse 1 Ashalaja has been notified of inbound tonnage for raw material intake."
-                                    )
-                                ),
-
-                                e('div', { className: 'mt-10 flex justify-end gap-3' },
-                                    e('button', { className: 'px-8 py-3 bg-slate-100 text-[10px] font-black uppercase rounded shadow-sm' }, 'Log Issue'),
-                                    e('button', { className: 'px-8 py-3 bg-slate-900 text-white text-[10px] font-black uppercase rounded shadow-xl' }, 'Finalize Port Clearance')
+                                e('div', { className: 'bg-slate-50 border-2 border-dashed border-slate-200 p-10 rounded-xl text-center' },
+                                    e('p', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, 'Executive Print Preview Area'),
+                                    e('p', { className: 'text-xs text-slate-500 mt-2' }, 'Click "Master Print" to generate full regulatory analysis for this record.')
                                 )
                             )
                         )
-                    ) : e('div', { className: 'py-20 text-center opacity-30' }, e('h1', { className: 'text-4xl' }, 'Navigating Module...'))
+                    )
                 );
             }
 
@@ -175,10 +149,10 @@
                 const desks = ['Executive', 'Administration', 'Finance', 'Production', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'HR', 'Reception'];
 
                 return e('div', { className: 'flex' },
-                    e('div', { className: 'sidebar-executive' },
+                    e('div', { className: 'sidebar-executive no-print' },
                         e('div', { className: 'p-10 mb-6' },
-                            e('h1', { className: 'cambria-light text-white text-3xl' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Site Control Hub')
+                            e('h1', { className: 'cambria text-white text-3xl' }, 'DE-TRUSTED'),
+                            e('p', { className: 'text-[9px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Master Command')
                         ),
                         desks.map(name => 
                             e('button', {
@@ -188,8 +162,8 @@
                             }, name)
                         )
                     ),
-                    e('main', { className: 'flex-1 ml-[260px] min-h-screen p-16 bg-slate-100' },
-                        currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'text-center py-40' }, e('h1', { className: 'text-6xl text-slate-300 cambria-light' }, currentDesk))
+                    e('main', { className: 'flex-1 ml-[240px] min-h-screen p-16' },
+                        currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'text-center py-40 opacity-20' }, e('h1', { className: 'text-6xl cambria' }, currentDesk))
                     )
                 );
             }
