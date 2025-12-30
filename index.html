@@ -34,7 +34,7 @@
 
         input, select, textarea { 
             border: 1px solid #d1d5db; 
-            padding: 8px 12px; 
+            padding: 10px 12px; 
             font-size: 13px; 
             width: 100%;
             border-radius: 4px;
@@ -51,6 +51,16 @@
             margin-bottom: 4px; 
             display: block; 
         }
+        .btn-primary {
+            background: #0f172a;
+            color: white;
+            padding: 10px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover { background: #2563eb; }
     </style>
 </head>
 <body>
@@ -69,90 +79,122 @@
         );
 
         const Dashboard = () => {
-            const [currentDesk, setCurrentDesk] = useState('Executive');
+            const [currentDesk, setCurrentDesk] = useState('Administration');
             
-            // Additive Logic States
+            // Administration Specific Logic
             const [adminAction, setAdminAction] = useState("");
-            const [finType, setFinType] = useState("");
-            const [prodCat, setProdCat] = useState("");
-            const [logAction, setLogAction] = useState("");
-            const [salesType, setSalesType] = useState("");
-            const [stockAction, setStockAction] = useState("");
-            const [hrAction, setHrAction] = useState("");
+            const [complianceAgency, setComplianceAgency] = useState("");
 
-            // --- MODULES ---
-            
-            const ExecutiveDesk = () => (
+            // --- ADMINISTRATION MODULE (FULL DETAIL) ---
+            const AdministrationDesk = () => (
                 <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Executive Cockpit</h1>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white p-6 shadow border-t-4 border-blue-600">
-                            <p className="text-[10px] font-semibold text-slate-400 uppercase">Revenue Projection</p>
-                            <p className="text-2xl cambria-light text-blue-600">GHS 842,500</p>
+                    <h1 className="text-4xl cambria-light mb-2">Administration & Corporate Compliance</h1>
+                    <p className="text-sm text-slate-500 mb-10 italic">Ashalaja Industrial Site | Asset & Regulatory Control</p>
+                    
+                    {/* STATUTORY MONITORING ROW */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+                        <div className="bg-white p-5 border-l-4 border-emerald-500 shadow-sm">
+                            <label>GSA Status</label>
+                            <p className="text-sm cambria-light">Cert: DT-2025-01</p>
+                            <p className="text-[10px] text-emerald-600 font-bold uppercase">Compliant</p>
                         </div>
-                        <div className="bg-white p-6 shadow border-t-4 border-green-600">
-                            <p className="text-[10px] font-semibold text-slate-400 uppercase">Operational Health</p>
-                            <p className="text-2xl cambria-light text-green-600">Stable</p>
+                        <div className="bg-white p-5 border-l-4 border-amber-500 shadow-sm">
+                            <label>EPA Permit</label>
+                            <p className="text-sm cambria-light">Review: Feb 2026</p>
+                            <p className="text-[10px] text-amber-600 font-bold uppercase">Pending Audit</p>
+                        </div>
+                        <div className="bg-white p-5 border-l-4 border-blue-500 shadow-sm">
+                            <label>GNFS (Fire)</label>
+                            <p className="text-sm cambria-light">Valid until: 2026</p>
+                            <p className="text-[10px] text-blue-600 font-bold uppercase">Active</p>
+                        </div>
+                        <div className="bg-white p-5 border-l-4 border-slate-900 shadow-sm">
+                            <label>Reg. General</label>
+                            <p className="text-sm cambria-light">Annual Returns</p>
+                            <p className="text-[10px] text-slate-500 font-bold uppercase">Filed 2025</p>
                         </div>
                     </div>
-                </div>
-            );
 
-            const AdminDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Administration Desk</h1>
-                    <div className="locked-card p-8">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <label>Administrative Task</label>
-                                <select onChange={(e) => setAdminAction(e.target.value)} value={adminAction}>
-                                    <option value="">Choose...</option>
-                                    <option value="regulatory">Regulatory Compliance (GSA/EPA)</option>
-                                    <option value="minutes">Board Minutes Entry</option>
-                                </select>
-                            </div>
-                            {adminAction === 'regulatory' && (
-                                <div className="fade-in">
-                                    <label>Agency</label>
-                                    <select><option>Ghana Standards Authority</option><option>EPA Ghana</option></select>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                        {/* FORM ACTION SELECTION */}
+                        <div className="lg:col-span-2">
+                            <div className="locked-card p-8">
+                                <h3 className="text-xl cambria-light mb-6 border-b pb-2">Record Entry Management</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <label>Administrative Protocol</label>
+                                        <select onChange={(e) => setAdminAction(e.target.value)} value={adminAction}>
+                                            <option value="">Select Category...</option>
+                                            <option value="regulatory">Statutory License Renewal</option>
+                                            <option value="facility">Facility & Security Log</option>
+                                            <option value="corporate">Board / Management Minutes</option>
+                                            <option value="assets">Asset Registry (IT/Plant)</option>
+                                        </select>
+                                    </div>
+
+                                    {adminAction === 'regulatory' && (
+                                        <div className="fade-in">
+                                            <label>Statutory Agency</label>
+                                            <select onChange={(e) => setComplianceAgency(e.target.value)}>
+                                                <option value="">Choose Agency...</option>
+                                                <option value="gsa">Ghana Standards Authority</option>
+                                                <option value="epa">Environmental Protection Agency</option>
+                                                <option value="gnfs">Ghana National Fire Service</option>
+                                                <option value="district">Ga South Municipal Assembly</option>
+                                            </select>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
 
-            const FinanceDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Finance Portal</h1>
-                    <div className="locked-card p-8 border-emerald-600">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <label>Entry Type</label>
-                                <select onChange={(e) => setFinType(e.target.value)} value={finType}>
-                                    <option value="">Choose...</option>
-                                    <option value="rev">Revenue Inflow</option>
-                                    <option value="exp">Operational Expense</option>
-                                </select>
+                                {/* DYNAMIC FORM SECTIONS */}
+                                {adminAction === 'regulatory' && complianceAgency && (
+                                    <div className="fade-in space-y-6 pt-6 border-t border-dashed">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div><label>Permit Number</label><input type="text" placeholder="GSA/PT/25/..." /></div>
+                                            <div><label>Filing Date</label><input type="date" /></div>
+                                            <div><label>Renewal Cost (GHS)</label><input type="number" /></div>
+                                            <div><label>Officer in Charge</label><input type="text" /></div>
+                                        </div>
+                                        <div><label>Agency Feedback / Notes</label><textarea rows="3"></textarea></div>
+                                    </div>
+                                )}
+
+                                {adminAction === 'facility' && (
+                                    <div className="fade-in space-y-6 pt-6 border-t border-dashed">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div><label>Incident/Service Area</label><select><option>Main Factory Floor</option><option>Perimeter Security</option><option>IT Server Room</option></select></div>
+                                            <div><label>Severity Level</label><select><option>Routine</option><option>Urgent</option><option>Critical Error</option></select></div>
+                                        </div>
+                                        <div><label>Technical Description</label><textarea rows="3"></textarea></div>
+                                    </div>
+                                )}
+
+                                {adminAction === 'corporate' && (
+                                    <div className="fade-in space-y-6 pt-6 border-t border-dashed">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div><label>Meeting Date</label><input type="date" /></div>
+                                            <div><label>Venue</label><input type="text" value="Ashalaja Boardroom" readOnly /></div>
+                                        </div>
+                                        <div><label>Key Resolutions</label><textarea rows="5" placeholder="Documented decisions here..."></textarea></div>
+                                    </div>
+                                )}
+
+                                {adminAction && (
+                                    <div className="mt-10">
+                                        <button className="btn-primary rounded shadow-lg" onClick={() => alert('Record Archiving Initiated')}>Commit to Secure Cloud</button>
+                                    </div>
+                                )}
                             </div>
-                            {finType && (
-                                <div className="fade-in">
-                                    <label>Account</label>
-                                    <select>{finType === 'rev' ? <option>Direct Sales</option> : <option>Utility/Rent</option>}</select>
-                                </div>
-                            )}
                         </div>
-                    </div>
-                </div>
-            );
 
-            const ProductionDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Production Line</h1>
-                    <div className="locked-card p-8 border-blue-900">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <label>Paint Category</label>
-                                <select onChange={(e) => setProdCat(e.target.value)} value={prodCat}>
-                                    <option value="">Choose...</option>
-                                    <option      
+                        {/* RECENT RECORDS LOG (Sidebar of Admin) */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-slate-900 text-white p-6 rounded shadow-xl">
+                                <h3 className="text-lg cambria-light mb-4 text-blue-400">Archived Filings</h3>
+                                <div className="space-y-4">
+                                    <div className="border-b border-slate-800 pb-3">
+                                        <p className="text-[10px] uppercase text-slate-500">Dec 28, 2025</p>
+                                        <p className="text-xs">EPA Effluent Audit Logged</p>
+                                    </div>
+                                    <div className="border-b border-slate-800 pb-3">
+                                        <p className="text-[10px] uppercase text-slate-500">Dec
