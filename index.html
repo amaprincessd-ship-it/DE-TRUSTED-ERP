@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | EXECUTIVE DASHBOARD</title>
+    <title>DE-TRUSTED ERP | SUPPORT & STRATEGY DESKS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,23 +12,20 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        :root { --navy: #001f3f; --gold: #fbbf24; --accent: #38bdf8; }
-        body { font-family: 'Ubuntu', sans-serif; background: #0f172a; color: #f8fafc; margin: 0; }
+        :root { --navy: #001f3f; --gold: #fbbf24; --legal-purple: #581c87; --tool-gray: #334155; --qa-teal: #0d9488; }
+        body { font-family: 'Ubuntu', sans-serif; background: #f1f5f9; margin: 0; }
 
-        .sidebar { background: #020617; height: 100vh; width: 260px; position: fixed; border-right: 1px solid #1e293b; }
-        .main-stage { margin-left: 260px; padding: 40px; }
+        .sidebar { background: var(--navy); height: 100vh; width: 260px; position: fixed; border-right: 4px solid var(--gold); }
+        .workspace { margin-left: 260px; padding: 40px; }
         
-        .stat-card { background: #1e293b; border: 1px solid #334155; padding: 24px; border-radius: 12px; transition: 0.3s; }
-        .stat-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+        .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 30px; }
+        .header { color: white; padding: 20px 30px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
         
-        .module-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .status-online { background: #10b981; box-shadow: 0 0 10px #10b981; }
-
-        .chart-mock { height: 120px; background: linear-gradient(0deg, #1e293b 0%, #334155 100%); border-radius: 6px; position: relative; overflow: hidden; }
-        .bar { position: absolute; bottom: 0; width: 12%; background: var(--accent); border-radius: 2px 2px 0 0; }
-
-        .alert-feed { font-size: 11px; font-family: 'Roboto Mono'; color: #94a3b8; }
-        .critical { color: #f87171; font-weight: bold; }
+        .field-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .input-f { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
+        
+        .tag { padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .tag-critical { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
@@ -37,109 +34,74 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useEffect } = React;
 
             function App() {
-                const [time, setTime] = useState(new Date().toLocaleTimeString());
-                useEffect(() => { const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000); return () => clearInterval(timer); }, []);
-
                 return e('div', { className: 'flex' },
                     // SIDEBAR
-                    e('aside', { className: 'sidebar p-8' },
-                        e('div', { className: 'mb-12' },
-                            e('h1', { className: 'text-2xl font-black text-white tracking-tighter' }, 'DE-TRUSTED'),
-                            e('span', { className: 'text-[10px] text-gold font-bold tracking-widest' }, 'ULTIMATE ERP v4.0')
-                        ),
-                        ['Overview', 'Intelligence', 'Audit Trail', 'Global Search', 'Sys Admin'].map(m => 
-                            e('div', { key: m, className: 'py-4 text-xs font-bold text-slate-400 hover:text-white cursor-pointer uppercase tracking-wider' }, m)
-                        ),
-                        e('div', { className: 'absolute bottom-10 left-8' },
-                            e('div', { className: 'flex items-center gap-2' },
-                                e('span', { className: 'module-indicator status-online' }),
-                                e('span', { className: 'text-[10px] font-bold text-slate-500' }, 'SYSTEM STABLE')
-                            )
+                    e('aside', { className: 'sidebar p-6' },
+                        e('h1', { className: 'text-white text-xl font-black mb-10' }, 'DE-TRUSTED ERP'),
+                        ['Legal Registry', 'Fixed Assets', 'Maintenance Log', 'Quality Control', 'Safety (HSE)', 'IT Support'].map(i => 
+                            e('div', { key: i, className: 'text-slate-400 text-[11px] font-black py-3 border-b border-white/5 cursor-pointer hover:text-white' }, i.toUpperCase())
                         )
                     ),
 
-                    // MAIN STAGE
-                    e('main', { className: 'main-stage flex-1' },
-                        // Top Nav
-                        e('header', { className: 'flex justify-between items-end mb-10' },
-                            e('div', null,
-                                e('h2', { className: 'text-3xl font-black' }, 'Global Command Dashboard'),
-                                e('p', { className: 'text-slate-400 text-sm' }, 'Consolidated Enterprise Intelligence | ' + new Date().toDateString())
+                    e('main', { className: 'workspace flex-1' },
+                        
+                        // 1. LEGAL & COMPLIANCE DESK
+                        e('div', { className: 'card' },
+                            e('div', { className: 'header bg-purple-900' },
+                                e('div', null, e('h2', { className: 'text-lg font-black' }, 'Legal & Contract Registry'), e('p', { className: 'text-[10px] opacity-70' }, 'Compliance > Risk Management')),
+                                e('span', { className: 'tag tag-critical' }, 'Renewal Due')
                             ),
-                            e('div', { className: 'text-right font-mono' },
-                                e('p', { className: 'text-gold text-xl font-bold' }, time),
-                                e('p', { className: 'text-[10px] text-slate-500' }, 'UTC/GMT +0:00 (ACCRA)')
+                            e('div', { className: 'p-6 grid grid-cols-3 gap-6' },
+                                e('div', null, e('label', { className: 'field-label' }, 'Contract Title'), e('input', { className: 'input-f', defaultValue: 'Main Factory Lease Agreement' })),
+                                e('div', null, e('label', { className: 'field-label' }, 'Expiry Date'), e('input', { className: 'input-f', type: 'date', defaultValue: '2026-01-15' })),
+                                e('div', null, e('label', { className: 'field-label' }, 'Legal Custodian'), e('input', { className: 'input-f', value: 'Barrister O. Boateng', readOnly: true }))
                             )
                         ),
 
-                        // CORE KPIs
-                        e('div', { className: 'grid grid-cols-4 gap-6 mb-10' },
-                            [
-                                { label: 'TOTAL REVENUE (YTD)', val: 'GHS 4.2M', trend: '+12.4%', color: 'text-emerald-400' },
-                                { label: 'OPEX EFFICIENCY', val: '64.2%', trend: '-2.1%', color: 'text-sky-400' },
-                                { label: 'CASH ON HAND', val: 'GHS 842K', trend: 'STABLE', color: 'text-gold' },
-                                { label: 'HEADCOUNT', val: '142 Staff', trend: '4 Pending', color: 'text-purple-400' }
-                            ].map(k => e('div', { key: k.label, className: 'stat-card' },
-                                e('p', { className: 'text-[10px] font-bold text-slate-500 mb-1' }, k.label),
-                                e('h3', { className: 'text-2xl font-black' }, k.val),
-                                e('span', { className: `text-[10px] font-bold ${k.color}` }, k.trend)
-                            ))
-                        ),
-
-                        // MODULE HEALTH & ALERTS
-                        e('div', { className: 'grid grid-cols-3 gap-8' },
-                            // Left Col: Module Status
-                            e('div', { className: 'col-span-2' },
-                                e('div', { className: 'stat-card h-full' },
-                                    e('h3', { className: 'text-sm font-black mb-6 uppercase tracking-widest text-slate-400' }, 'Departmental Performance & Flow'),
-                                    e('div', { className: 'space-y-6' },
-                                        [
-                                            { d: 'FINANCE & LEDGER', p: 98, sub: 'All reconciliation current' },
-                                            { d: 'SALES & MARKETING', p: 72, sub: 'Q4 Target: GHS 1.5M Remaining' },
-                                            { d: 'PRODUCTION & WHSE', p: 85, sub: 'Raw material stock optimal' },
-                                            { d: 'HR & PAYROLL', p: 100, sub: 'Statutory filings (SSNIT/PAYE) completed' }
-                                        ].map(m => e('div', { key: m.d },
-                                            e('div', { className: 'flex justify-between text-xs font-bold mb-2' },
-                                                e('span', null, m.d),
-                                                e('span', { className: 'text-gold' }, `${m.p}%`)
-                                            ),
-                                            e('div', { className: 'w-full bg-slate-700 h-1.5 rounded-full' },
-                                                e('div', { className: 'bg-accent h-full rounded-full', style: { width: `${m.p}%` } })
-                                            ),
-                                            e('p', { className: 'text-[9px] text-slate-500 mt-1' }, m.sub)
-                                        ))
-                                    )
-                                )
+                        // 2. MAINTENANCE & ASSET DESK
+                        
+                        e('div', { className: 'card' },
+                            e('div', { className: 'header bg-slate-700' },
+                                e('div', null, e('h2', { className: 'text-lg font-black' }, 'Fixed Asset Maintenance'), e('p', { className: 'text-[10px] opacity-70' }, 'Operations > Asset Lifecycle')),
+                                e('div', { className: 'text-right' }, e('p', { className: 'text-[10px] font-black' }, 'ASSET ID'), e('p', { className: 'font-mono' }, 'GEN-SET-004'))
                             ),
-
-                            // Right Col: Audit Feed
-                            e('div', { className: 'space-y-6' },
-                                e('div', { className: 'stat-card' },
-                                    e('h3', { className: 'text-xs font-black mb-4 uppercase text-slate-400' }, 'Critical Audit Feed'),
-                                    e('div', { className: 'alert-feed space-y-3' },
-                                        e('p', { className: 'critical' }, '[SECURITY] Duplicate Receipt Attempt: RCP-99801 (BLOCKED)'),
-                                        e('p', null, '[FINANCE] PV-2025-0012 Approved by Controller'),
-                                        e('p', null, '[PROCUR] New Supplier "Global Parts" Enrolled'),
-                                        e('p', { className: 'text-gold' }, '[SALES] Tax Invoice INV-8801 Generated (GHS 25k)'),
-                                        e('p', null, '[SYSTEM] Automated Ledger Backup Successful')
-                                    )
+                            e('div', { className: 'p-6 grid grid-cols-2 gap-10' },
+                                e('div', null, 
+                                    e('label', { className: 'field-label' }, 'Maintenance Type'),
+                                    e('select', { className: 'input-f' }, ['Preventative', 'Corrective', 'Emergency', 'Routine Check'].map(o => e('option', {key:o}, o))),
+                                    e('label', { className: 'field-label' }, 'Cost Estimation (Link to Finance)'),
+                                    e('input', { className: 'input-f', placeholder: 'GHS 0.00' })
                                 ),
-                                e('div', { className: 'stat-card bg-indigo-900/20 border-indigo-500/30' },
-                                    e('h3', { className: 'text-xs font-black mb-2 uppercase text-indigo-400' }, 'Compliance Radar'),
-                                    e('p', { className: 'text-xl font-black' }, 'GHS 142,500'),
-                                    e('p', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, 'Estimated Tax Liability (VAT/NHIL/PAYE)')
+                                e('div', { className: 'bg-slate-50 p-4 rounded border' },
+                                    e('p', { className: 'text-[10px] font-black text-slate-400 mb-2' }, 'SYSTEM STATUS'),
+                                    e('div', { className: 'flex justify-between items-center' },
+                                        e('span', { className: 'text-xs font-bold' }, 'Generator Runtime: 4,200 hrs'),
+                                        e('span', { className: 'tag bg-orange-100 text-orange-700' }, 'Service Overdue')
+                                    )
                                 )
                             )
                         ),
 
-                        // FOOTER ACTIONS
-                        e('footer', { className: 'mt-10 flex gap-4' },
-                            e('button', { className: 'px-6 py-2 bg-gold text-navy font-black text-[10px] rounded uppercase' }, 'Generate Annual Report'),
-                            e('button', { className: 'px-6 py-2 border border-slate-700 font-black text-[10px] rounded uppercase' }, 'System Audit Log'),
-                            e('button', { className: 'px-6 py-2 border border-slate-700 font-black text-[10px] rounded uppercase' }, 'User RBAC Settings')
+                        // 3. QUALITY ASSURANCE (QA) DESK
+                        
+                        e('div', { className: 'card' },
+                            e('div', { className: 'header bg-teal-700' },
+                                e('div', null, e('h2', { className: 'text-lg font-black' }, 'Quality Control (Batch Inspection)'), e('p', { className: 'text-[10px] opacity-70' }, 'Production > Compliance Standards')),
+                                e('span', { className: 'tag bg-white text-teal-900' }, 'QA Passed')
+                            ),
+                            e('div', { className: 'p-6 grid grid-cols-3 gap-6' },
+                                e('div', null, e('label', { className: 'field-label' }, 'Production Batch #'), e('input', { className: 'input-f', value: 'BATCH-2025-AX1', readOnly: true })),
+                                e('div', null, e('label', { className: 'field-label' }, 'Defect Rate (%)'), e('input', { className: 'input-f', type: 'number', defaultValue: 0.02 })),
+                                e('div', null, e('label', { className: 'field-label' }, 'Inspector ID'), e('input', { className: 'input-f', value: 'EMP-8802 | J. Doe', readOnly: true }))
+                            )
+                        ),
+
+                        // FOOTER GLOBAL ACTION
+                        e('div', { className: 'flex justify-end gap-4' },
+                            e('button', { className: 'px-8 py-3 bg-white border border-slate-300 font-bold text-xs rounded' }, 'EXPORT GLOBAL AUDIT'),
+                            e('button', { className: 'px-10 py-3 bg-navy text-white font-bold text-xs rounded' }, 'LOCK CURRENT PERIOD')
                         )
                     )
                 );
