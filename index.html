@@ -67,4 +67,101 @@
                         e('form', { onSubmit: handleLogin, className: 'glass-card w-80 text-center shadow-2xl border-slate-800' },
                             e('h1', { className: 'text-2xl font-black mb-2 tracking-tighter' }, 'DE-TRUSTED ERP'),
                             e('p', { className: 'text-[10px] text-yellow-500 font-bold mb-8' }, 'ENTER MASTER KEY TO INITIALIZE'),
-                            e('input', { type: 'password', className:
+                            e('input', { type: 'password', className: 'input-box text-center mb-6', placeholder: '••••••••', value: passInput, onChange: v => setPassInput(v.target.value) }),
+                            e('button', { type: 'submit', className: 'btn-gold w-full' }, 'UNFOLD SYSTEM')
+                        )
+                    );
+                }
+
+                return e('div', { className: 'flex' },
+                    e('aside', { className: 'sidebar' },
+                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic text-white' }, 'DE-TRUSTED')),
+                        e('nav', { className: 'mt-6' },
+                            e('div', { onClick: () => setView('PAYROLL'), className: `p-4 cursor-pointer text-xs font-bold ${view === 'PAYROLL' ? 'text-yellow-500 bg-slate-800' : 'text-slate-500'}` }, '💳 PAYROLL DESK'),
+                            e('div', { onClick: () => setView('ADD_EMP'), className: `p-4 cursor-pointer text-xs font-bold ${view === 'ADD_EMP' ? 'text-yellow-500 bg-slate-800' : 'text-slate-500'}` }, '➕ ONBOARDING'),
+                            e('div', { onClick: () => setView('DIR'), className: `p-4 cursor-pointer text-xs font-bold ${view === 'DIR' ? 'text-yellow-500 bg-slate-800' : 'text-slate-500'}` }, '👥 STAFF DIRECTORY')
+                        )
+                    ),
+                    e('main', { className: 'main-content flex-1' },
+                        
+                        // ONBOARDING VIEW
+                        view === 'ADD_EMP' && e('div', { className: 'max-w-5xl' },
+                            e('h2', { className: 'text-3xl font-black mb-8' }, 'Automatic Staff Registration'),
+                            e('div', { className: 'glass-card space-y-8' },
+                                e('div', null, 
+                                    e('h3', { className: 'section-title' }, 'Personal Information'),
+                                    e('div', { className: 'grid grid-cols-3 gap-4' },
+                                        e('input', {className:'input-box', placeholder:'First Name', value:newEmp.fName, onChange:v=>setNewEmp({...newEmp, fName:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Middle Name', value:newEmp.mName, onChange:v=>setNewEmp({...newEmp, mName:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Last Name', value:newEmp.lName, onChange:v=>setNewEmp({...newEmp, lName:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Phone Number', value:newEmp.phone, onChange:v=>setNewEmp({...newEmp, phone:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Email Address', value:newEmp.email, onChange:v=>setNewEmp({...newEmp, email:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Educational Background', value:newEmp.edu, onChange:v=>setNewEmp({...newEmp, edu:v.target.value})})
+                                    )
+                                ),
+                                e('div', null, 
+                                    e('h3', { className: 'section-title' }, 'Identity & Location'),
+                                    e('div', { className: 'grid grid-cols-3 gap-4' },
+                                        e('select', {className:'input-box', value:newEmp.idType, onChange:v=>setNewEmp({...newEmp, idType:v.target.value})}, e('option',null,'Ghana Card'), e('option',null,'Passport'), e('option',null,'Voters ID')),
+                                        e('input', {className:'input-box', placeholder:'National ID Number', value:newEmp.idNum, onChange:v=>setNewEmp({...newEmp, idNum:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Digital GPS Address', value:newEmp.gps, onChange:v=>setNewEmp({...newEmp, gps:v.target.value})}),
+                                        e('input', {className:'input-box col-span-2', placeholder:'Home Address', value:newEmp.homeAddress, onChange:v=>setNewEmp({...newEmp, homeAddress:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Department', value:newEmp.dept, onChange:v=>setNewEmp({...newEmp, dept:v.target.value})})
+                                    )
+                                ),
+                                e('div', null, 
+                                    e('h3', { className: 'section-title' }, 'Next of Kin (Emergency)'),
+                                    e('div', { className: 'grid grid-cols-4 gap-4' },
+                                        e('input', {className:'input-box', placeholder:'NOK Full Name', value:newEmp.nokName, onChange:v=>setNewEmp({...newEmp, nokName:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Relationship', value:newEmp.nokRel, onChange:v=>setNewEmp({...newEmp, nokRel:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'NOK Phone', value:newEmp.nokPhone, onChange:v=>setNewEmp({...newEmp, nokPhone:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'NOK Email', value:newEmp.nokEmail, onChange:v=>setNewEmp({...newEmp, nokEmail:v.target.value})})
+                                    )
+                                ),
+                                e('button', { className: 'btn-gold w-full py-4 text-sm', onClick: addEmployee }, 'Generate Staff ID & Save Profile')
+                            )
+                        ),
+
+                        // DIRECTORY VIEW
+                        view === 'DIR' && e('div', null,
+                            e('h2', { className: 'text-3xl font-black mb-8' }, 'Company Directory'),
+                            e('div', { className: 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' },
+                                employees.map(emp => e('div', { key: emp.id, className: 'glass-card border-l-4 border-yellow-500' },
+                                    e('div', { className: 'flex justify-between items-start mb-4' },
+                                        e('div', null, 
+                                            e('h4', {className:'text-lg font-bold'}, `${emp.fName} ${emp.lName}`),
+                                            e('p', {className:'text-xs text-yellow-500 font-mono'}, emp.staffId)
+                                        ),
+                                        e('div', {className:'w-12 h-12 bg-slate-800 rounded border border-slate-700 flex items-center justify-center text-[8px]'}, 'PHOTO')
+                                    ),
+                                    e('div', {className:'text-[11px] space-y-1 text-slate-400'},
+                                        e('p', null, e('b', {className:'text-slate-200'}, 'Dept: '), emp.dept),
+                                        e('p', null, e('b', {className:'text-slate-200'}, 'GPS: '), emp.gps),
+                                        e('p', null, e('b', {className:'text-slate-200'}, 'NOK: '), emp.nokName)
+                                    ),
+                                    e('button', { className:'mt-4 w-full bg-slate-800 text-[10px] py-2 rounded font-bold hover:bg-slate-700'}, 'GENERATE DIGITAL ID CARD')
+                                ))
+                            ),
+                            employees.length === 0 && e('p', {className:'text-slate-600 italic'}, 'No staff registered yet.')
+                        ),
+
+                        // PAYROLL VIEW
+                        view === 'PAYROLL' && e('div', null,
+                            e('h2', { className: 'text-3xl font-black mb-8' }, 'Secure Payroll Processing'),
+                            e('div', { className: 'glass-card max-w-2xl' },
+                                e('label', {className:'text-[10px] text-slate-500 font-bold'}, 'SEARCH & SELECT STAFF'),
+                                e('select', { className:'input-box mb-6', onChange: v => alert('Selected ' + v.target.value) },
+                                    e('option', null, '-- Choose --'),
+                                    employees.map(emp => e('option', {key:emp.id}, `${emp.fName} ${emp.lName} [${emp.staffId}]`))
+                                ),
+                                e('p', {className:'text-xs text-slate-500 italic'}, 'Staff data will auto-populate here once selected...')
+                            )
+                        )
+                    )
+                );
+            }
+            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+        };
+    </script>
+</body>
+</html>
