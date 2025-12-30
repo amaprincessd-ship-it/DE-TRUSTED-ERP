@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Auto-Sync Archive</title>
+    <title>DE-TRUSTED ERP | Unified Admin Command</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -11,23 +11,34 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; color: #0f172a; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; color: #0f172a; overflow-x: hidden; }
         h1, h2, h3, .cambria-light { font-family: 'Cambria', 'Georgia', serif; font-weight: 400 !important; }
         
-        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 280px; z-index: 50; }
-        .nav-btn { width: 100%; text-align: left; padding: 16px 28px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
+        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 260px; z-index: 50; }
+        .nav-btn { width: 100%; text-align: left; padding: 14px 24px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
         .nav-btn.active { background: #0f172a; color: #3b82f6; border-left-color: #3b82f6; font-weight: 700; }
         
-        .data-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .linked-item { cursor: pointer; transition: 0.2s; border-left: 3px solid transparent; }
-        .linked-item:hover { background: #f1f5f9; border-left-color: #2563eb; }
-        .linked-item.selected { background: #eff6ff; border-left-color: #2563eb; }
+        .sub-nav-btn { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 10px 20px; border-radius: 6px; transition: 0.2s; }
+        .sub-nav-btn.active { background: white; color: #2563eb; shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .sub-nav-btn.inactive { color: #64748b; }
+        .sub-nav-btn.inactive:hover { background: #e2e8f0; color: #1e293b; }
 
-        label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px; display: block; }
-        .auto-field { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 500; min-height: 40px; display: flex; align-items: center; }
+        .data-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
+        .linked-heading { cursor: pointer; transition: 0.2s; border-radius: 8px; border: 1px solid #e2e8f0; background: white; }
+        .linked-heading:hover { border-color: #2563eb; transform: translateX(5px); }
+        .linked-heading.selected { background: #eff6ff; border-color: #2563eb; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1); }
+
+        .form-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: block; }
+        .pulled-data { background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 6px; font-size: 14px; color: #1e293b; min-height: 48px; }
         
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media print {
+            .sidebar-executive, .no-print { display: none !important; }
+            .ml-64 { margin-left: 0 !important; }
+            .data-card { border: none !important; box-shadow: none !important; width: 100% !important; }
+        }
     </style>
 </head>
 <body>
@@ -38,82 +49,137 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            // --- DATABASE: THE LINKED DATA REPOSITORY ---
-            const MOCK_DATABASE = {
-                "GSA-2025": { title: "GSA Product Certification", agency: "Ghana Standards Authority", ref: "GSA/PAINT/001/25", status: "Active", expiry: "2026-06-12", notes: "Ashalaja Batch Alpha certified for ECOWAS distribution." },
-                "EPA-AUDIT": { title: "Environmental Audit Report", agency: "Environmental Protection Agency", ref: "EPA/ASH/AUD/44", status: "Review Pending", expiry: "2026-01-30", notes: "Annual chemical waste management audit for Ashalaja site." },
-                "ETLS-NIG": { title: "ECOWAS Certificate of Origin", agency: "MoTI / GRA", ref: "ETLS/GH/2025/998", status: "Authorized", expiry: "N/A", notes: "Duty-free export clearance for Lagos distribution center." },
-                "MSDS-GLO": { title: "Global Chemical Safety Sheet", agency: "HSSE Dept", ref: "MSDS/CHM/P-02", status: "Valid", expiry: "2027-12-01", notes: "GHS Standard label for solvent-based paints." }
+            // --- MASTER DATABASE (CONSOLIDATED) ---
+            const REGULATORY_MASTER = {
+                "GSA-CERT": { 
+                    heading: "Ghana Standards Authority Certification", 
+                    id: "GSA-2025-PNT-01",
+                    body: "GSA (Quality Division)",
+                    status: "Valid/Certified",
+                    expiry: "2026-12-30",
+                    compliance_type: "Product Quality & Safety Standards",
+                    analysis: "Full lab analysis of chemical binders and solvent levels confirmed. Authorized for export under ECOWAS protocols."
+                },
+                "EPA-PERMIT": { 
+                    heading: "EPA Environmental Permit", 
+                    id: "EPA-ASH-2025-V2",
+                    body: "Environmental Protection Agency",
+                    status: "Renewal Pending",
+                    expiry: "2026-02-15",
+                    compliance_type: "Industrial Waste & Emissions Control",
+                    analysis: "Ashalaja site audit successful. Recommendation: Upgrade solvent filtration system within 60 days."
+                },
+                "RGD-RETS": { 
+                    heading: "Registrar-General Annual Returns", 
+                    id: "RGD-CORP-449-25",
+                    body: "Registrar-General's Department",
+                    status: "Current",
+                    expiry: "2026-12-30",
+                    compliance_type: "Statutory Corporate Governance",
+                    analysis: "Annual returns filed. Good standing status verified for MoTI export incentives."
+                },
+                "ETLS-EXPORT": { 
+                    heading: "ECOWAS Trade Liberalisation Scheme", 
+                    id: "ETLS-GH-NIG-55",
+                    body: "Ministry of Trade / GRA Customs",
+                    status: "Authorized",
+                    expiry: "N/A",
+                    compliance_type: "Inter-Regional Trade (Duty-Free)",
+                    analysis: "Certificate of Origin verified for 5000L high-gloss shipment to Lagos, Nigeria via Aflao Border."
+                }
             };
 
             function AdministrationDesk() {
-                const [selectedDocID, setSelectedDocID] = useState("GSA-2025");
-                const currentData = MOCK_DATABASE[selectedDocID];
+                const [activeSub, setActiveSub] = useState('Compliance Management');
+                const [selectedHeading, setSelectedHeading] = useState('GSA-CERT');
+                const activeData = REGULATORY_MASTER[selectedHeading];
 
-                return e('div', { className: 'fade-in' },
-                    e('div', { className: 'mb-10 border-b pb-6' },
-                        e('h1', { className: 'text-4xl cambria-light' }, 'Executive Command & Print Archive'),
-                        e('p', { className: 'text-slate-500' }, 'Direct Linkage between Statutory Filings and Data Analysis')
+                return e('div', { className: 'fade-in max-w-7xl mx-auto' },
+                    // HEADER
+                    e('div', { className: 'mb-12 border-b border-slate-300 pb-10 flex justify-between items-end' },
+                        e('div', null,
+                            e('h1', { className: 'text-5xl cambria-light tracking-tight text-slate-900' }, 'Administration Desk'),
+                            e('p', { className: 'text-lg text-slate-500 mt-2 font-light' }, 'Statutory Controls & Executive Document Analysis')
+                        ),
+                        e('div', { className: 'no-print text-right' },
+                            e('p', { className: 'text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]' }, 'System Status'),
+                            e('div', { className: 'flex items-center gap-2 mt-1' },
+                                e('div', { className: 'w-2 h-2 bg-emerald-500 rounded-full animate-pulse' }),
+                                e('span', { className: 'text-xs font-bold text-slate-700' }, 'LIVE: Regulatory Sync')
+                            )
+                        )
                     ),
 
-                    e('div', { className: 'grid grid-cols-12 gap-8' },
-                        // LEFT COLUMN: DOCUMENT LIST (THE HEADINGS)
-                        e('div', { className: 'col-span-4 space-y-3' },
-                            e('h3', { className: 'text-xs font-bold text-slate-400 uppercase tracking-widest mb-4' }, 'Select Heading to Pull Data'),
-                            Object.keys(MOCK_DATABASE).map(id => 
-                                e('div', { 
-                                    key: id,
-                                    onClick: () => setSelectedDocID(id),
-                                    className: `linked-item p-4 rounded-lg border shadow-sm ${selectedDocID === id ? 'selected shadow-md' : 'bg-white'}`
+                    // SUB-HEADING NAVIGATION
+                    e('nav', { className: 'no-print flex gap-2 bg-slate-200 p-1.5 rounded-xl mb-12 shadow-inner' },
+                        ['Compliance Management', 'Asset Tracking', 'HSSE Command', 'Vendor Portal'].map(tab => 
+                            e('button', {
+                                key: tab,
+                                onClick: () => setActiveSub(tab),
+                                className: `sub-nav-btn flex-1 ${activeSub === tab ? 'active' : 'inactive'}`
+                            }, tab)
+                        )
+                    ),
+
+                    e('div', { className: 'grid grid-cols-12 gap-10' },
+                        // LEFT PANEL: HEADINGS
+                        e('div', { className: 'no-print col-span-4 space-y-4' },
+                            e('h3', { className: 'text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6' }, 'Select Regulatory Heading'),
+                            Object.keys(REGULATORY_MASTER).map(key => 
+                                e('div', {
+                                    key: key,
+                                    onClick: () => setSelectedHeading(key),
+                                    className: `linked-heading p-5 ${selectedHeading === key ? 'selected' : ''}`
                                 },
-                                    e('p', { className: 'text-[9px] font-bold text-blue-600 uppercase mb-1' }, MOCK_DATABASE[id].agency),
-                                    e('h4', { className: 'text-sm font-semibold' }, MOCK_DATABASE[id].title),
-                                    e('p', { className: 'text-[10px] text-slate-400 mt-1' }, `Ref: ${MOCK_DATABASE[id].ref}`)
+                                    e('p', { className: 'text-[9px] font-black text-blue-600 uppercase mb-1' }, REGULATORY_MASTER[key].body),
+                                    e('h4', { className: 'text-sm font-bold text-slate-800' }, REGULATORY_MASTER[key].heading),
+                                    e('p', { className: 'text-[10px] text-slate-400 mt-1 font-mono' }, `ID: ${REGULATORY_MASTER[key].id}`)
                                 )
                             )
                         ),
 
-                        // RIGHT COLUMN: AUTOMATIC DATA DISPLAY (ANALYSIS & PRINT)
+                        // RIGHT PANEL: DYNAMIC DATA PULL & ANALYSIS
                         e('div', { className: 'col-span-8' },
-                            e('div', { className: 'data-card fade-in', key: selectedDocID },
-                                e('div', { className: 'flex justify-between items-start mb-8 border-b pb-6' },
+                            e('div', { className: 'data-card fade-in', key: selectedHeading },
+                                e('div', { className: 'flex justify-between items-start mb-10 border-b pb-8' },
                                     e('div', null,
-                                        e('h2', { className: 'text-3xl cambria-light' }, currentData.title),
-                                        e('p', { className: 'text-xs text-slate-400 mt-1 uppercase font-bold tracking-tighter' }, 'Linked Data Record')
+                                        e('h2', { className: 'text-3xl cambria-light text-slate-900' }, activeData.heading),
+                                        e('span', { className: 'text-[10px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold uppercase mt-3 inline-block' }, activeData.compliance_type)
                                     ),
-                                    e('div', { className: 'flex gap-2' },
+                                    e('div', { className: 'no-print flex gap-3' },
                                         e('button', { 
-                                            className: 'px-4 py-2 bg-slate-900 text-white text-[10px] font-bold uppercase rounded shadow-lg flex items-center gap-2',
+                                            className: 'px-6 py-3 bg-slate-900 text-white text-[10px] font-black uppercase rounded-lg shadow-xl hover:bg-slate-800 transition-all',
                                             onClick: () => window.print()
-                                        }, 'Print Page'),
+                                        }, 'Send to Print'),
                                         e('button', { 
-                                            className: 'px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase rounded shadow-lg',
-                                            onClick: () => alert('Generating CSV for Analysis...')
+                                            className: 'px-6 py-3 bg-white border border-slate-300 text-slate-600 text-[10px] font-black uppercase rounded-lg shadow-sm hover:bg-slate-50',
+                                            onClick: () => alert('Downloading Analysis Data for ' + activeData.id)
                                         }, 'Export Analysis')
                                     )
                                 ),
 
+                                // PULLED FIELDS
                                 e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
-                                    e('div', null, e('label', null, 'Filing Authority'), e('div', { className: 'auto-field' }, currentData.agency)),
-                                    e('div', null, e('label', null, 'Reference ID'), e('div', { className: 'auto-field' }, currentData.ref))
+                                    e('div', null, e('label', { className: 'form-label' }, 'Authority Body'), e('div', { className: 'pulled-data' }, activeData.body)),
+                                    e('div', null, e('label', { className: 'form-label' }, 'Filing Reference'), e('div', { className: 'pulled-data font-mono' }, activeData.id))
+                                ),
+                                e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
+                                    e('div', null, e('label', { className: 'form-label' }, 'Current Status'), e('div', { className: `pulled-data font-bold ${activeData.status.includes('Valid') ? 'text-emerald-600' : 'text-amber-600'}` }, activeData.status)),
+                                    e('div', null, e('label', { className: 'form-label' }, 'Expiry Date'), e('div', { className: 'pulled-data' }, activeData.expiry))
+                                ),
+                                e('div', { className: 'mb-8' },
+                                    e('label', { className: 'form-label' }, 'Executive Analysis & Brief'),
+                                    e('div', { className: 'pulled-data h-auto leading-relaxed py-5' }, activeData.analysis)
                                 ),
 
-                                e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
-                                    e('div', null, 
-                                        e('label', null, 'Compliance Status'), 
-                                        e('div', { className: `auto-field font-bold ${currentData.status.includes('Active') ? 'text-emerald-600' : 'text-amber-600'}` }, currentData.status)
+                                e('div', { className: 'no-print mt-12 pt-8 border-t flex items-center justify-between' },
+                                    e('div', { className: 'flex items-center gap-2' },
+                                        e('div', { className: 'w-4 h-4 bg-emerald-100 rounded flex items-center justify-center' }, 
+                                            e('svg', { className: 'w-3 h-3 text-emerald-600', fill: 'currentColor', viewBox: '0 0 20 20' }, e('path', { d: 'M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' }))
+                                        ),
+                                        e('span', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, 'Encrypted Archive Sync Complete')
                                     ),
-                                    e('div', null, e('label', null, 'Expiry / Review Date'), e('div', { className: 'auto-field' }, currentData.expiry))
-                                ),
-
-                                e('div', null, 
-                                    e('label', null, 'Executive Analysis & Brief'),
-                                    e('div', { className: 'auto-field h-auto py-4 items-start leading-relaxed' }, currentData.notes)
-                                ),
-
-                                e('div', { className: 'mt-10 p-6 bg-slate-50 border-2 border-dashed rounded-xl text-center' },
-                                    e('p', { className: 'text-[10px] text-slate-400 font-bold uppercase mb-2' }, 'Scanned Document Attachment'),
-                                    e('div', { className: 'text-blue-600 text-xs font-semibold cursor-pointer underline' }, 'View_Scanned_Certificate_Copy.pdf')
+                                    e('p', { className: 'text-[10px] text-slate-400 font-mono italic' }, 'Filing Timestamp: 2025-12-30T11:08:59Z')
                                 )
                             )
                         )
@@ -126,10 +192,10 @@
                 const desks = ['Executive', 'Administration', 'Finance', 'Production', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'HR', 'Reception'];
 
                 return e('div', { className: 'flex' },
-                    e('div', { className: 'sidebar-executive' },
+                    e('div', { className: 'sidebar-executive no-print' },
                         e('div', { className: 'p-10 mb-6' },
                             e('h1', { className: 'cambria-light text-white text-3xl' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Data Engine')
+                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Master Command')
                         ),
                         desks.map(name => 
                             e('button', {
@@ -139,7 +205,7 @@
                             }, name)
                         )
                     ),
-                    e('main', { className: 'flex-1 ml-[280px] min-h-screen p-24 bg-[#f8fafc]' },
+                    e('main', { className: 'flex-1 ml-[260px] min-h-screen p-24 bg-slate-100' },
                         currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'text-center py-40' }, e('h1', { className: 'text-6xl text-slate-300 cambria-light' }, currentDesk))
                     )
                 );
