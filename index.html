@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Full Restoration Build</title>
+    <title>DE-TRUSTED ERP | Dynamic Action Hub</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -32,16 +32,17 @@
         .sub-link:hover { background: #fffbeb; color: #002366; }
         .sub-link.active { background: #fef3c7; color: #002366; font-weight: 700; border-left-color: #002366; }
 
-        .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 850px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); }
+        .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 850px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); position: relative; }
         .field-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #002366; margin-bottom: 6px; display: block; }
         .input-linked, .select-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; border-bottom: 2px solid #eab308; transition: 0.3s; }
         .input-readonly { background: #f1f5f9; cursor: not-allowed; border-bottom: 2px solid #94a3b8; }
         
-        .finance-header { background: #002366; color: #fbbf24; padding: 15px 25px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #eab308; display: flex; justify-content: space-between; align-items: center; }
-        .prepared-by { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-top: 30px; display: flex; justify-content: space-between; }
+        /* Modal Backdrop */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 35, 102, 0.8); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-box { background: white; width: 500px; padding: 2rem; border-radius: 12px; border-top: 8px solid #fbbf24; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        
         .royal-badge { font-size: 8px; font-weight: 900; padding: 3px 10px; border-radius: 20px; background: #002366; color: #fbbf24; }
         .strat-card { border-left: 4px solid #fbbf24; background: #fffbeb; padding: 15px; margin-bottom: 12px; border-radius: 0 8px 8px 0; }
-        
         .dash-stat-card { background: white; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 12px; border-bottom: 4px solid #002366; }
     </style>
 </head>
@@ -59,7 +60,7 @@
             const SYSTEM_REGISTRY = {
                 "Executive": { desk: "Executive", isWelcome: true },
                 
-                // --- FULL ADMINISTRATION RESTORATION ---
+                // --- ADMINISTRATION ---
                 "Regulatory Master": { desk: "Administration", title: "Regulatory Agency Master", table: "reg_master", fields: ["Agency Name (Dropdown)", "Contact Person", "Designation", "Direct Line", "Official Email", "Office Location", "Governing Act", "Remarks"] },
                 "Statutory Setup": { desk: "Administration", title: "Statutory Requirements Master", table: "stat_setup", fields: ["Agency Name (Dropdown)", "Requirement Name", "Legal Code", "Frequency (Months)", "Standard Fee (GHS)", "Operational Linkage ID"] },
                 "Permit Register": { desk: "Administration", title: "Active License & Permit Register", table: "permit_reg", fields: ["Agency Name (Dropdown)", "Permit Name", "Serial #", "Effective Date", "Expiry Date", "Department Lead", "GPS Location", "Digital Copy Link"] },
@@ -70,7 +71,7 @@
                 "Site Inspections": { desk: "Administration", title: "Regulatory Site Inspection Log", table: "inspections", fields: ["Agency Name (Dropdown)", "Inspectors Name", "Date of Visit", "Findings Summary", "Compliance Score (%)", "Corrective Action Required", "Deadline", "Follow-up Ref"] },
                 "Compliance Breaches": { desk: "Administration", title: "Incident & Breach Registry", table: "breaches", fields: ["Incident Date", "Regulation Violated", "Description of Breach", "Immediate Mitigation", "Penalty Amount (if any)", "Closure Date", "Officer in Charge", "Root Cause"] },
 
-                // --- FINANCE: LOCKED & ACTIVE ---
+                // --- FINANCE ---
                 "Accounts Payable": { desk: "Finance", title: "Accounts Payable (AP) Master", table: "finance_ap", fields: ["Invoice ID (Auto)", "Supplier (Dropdown)", "Invoice Date", "Invoice Number", "Currency", "Base Amount", "Tax / VAT (15%)", "Total Amount Payable", "Payment Terms", "Due Date", "Payment Status", "Approved By", "Notes"] },
                 "General Ledger": { desk: "Finance", title: "General Ledger Entry", table: "finance_gl", fields: ["Entry ID", "Date", "Type", "Account Code", "Account Name", "Debit", "Credit", "Reference No.", "Status", "Narration"] },
                 "Import Costing": { desk: "Finance", title: "Duty & Landed Cost Breakdown", table: "import_costing", fields: ["Import ID", "FOB Value", "Freight", "Insurance", "GRA Duty", "VAT", "Levies", "Total Landed Cost", "Method"] }
@@ -79,18 +80,17 @@
             function DeskRenderer({ activeSub, setActiveSub, currentDesk }) {
                 const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
                 const [form, setForm] = useState({});
+                const [showModal, setShowModal] = useState(false);
+                const [modalData, setModalData] = useState({});
 
-                // Automated calculation for Finance AP
+                // CASCADING LOGIC: Trigger modal on specific selections
                 useEffect(() => {
-                    if (activeSub === "Accounts Payable") {
-                        const base = parseFloat(form["Base Amount"]) || 0;
-                        const tax = base * 0.15;
-                        const total = base + tax;
-                        if (tax.toFixed(2) !== form["Tax / VAT (15%)"]) {
-                            setForm(prev => ({ ...prev, "Tax / VAT (15%)": tax.toFixed(2), "Total Amount Payable": total.toFixed(2) }));
-                        }
+                    if (form["Status"] === "Broken" || form["Status"] === "Emergency" || form["Compliance Score (%)"] < 50) {
+                        setShowModal(true);
                     }
-                }, [form["Base Amount"], activeSub]);
+                }, [form["Status"], form["Compliance Score (%)"]]);
+
+                const handleInput = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
                 const renderField = (label) => {
                     const isReadOnly = label.includes("(Auto)") || label.includes("VAT") || label === "Total Amount Payable";
@@ -100,7 +100,7 @@
                     return e('div', { key: label, className: isFull ? "col-span-2" : "" },
                         e('label', { className: 'field-label' }, label),
                         isSelect ? 
-                            e('select', { className: 'select-linked', value: form[label] || '', onChange: (x) => setForm({...form, [label]: x.target.value}) }, 
+                            e('select', { className: 'select-linked', value: form[label] || '', onChange: (x) => handleInput(label, x.target.value) }, 
                                 e('option', { value: '' }, `-- Select ${label} --`),
                                 label.includes("Agency") ? GH_AGENCIES.map(a => e('option', {key:a}, a)) :
                                 ["Pending", "Completed", "Active", "Broken", "Excellent", "Routine", "Emergency", "Fire", "Fleet"].map(o => e('option', {key:o}, o))
@@ -108,38 +108,38 @@
                         e(isFull ? 'textarea' : 'input', { 
                             className: `input-linked ${isReadOnly ? 'input-readonly' : ''} ${isFull ? 'h-24' : ''}`,
                             readOnly: isReadOnly,
-                            type: label.includes("Date") || label.includes("Due") ? "date" : label.includes("Amount") || label.includes("Cost") || label === "Base Amount" ? "number" : "text",
-                            value: form[label] || (label.includes("(Auto)") ? "SYS-"+Date.now().toString().slice(-4) : ""),
-                            onChange: (x) => setForm({...form, [label]: x.target.value})
+                            type: label.includes("Date") || label.includes("Due") ? "date" : label.includes("Amount") || label === "Base Amount" ? "number" : "text",
+                            value: form[label] || (label.includes("(Auto)") ? "REF-"+Date.now().toString().slice(-4) : ""),
+                            onChange: (x) => handleInput(label, x.target.value)
                         })
                     );
                 };
 
-                if (currentDesk === 'Executive') {
-                    return e('div', { className: 'fade-in' },
-                        e('h1', { className: 'text-3xl cambria text-blue-900 font-bold mb-8' }, 'Executive Command Dashboard'),
-                        e('div', { className: 'grid grid-cols-4 gap-4 mb-10' },
-                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[9px] font-bold text-slate-400 uppercase'}, 'Liabilities'), e('h2', {className:'text-2xl font-black text-red-600'}, 'GHS 180k')),
-                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[9px] font-bold text-slate-400 uppercase'}, 'Compliance'), e('h2', {className:'text-2xl font-black text-blue-900'}, '98%')),
-                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[9px] font-bold text-slate-400 uppercase'}, 'Assets'), e('h2', {className:'text-2xl font-black text-amber-600'}, '24 Units')),
-                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[9px] font-bold text-slate-400 uppercase'}, 'Maintenance'), e('h2', {className:'text-2xl font-black text-emerald-600'}, 'All Clear'))
-                        ),
-                        e('div', { className: 'workspace-card' }, 
-                            e('h2', { className: 'text-lg font-bold text-blue-900 mb-6 border-b pb-2' }, 'Institutional Status Reports'),
-                            e('div', { className: 'strat-card' }, 'Facility: Main Mixer 02 maintenance scheduled for 2025-12-31.'),
-                            e('div', { className: 'strat-card' }, 'Regulatory: EPA Ashalaja site visit report pending upload.'),
-                            e('div', { className: 'strat-card' }, 'Finance: Accounts Payable cycle for mainland suppliers locked.')
-                        )
-                    );
-                }
-
                 return e('div', { className: 'fade-in' },
+                    // --- CASCADING DIALOGUE BOX ---
+                    showModal && e('div', { className: 'modal-overlay' },
+                        e('div', { className: 'modal-box' },
+                            e('h3', { className: 'cambria text-blue-900 text-xl font-bold mb-4' }, '⚠️ Critical Action Required'),
+                            e('p', { className: 'text-sm text-slate-600 mb-6' }, 'System detected a critical status. Please provide immediate escalation details.'),
+                            e('label', { className: 'field-label' }, 'Escalation Contact'),
+                            e('input', { className: 'input-linked mb-4', placeholder: 'Name of Senior Manager' }),
+                            e('label', { className: 'field-label' }, 'Risk Level'),
+                            e('select', { className: 'select-linked mb-6' }, 
+                                ['Low', 'Medium', 'High', 'Catastrophic'].map(r => e('option', {key:r}, r))
+                            ),
+                            e('div', { className: 'flex gap-4' },
+                                e('button', { onClick: () => setShowModal(false), className: 'bg-blue-900 text-white flex-1 py-2 rounded font-bold uppercase text-[10px]' }, 'Validate & Close'),
+                                e('button', { onClick: () => setShowModal(false), className: 'border border-blue-900 text-blue-900 flex-1 py-2 rounded font-bold uppercase text-[10px]' }, 'Cancel')
+                            )
+                        )
+                    ),
+
                     e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
                         e('div', null, 
                             e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, `${currentDesk} Desk`),
-                            e('p', { className: 'text-blue-700 text-sm font-medium' }, `DE-TRUSTED | FULL INTEGRATION`)
+                            e('p', { className: 'text-blue-700 text-sm font-medium' }, `DE-TRUSTED | MASTER INTEGRATION`)
                         ),
-                        e('div', { className: 'flex gap-2' }, e('span', { className: 'royal-badge' }, 'STATUS: MASTER_LOCK'), e('span', { className: 'royal-badge' }, 'RESTORED: 2025'))
+                        e('div', { className: 'flex gap-2' }, e('span', { className: 'royal-badge' }, 'STATUS: LOCKED_ACTIVE'), e('span', { className: 'royal-badge' }, 'HUB: DYNAMIC'))
                     ),
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
@@ -156,15 +156,20 @@
                         ),
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card fade-in', key: activeSub },
-                                e('div', null,
+                                schema.isWelcome ? e('div', null,
+                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Institutional Overview'),
+                                    e('p', { className: 'intro-text mb-8' }, "Executive Command synchronized. All modules are static and locked."),
+                                    e('div', { className: 'strat-card shadow-sm' }, e('h4', { className: 'font-bold text-blue-900 text-sm' }, '1. Administration & Assets (Locked)')),
+                                    e('div', { className: 'strat-card shadow-sm' }, e('h4', { className: 'font-bold text-blue-900 text-sm' }, '2. Finance & Liabilities (Locked)'))
+                                ) : e('div', null,
                                     e('div', { className: 'flex justify-between items-start mb-10' },
                                         e('div', null, e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title), e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `DATABASE: ${schema.table}`)),
-                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Save to Central Server')
+                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Post Entry')
                                     ),
                                     e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-6' }, schema.fields.map(renderField)),
                                     e('div', { className: 'prepared-by' },
-                                        e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'PREPARED BY'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, 'Executive Command')),
-                                        e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'SYSTEM TIMESTAMP'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, '2025-12-30 | 14:35 GMT'))
+                                        e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'AUTHENTICATED BY'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, 'De-Trusted Command')),
+                                        e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'SYSTEM TIMESTAMP'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, '2025-12-30 | 14:38 GMT'))
                                     )
                                 )
                             )
