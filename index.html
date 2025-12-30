@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Total Administrative Integration</title>
+    <title>DE-TRUSTED ERP | Executive Master Control</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -14,10 +14,12 @@
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; color: #0f172a; }
         h1, h2, h3, .cambria { font-family: 'Cambria', 'Georgia', serif; }
         
+        /* Sidebar Navigation */
         .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 240px; z-index: 50; }
         .nav-btn { width: 100%; text-align: left; padding: 12px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
         .nav-btn.active { background: #0f172a; color: #3b82f6; border-left-color: #3b82f6; font-weight: 700; }
         
+        /* Fixed Sub-Menu Card */
         .admin-sub-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; height: calc(100vh - 180px); overflow-y: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .branch-label { font-size: 9px; font-weight: 900; color: #94a3b8; padding: 18px 20px 8px 20px; text-transform: uppercase; letter-spacing: 0.15em; border-top: 1px solid #f1f5f9; }
         .branch-label:first-child { border-top: none; }
@@ -26,9 +28,11 @@
         .sub-link:hover { background: #f8fafc; color: #2563eb; }
         .sub-link.active { background: #eff6ff; color: #2563eb; font-weight: 700; border-left-color: #2563eb; }
 
-        .workspace-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2.5rem; min-height: 700px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        /* Workspace & Content */
+        .workspace-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 3rem; min-height: 750px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .field-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 14px; color: #1e293b; }
         
+        .strat-card { border-left: 4px solid #2563eb; background: #f8fafc; padding: 20px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -41,21 +45,27 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            const COMPREHENSIVE_REGISTRY = {
+            const MASTER_REGISTRY = {
+                // STRATEGIC WELCOME
+                "Department Purpose": { 
+                    isWelcome: true,
+                    title: "PURPOSE AND STRATEGIC ROLE",
+                    info: "The Administration Department of De-Trusted Paint Manufacturing Company serves as the central coordinating function responsible for ensuring organizational efficiency, regulatory compliance, corporate governance, internal controls, and operational continuity."
+                },
                 // REGULATORY HUB
                 "GRA (Revenue)": { title: "Ghana Revenue Authority", fields: ["VAT/NHIL/GETFund Ref", "WHT Certificate", "CIT Filing Period", "Tax Clearance Status"], info: "Statutory tax compliance, monthly filings, and fiscal monitoring." },
                 "SSNIT (Pension)": { title: "Social Security & Nat. Insurance", fields: ["Employer Number", "Contribution Month", "Clearance Cert ID", "Staff Count Sync"], info: "Mandatory pension contributions and social security compliance." },
-                "FDA (Food & Drugs)": { title: "Food and Drugs Authority", fields: ["Product Reg. Number", "Facility License", "Expiry Date", "Batch Release Ref"], info: "Chemical and industrial product registration and safety certification." },
+                "FDA (Food & Drugs)": { title: "Food and Drugs Authority", fields: ["Product Reg. Number", "Facility License", "Expiry Date", "Batch Release Ref"], info: "Industrial product registration and safety certification." },
                 "GSA (Standards)": { title: "Ghana Standards Authority", fields: ["Batch Certificate", "GS-Code Compliance", "Lab Test Status", "Renewal Cycle"], info: "Product quality and standard certification management." },
                 "EPA (Environmental)": { title: "EPA Compliance Hub", fields: ["Environmental Permit #", "Effluent Test Date", "Waste Log Ref", "Audit Status"], info: "Industrial environmental impact and permit tracking." },
                 "RGD (Registrar)": { title: "Registrar-General Dept", fields: ["Company Return Year", "TIN Linked", "Legal Standing", "Form 3 Ref"], info: "Corporate legal and statutory standing." },
-                "Local Assembly": { title: "Municipal/Local Assembly", fields: ["Business Op. Permit", "Property Rate ID", "Assembly District", "Permit Validity"], info: "Municipal permits, operating licenses, and local property rates." },
+                "Local Assembly": { title: "Municipal/Local Assembly", fields: ["Business Op. Permit", "Property Rate ID", "Assembly District", "Permit Validity"], info: "Municipal permits, operating licenses, and property rates." },
                 
                 // LOGISTICS & TRADE
                 "Import (International)": { title: "Global Import Administration", fields: ["Vessel Name", "Bill of Lading", "Foreign Supplier", "ICUMS Ref"], info: "International raw material procurement and sea freight management." },
-                "Forex & Finance Support": { title: "Foreign Currency & Financial Admin", fields: ["LC/TT Ref", "BoG Compliance Check", "Transaction Documentation", "Admin Cost Tracker"], info: "Supports Finance with foreign currency documentation, Bank of Ghana requirements, and international payment confirmations." },
+                "Forex & Finance Support": { title: "Foreign Currency & Financial Admin", fields: ["LC/TT Ref", "BoG Compliance Check", "Transaction Documentation", "Admin Cost Tracker"], info: "Supports Finance with foreign currency documentation, Bank of Ghana requirements, and payment confirmations." },
                 "Inbound (Raw Materials)": { title: "Site Intake Logistics", fields: ["Gate Entry Ref", "Material Type", "Quantity (MT)", "Warehouse Slot"], info: "Local and port-to-factory raw material movement." },
-                "Local Distribution": { title: "Local Distribution Channels", fields: ["Customer Name", "Regional Hub", "Delivery Truck ID", "Waybill Number"], info: "Ghanaian domestic market supply chain tracking." },
+                "Local Distribution": { title: "Local Distribution Channels", fields: ["Customer Name", "Regional Hub", "Delivery Truck ID", "Waybill Number"], info: "Ghanaian domestic market supply chain tracking (Excluding International)." },
                 "Shipment Tracking": { title: "Fleet & Shipment Monitor", fields: ["Live GPS Ref", "Driver Contact", "Cargo Security Code", "ETA Ashalaja"], info: "Real-time movement of all company-managed transit." },
                 
                 // OPERATIONS & COORDINATION
@@ -64,8 +74,8 @@
             };
 
             function AdministrationDesk() {
-                const [activeSub, setActiveSub] = useState('GRA (Revenue)');
-                const data = COMPREHENSIVE_REGISTRY[activeSub];
+                const [activeSub, setActiveSub] = useState('Department Purpose');
+                const data = MASTER_REGISTRY[activeSub];
 
                 const SubMenuLink = (name) => e('div', {
                     key: name,
@@ -76,12 +86,15 @@
                 return e('div', { className: 'fade-in' },
                     e('div', { className: 'mb-8 border-b pb-6' },
                         e('h1', { className: 'text-4xl cambria text-slate-900' }, 'Administration Desk'),
-                        e('p', { className: 'text-slate-500' }, 'Consolidated Statutory Hub, Global Trade & Site Logistics')
+                        e('p', { className: 'text-slate-500' }, 'Consolidated Master Command: Ashalaja Industrial Complex')
                     ),
 
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
                             e('div', { className: 'admin-sub-card' },
+                                e('div', { className: 'branch-label' }, 'Executive Overview'),
+                                ["Department Purpose"].map(SubMenuLink),
+
                                 e('div', { className: 'branch-label' }, 'Regulatory Hub'),
                                 ["GRA (Revenue)", "SSNIT (Pension)", "FDA (Food & Drugs)", "GSA (Standards)", "EPA (Environmental)", "RGD (Registrar)", "Local Assembly"].map(SubMenuLink),
                                 
@@ -95,35 +108,48 @@
 
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card fade-in', key: activeSub },
-                                e('div', { className: 'flex justify-between items-start mb-10' },
-                                    e('div', null,
-                                        e('h2', { className: 'text-3xl font-bold text-slate-800' }, data.title),
-                                        e('p', { className: 'text-blue-600 text-xs font-bold uppercase mt-1 tracking-widest' }, 'Active Command Module')
+                                data.isWelcome ? e('div', null,
+                                    e('h2', { className: 'text-xs font-black text-blue-600 uppercase tracking-widest mb-2' }, data.title),
+                                    e('h1', { className: 'text-2xl cambria text-slate-900 mb-8 leading-tight' }, data.info),
+                                    
+                                    e('h3', { className: 'text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6' }, 'Institutional Roles in Ghanaian Corporate Practice'),
+                                    
+                                    e('div', { className: 'strat-card' }, 
+                                        e('h4', { className: 'font-bold text-slate-900' }, 'Institutional Backbone'),
+                                        e('p', { className: 'text-sm text-slate-500 mt-1' }, 'The foundation of DE-TRUSTED PAINT manufacturing and operational efficiency.')
                                     ),
-                                    e('div', { className: 'flex gap-2' },
-                                        e('button', { className: 'bg-slate-900 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg hover:bg-slate-800 transition-all' }, 'Print Official Form'),
-                                        e('button', { className: 'bg-blue-600 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg' }, 'Analyze Compliance')
+                                    e('div', { className: 'strat-card' }, 
+                                        e('h4', { className: 'font-bold text-slate-900' }, 'Custodian of Compliance'),
+                                        e('p', { className: 'text-sm text-slate-500 mt-1' }, 'Official guardian of policies, statutory records, and regulatory interface.')
+                                    ),
+                                    e('div', { className: 'strat-card' }, 
+                                        e('h4', { className: 'font-bold text-slate-900' }, 'Internal Interface'),
+                                        e('p', { className: 'text-sm text-slate-500 mt-1' }, 'Bridging Management, Staff, Regulators, and External Stakeholders.')
                                     )
-                                ),
-
-                                e('div', { className: 'mb-10 p-6 bg-slate-50 border-l-4 border-blue-600 rounded-r-lg shadow-sm' },
-                                    e('h4', { className: 'text-[10px] font-black text-blue-800 uppercase mb-1' }, 'Executive Overview'),
-                                    e('p', { className: 'text-sm text-slate-800 leading-relaxed font-medium' }, data.info)
-                                ),
-
-                                e('div', { className: 'grid grid-cols-2 gap-8 mb-10' },
-                                    data.fields.map(label => e('div', { key: label },
-                                        e('label', { className: 'text-[9px] font-black text-slate-400 uppercase mb-2 block' }, label),
-                                        e('div', { className: 'field-box' }, `Pulling records for ${label}...`)
-                                    ))
-                                ),
-
-                                e('div', { className: 'mt-20 border-t pt-8 flex justify-between items-center' },
-                                    e('div', { className: 'flex items-center gap-2' },
-                                        e('div', { className: 'w-2 h-2 bg-emerald-500 rounded-full animate-pulse' }),
-                                        e('span', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, 'System Link Synchronized')
+                                ) : e('div', null,
+                                    e('div', { className: 'flex justify-between items-start mb-10' },
+                                        e('div', null,
+                                            e('h2', { className: 'text-3xl font-bold text-slate-800' }, data.title),
+                                            e('p', { className: 'text-blue-600 text-xs font-bold uppercase mt-1 tracking-widest' }, 'Locked Module Protocol')
+                                        ),
+                                        e('div', { className: 'flex gap-2' },
+                                            e('button', { className: 'bg-slate-900 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg' }, 'Executive Report'),
+                                            e('button', { className: 'bg-blue-600 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg' }, 'Verify Compliance')
+                                        )
                                     ),
-                                    e('p', { className: 'text-[10px] text-slate-400 font-mono italic' }, `Record Hash: DT-MASTER-${activeSub.substring(0,3).toUpperCase()}-2025`)
+                                    e('div', { className: 'mb-10 p-6 bg-slate-50 border-l-4 border-slate-900 rounded-r-lg shadow-sm' },
+                                        e('p', { className: 'text-sm text-slate-800 leading-relaxed font-medium' }, data.info)
+                                    ),
+                                    e('div', { className: 'grid grid-cols-2 gap-8' },
+                                        data.fields.map(label => e('div', { key: label },
+                                            e('label', { className: 'text-[9px] font-black text-slate-400 uppercase mb-2 block' }, label),
+                                            e('div', { className: 'field-box' }, `System pulling verified ${label}...`)
+                                        ))
+                                    ),
+                                    e('div', { className: 'mt-24 border-t pt-8 flex justify-between items-center opacity-40' },
+                                        e('span', { className: 'text-[9px] font-bold text-slate-400 uppercase' }, 'De-Trusted Paint Manufacturing • Admin Console 2025'),
+                                        e('span', { className: 'text-[9px] font-mono' }, `ID: ${activeSub.toUpperCase().replace(/\s/g, '')}-SEC-01`)
+                                    )
                                 )
                             )
                         )
@@ -139,7 +165,7 @@
                     e('div', { className: 'sidebar-executive' },
                         e('div', { className: 'p-8 mb-6' },
                             e('h1', { className: 'cambria text-white text-3xl' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.2em] mt-2' }, 'Admin Command')
+                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.2em] mt-2' }, 'Admin System')
                         ),
                         desks.map(name => 
                             e('button', {
