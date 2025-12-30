@@ -41,7 +41,6 @@
         .modal-box { background: white; width: 600px; padding: 3rem; border-radius: 4px; border-top: 12px solid #fbbf24; }
         
         .royal-badge { font-size: 9px; font-weight: 900; padding: 5px 14px; border-radius: 4px; background: #001a4d; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; }
-        .status-tag { font-size: 10px; font-weight: 900; color: #059669; background: #ecfdf5; padding: 4px 10px; border-radius: 100px; }
     </style>
 </head>
 <body>
@@ -55,8 +54,8 @@
             const SYSTEM_REGISTRY = {
                 "Executive": { desk: "Executive", isWelcome: true },
                 
-                // --- ADMINISTRATION DESK (RESTORED FULLY) ---
-                "Fixed Assets & CAPEX": { desk: "Administration", title: "Fixed Asset & CAPEX Registry", table: "adm_assets", fields: ["Asset ID (Auto)", "Asset Name", "Asset Category (Dropdown)", "Purchase Date", "Supplier (Selection)", "Invoice / PO Ref", "Purchase Cost (GHS)", "Useful Life (Years)", "Depreciation Method (Selection)", "Salvage Value", "Location (Selection)", "Current Value (Auto)", "Disposal Date", "Disposal Proceeds", "Notes", "Support Doc Link"] },
+                // --- ADMINISTRATION DESK (FIXED) ---
+                "Fixed Assets & CAPEX": { desk: "Administration", title: "Fixed Asset & CAPEX Registry", table: "adm_assets", fields: ["Asset ID (Auto)", "Asset Name", "Asset Category (Dropdown)", "Purchase Date", "Supplier (Selection)", "Invoice / PO Ref", "Purchase Cost (GHS)", "Useful Life (Years)", "Depreciation Method (Selection)", "Salvage Value", "Location (Selection)", "Current Value (Auto)", "Disposal Date", "Disposal Proceeds", "Notes"] },
                 "Regulatory Master": { desk: "Administration", title: "Regulatory Agency Master", table: "adm_reg_master", fields: ["Agency Name (Dropdown)", "Contact Person", "Designation", "Direct Line", "Official Email", "Office Location", "Governing Act", "Remarks"] },
                 "Statutory Setup": { desk: "Administration", title: "Statutory Requirements Master", table: "adm_stat_setup", fields: ["Agency Name (Dropdown)", "Requirement Name", "Legal Code", "Frequency (Months)", "Standard Fee (GHS)", "Operational Linkage ID"] },
                 "Permit Register": { desk: "Administration", title: "Active License & Permit Register", table: "adm_permits", fields: ["Agency Name (Dropdown)", "Permit Name", "Serial #", "Effective Date", "Expiry Date", "Department Lead", "GPS Location", "Digital Copy Link"] },
@@ -66,8 +65,14 @@
                 "Site Inspections": { desk: "Administration", title: "Regulatory Site Inspection Log", table: "adm_inspections", fields: ["Agency Name (Dropdown)", "Inspectors Name", "Date of Visit", "Findings Summary", "Compliance Score (%)", "Corrective Action Required", "Deadline", "Follow-up Ref"] },
                 "Compliance Breaches": { desk: "Administration", title: "Incident & Breach Registry", table: "adm_breaches", fields: ["Incident Date", "Regulation Violated", "Description of Breach", "Immediate Mitigation", "Penalty Amount (if any)", "Closure Date", "Officer in Charge", "Root Cause"] },
 
-                // --- FINANCE DESK (RESTORED FULLY) ---
-                "Cash & Bank": { desk: "Finance", title: "Cash & Bank Transaction Journal", table: "fin_cash_bank", fields: ["Transaction ID (Auto)", "Transaction Date", "Account Type (Dropdown)", "Account (CoA Selection)", "Transaction Type (Dropdown)", "Amount (Local)", "Currency", "Exchange Rate (Auto)", "Internal Reference #", "Payment Method", "Authorized By (Approver)", "Description", "Supporting Doc Link"] },
+                // --- FINANCE DESK (ACCOUNTS RECEIVABLE ADDED) ---
+                "Accounts Receivable": { 
+                    desk: "Finance", 
+                    title: "Accounts Receivable (AR) Master", 
+                    table: "fin_ar_ledger", 
+                    fields: ["Invoice # (Auto)", "Customer Name (Selection)", "Invoice Date", "Due Date", "Sales Order Ref", "Currency", "Base Amount", "VAT (15%)", "Total Receivable", "Payment Status (Dropdown)", "Amount Received", "Outstanding Balance (Auto)", "Notes"] 
+                },
+                "Cash & Bank": { desk: "Finance", title: "Cash & Bank Transaction Journal", table: "fin_cash_bank", fields: ["Transaction ID (Auto)", "Transaction Date", "Account Type (Dropdown)", "Account (CoA Selection)", "Transaction Type (Dropdown)", "Amount (Local)", "Currency", "Exchange Rate (Auto)", "Internal Reference #", "Payment Method", "Authorized By (Approver)", "Description"] },
                 "Accounts Payable": { desk: "Finance", title: "Payables Ledger Control", table: "fin_ap", fields: ["Invoice ID (Auto)", "Supplier", "Invoice Date", "Invoice Number", "Currency", "Base Amount", "Tax (15%)", "Net Payable", "Payment Terms", "Due Date", "Approval Status", "Notes"] },
                 "General Ledger": { desk: "Finance", title: "General Ledger Entry", table: "fin_gl", fields: ["Entry ID", "Date", "Type", "Account Code", "Account Name", "Debit", "Credit", "Reference No.", "Status", "Narration"] },
                 "Import Costing": { desk: "Finance", title: "Duty & Landed Cost Breakdown", table: "fin_imports", fields: ["Import ID", "FOB Value", "Freight", "Insurance", "GRA Duty", "VAT", "Levies", "Total Landed Cost", "Method"] }
@@ -78,72 +83,73 @@
                 const [form, setForm] = useState({});
                 const [showModal, setShowModal] = useState(false);
 
-                // --- CASCADING DIALOGUE TRIGGERS ---
+                // AR Auto-Calculation & High-Value Logic
                 useEffect(() => {
-                    // Trigger Authorization for Bank payments > 25,000
-                    if (activeSub === "Cash & Bank" && parseFloat(form["Amount (Local)"]) > 25000) setShowModal(true);
-                    // Trigger Disposal Alert
-                    if (activeSub === "Fixed Assets & CAPEX" && form["Disposal Date"]) setShowModal(true);
-                }, [form["Amount (Local)"], form["Disposal Date"], activeSub]);
+                    if (activeSub === "Accounts Receivable") {
+                        const base = parseFloat(form["Base Amount"]) || 0;
+                        const vat = base * 0.15;
+                        const total = base + vat;
+                        const received = parseFloat(form["Amount Received"]) || 0;
+                        const balance = total - received;
+
+                        handleInput("VAT (15%)", vat.toFixed(2));
+                        handleInput("Total Receivable", total.toFixed(2));
+                        handleInput("Outstanding Balance (Auto)", balance.toFixed(2));
+
+                        if (total > 50000 && !form["Approved"]) setShowModal(true);
+                    }
+                }, [form["Base Amount"], form["Amount Received"], activeSub]);
 
                 const handleInput = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
                 const renderField = (label) => {
-                    const isReadOnly = label.includes("(Auto)") || label === "Net Payable" || label === "Current Value (Auto)";
-                    const isFull = ["Description", "Remarks", "Notes", "Findings Summary", "Support Doc Link"].includes(label);
-                    const isSelect = label.includes("Dropdown") || label.includes("Selection") || label === "Currency" || label.includes("Type") || label.includes("Status") || label.includes("Method") || label.includes("Category");
+                    const isReadOnly = label.includes("(Auto)") || label.includes("VAT");
+                    const isFull = ["Description", "Remarks", "Notes", "Findings Summary"].includes(label);
+                    const isSelect = label.includes("Dropdown") || label.includes("Selection") || label === "Currency" || label.includes("Status");
 
                     return e('div', { key: label, className: isFull ? "col-span-2" : "" },
                         e('label', { className: 'field-label' }, label),
                         isSelect ? 
                             e('select', { className: 'select-linked', value: form[label] || '', onChange: (x) => handleInput(label, x.target.value) }, 
                                 e('option', { value: '' }, `-- SELECT --`),
-                                label.includes("Agency") ? ["GRA", "EPA", "FDA", "SSNIT"].map(o => e('option', {key:o}, o)) :
+                                label.includes("Status") ? ["Pending", "Partially Paid", "Paid In Full", "Overdue"].map(o => e('option', {key:o}, o)) :
                                 label.includes("Currency") ? ["GHS", "USD", "EUR"].map(o => e('option', {key:o}, o)) :
-                                label.includes("Category") ? ["Property", "Plant", "Vehicle", "Equipment"].map(o => e('option', {key:o}, o)) :
-                                ["Option 1", "Option 2", "Option 3"].map(o => e('option', {key:o}, o))
+                                ["Standard Client", "VIP Distributor", "Corporate Partner"].map(o => e('option', {key:o}, o))
                             ) :
                         e(isFull ? 'textarea' : 'input', { 
                             className: `input-linked ${isReadOnly ? 'input-readonly' : ''} ${isFull ? 'h-24' : ''}`,
                             readOnly: isReadOnly,
-                            type: label.includes("Date") ? "date" : label.includes("Amount") || label.includes("Value") || label.includes("Cost") ? "number" : "text",
-                            value: form[label] || (label.includes("(Auto)") ? "SYS-"+Date.now().toString().slice(-6) : ""),
+                            type: label.includes("Date") ? "date" : label.includes("Amount") || label.includes("Total") || label.includes("Balance") ? "number" : "text",
+                            value: form[label] || (label.includes("(Auto)") ? "REF-"+Math.floor(Math.random()*10000) : ""),
                             onChange: (x) => handleInput(label, x.target.value)
                         })
                     );
                 };
 
                 return e('div', { className: 'fade-in' },
-                    // CASCADING LOGIC BOX
                     showModal && e('div', { className: 'modal-overlay' },
                         e('div', { className: 'modal-box' },
-                            e('h3', { className: 'text-2xl font-black text-slate-900 mb-4' }, '⚠️ AUTHORIZATION REQUIRED'),
-                            e('p', { className: 'text-sm text-slate-500 mb-8' }, 'This transaction exceeds standard clearance. Please enter the Supervisor PIN to commit to the ledger.'),
-                            e('input', { type: 'password', className: 'input-linked mb-6', placeholder: 'ENTER PIN' }),
+                            e('h3', { className: 'text-2xl font-black text-slate-900 mb-4' }, '🛡️ CREDIT CONTROL AUTHORIZATION'),
+                            e('p', { className: 'text-sm text-slate-500 mb-8' }, 'Invoices over GHS 50,000 require senior credit officer authorization before issuance.'),
+                            e('input', { type: 'password', className: 'input-linked mb-6', placeholder: 'CREDIT PIN' }),
                             e('div', { className: 'flex gap-4' },
-                                e('button', { onClick: () => setShowModal(false), className: 'bg-blue-900 text-white flex-1 py-4 rounded font-black text-[11px] uppercase tracking-widest' }, 'AUTHORIZE'),
-                                e('button', { onClick: () => { setShowModal(false); setForm({}); }, className: 'bg-white border-2 border-slate-200 text-slate-500 flex-1 py-4 rounded font-black text-[11px] uppercase tracking-widest' }, 'CANCEL')
+                                e('button', { onClick: () => setShowModal(false), className: 'bg-blue-900 text-white flex-1 py-4 rounded font-black text-[11px] uppercase tracking-widest' }, 'APPROVE INVOICE'),
+                                e('button', { onClick: () => { setShowModal(false); setForm({}); }, className: 'bg-white border-2 border-slate-200 text-slate-500 flex-1 py-4 rounded font-black text-[11px] uppercase' }, 'CANCEL')
                             )
                         )
                     ),
 
                     e('div', { className: 'mb-10 flex justify-between items-end border-b-4 border-blue-900 pb-8' },
                         e('div', null, 
-                            e('h1', { className: 'text-4xl cambria text-slate-900 font-black' }, schema.title || "Institutional Dashboard"),
-                            e('div', { className: 'flex gap-3 mt-4' }, 
-                                e('span', { className: 'royal-badge' }, `DESK: ${currentDesk}`),
-                                e('span', { className: 'status-tag' }, 'SYSTEM_LOCKED_ACTIVE')
-                            )
+                            e('h1', { className: 'text-4xl cambria text-slate-900 font-black' }, schema.title || "Executive Dashboard"),
+                            e('div', { className: 'flex gap-3 mt-4' }, e('span', { className: 'royal-badge' }, `MODULE: ${currentDesk}`))
                         ),
-                        e('div', { className: 'text-right' }, 
-                            e('p', { className: 'text-[10px] font-black text-slate-400' }, 'FISCAL CALENDAR'), 
-                            e('p', { className: 'text-sm font-bold text-blue-900' }, 'DECEMBER 2025')
-                        )
+                        e('div', { className: 'text-right' }, e('p', { className: 'text-[10px] font-black text-slate-400' }, 'SYSTEM STATUS'), e('p', { className: 'text-sm font-bold text-blue-900' }, 'AUTHENTICATED_2025'))
                     ),
                     
                     e('div', { className: 'grid grid-cols-12 gap-10' },
                         e('div', { className: 'col-span-3' },
-                            e('div', { className: 'admin-sub-card shadow-2xl' },
+                            e('div', { className: 'admin-sub-card' },
                                 e('div', { className: 'branch-label' }, 'Registry Hub'),
                                 Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
                                     e('div', { key: name, className: `sub-link ${activeSub === name ? 'active' : ''}`, onClick: () => { setActiveSub(name); setForm({}); } }, name)
@@ -154,13 +160,12 @@
                             e('div', { className: 'workspace-card', key: activeSub },
                                 schema.isWelcome ? e('div', { className: 'pt-20 text-center' }, 
                                     e('h2', { className: 'text-5xl cambria font-black text-slate-200 mb-4' }, 'DE-TRUSTED ERP'),
-                                    e('p', { className: 'text-slate-400 font-medium' }, 'All modules are restored and locked. Select a registry to proceed.')
+                                    e('p', { className: 'text-slate-400' }, 'Finance & Admin modules are static. Select a registry.')
                                 ) :
                                 e('div', null,
                                     e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' }, schema.fields.map(renderField)),
-                                    e('div', { className: 'mt-16 flex justify-end gap-6 border-t pt-10' }, 
-                                        e('button', { className: 'px-12 py-4 bg-blue-900 text-white font-black rounded shadow-2xl uppercase text-[11px] tracking-widest' }, 'Post Entry'),
-                                        e('button', { className: 'px-12 py-4 border-2 border-slate-200 text-slate-400 font-black rounded uppercase text-[11px] tracking-widest' }, 'Print Voucher')
+                                    e('div', { className: 'mt-16 flex justify-end gap-6' }, 
+                                        e('button', { className: 'px-12 py-4 bg-blue-900 text-white font-black rounded uppercase text-[11px] tracking-widest' }, 'Post Entry')
                                     )
                                 )
                             )
