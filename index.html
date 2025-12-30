@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | WELLNESS ROI</title>
+    <title>DE-TRUSTED ERP | PRODUCTIVITY ROI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -21,8 +21,9 @@
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 10px; }
-        .roi-positive { color: #10b981; font-family: 'Roboto Mono', monospace; font-weight: bold; }
-        .rotation-slot { background: #020617; border: 1px solid #334155; padding: 8px; border-radius: 4px; font-size: 11px; }
+        .performance-spike { color: #10b981; animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .bar { height: 100%; transition: height 1s ease-in-out; }
     </style>
 </head>
 <body>
@@ -30,9 +31,9 @@
     <div id="hard-security-lock">
         <div class="glass-card w-96 text-center border-yellow-500/50 shadow-2xl">
             <h1 class="text-3xl font-black mb-1 italic">DE-TRUSTED</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em]">ROI ANALYTICS</p>
+            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em]">PRODUCTIVITY SYNC</p>
             <input type="password" id="gate-key" class="input-box bg-slate-900 border border-slate-700 text-white p-2 text-center mb-6 w-full" placeholder="••••" autofocus>
-            <button onclick="unlock()" class="btn-gold w-full py-4">INITIALIZE PROJECTION</button>
+            <button onclick="unlock()" class="btn-gold w-full py-4 uppercase font-black">Open Intelligence Suite</button>
         </div>
     </div>
 
@@ -50,44 +51,17 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('ROI');
-                const [staff] = useState([
-                    { id: 1, name: "Kofi Mensah", dept: "Sales", wellnessDay: "First Friday" },
-                    { id: 2, name: "Ama Serwaa", dept: "Marketing", wellnessDay: "Second Friday" },
-                    { id: 3, name: "John Doe", dept: "Sales", wellnessDay: "Third Friday" },
-                    { id: 4, name: "Abena Mansa", dept: "IT/Ops", wellnessDay: "Fourth Friday" }
+                const [view, setView] = useState('PERFORMANCE');
+                const [metrics] = useState([
+                    { name: "Mon", pre: 70, post: 85 },
+                    { name: "Tue", pre: 72, post: 88 },
+                    { name: "Wed", pre: 68, post: 92 },
+                    { name: "Thu", pre: 65, post: 94 },
+                    { name: "Fri", pre: 40, post: 98 } // Friday half-day impact
                 ]);
-
-                // Projected Savings Calculation
-                const currentMedicalSpend = 25000; // Mock Annual Spend
-                const projectedSavings = currentMedicalSpend * 0.22; // Estimated 22% reduction
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
                         e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
                         e('nav', { className: 'mt-6 text-[10px] font-bold uppercase' },
-                            e('div', { onClick:()=>setView('ROI'), className:`p-4 cursor-pointer ${view==='ROI'?'bg-slate-800 text-yellow-500':''}`}, '📈 Wellness ROI'),
-                            e('div', { onClick:()=>setView('ROTATION'), className:`p-4 cursor-pointer ${view==='ROTATION'?'bg-slate-800 text-yellow-500':''}`}, '🔄 Monthly Rotation')
-                        )
-                    ),
-                    e('main', { className: 'main-content flex-1' },
-                        
-                        view === 'ROI' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase text-emerald-500'}, 'Projected Wellness ROI'),
-                            e('div', {className:'grid grid-cols-2 gap-8 mb-8'},
-                                e('div', {className:'glass-card'},
-                                    e('p', {className:'text-xs text-slate-400 uppercase font-bold'}, 'Annual Medical Liability'),
-                                    e('h1', {className:'text-4xl font-black text-white mt-2'}, `GHS ${currentMedicalSpend.toLocaleString()}`),
-                                    e('p', {className:'text-[10px] mt-4 text-slate-500'}, 'Based on Q3-Q4 recurring stress/fatigue claims.')
-                                ),
-                                e('div', {className:'glass-card border-emerald-500/30'},
-                                    e('p', {className:'text-xs text-emerald-500 uppercase font-bold'}, 'Projected Savings (Wellness Plan)'),
-                                    e('h1', {className:'text-4xl font-black text-emerald-400 mt-2'}, `GHS ${projectedSavings.toLocaleString()}`),
-                                    e('p', {className:'roi-positive mt-4 text-[10px]'}, '↑ 22% Reduction in Claims predicted')
-                                )
-                            ),
-                            e('div', {className:'glass-card'},
-                                e('h3', {className:'text-xs font-bold text-slate-500 mb-4 uppercase'}, 'Impact Analysis'),
-                                e('ul', {className:'text-sm space-y-3 text-slate-300 italic'},
-                                    e('li', null, "• Reduction in burnout-related sick leave (Projected: -15 days/yr)"),
-                                    e('li', null, "• Optimization
+                            e('div', { onClick:()=>setView('PERFORMANCE'), className:`p-4 cursor-pointer ${view==='PERFORMANCE'?'bg-slate-800 text-yellow-500':''
