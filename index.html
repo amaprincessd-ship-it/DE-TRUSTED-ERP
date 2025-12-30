@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | SALES & MARKETING</title>
+    <title>DE-TRUSTED ERP | EXECUTIVE DASHBOARD</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,22 +12,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        :root { --navy: #001f3f; --gold: #fbbf24; --crimson: #991b1b; --sales-blue: #0284c7; }
-        body { font-family: 'Ubuntu', sans-serif; background: #f1f5f9; margin: 0; }
+        :root { --navy: #001f3f; --gold: #fbbf24; --accent: #38bdf8; }
+        body { font-family: 'Ubuntu', sans-serif; background: #0f172a; color: #f8fafc; margin: 0; }
 
-        .sidebar { background: var(--navy); height: 100vh; width: 260px; position: fixed; border-right: 4px solid var(--gold); }
-        .workspace { margin-left: 260px; padding: 40px; }
+        .sidebar { background: #020617; height: 100vh; width: 260px; position: fixed; border-right: 1px solid #1e293b; }
+        .main-stage { margin-left: 260px; padding: 40px; }
         
-        .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .header-sales { background: var(--sales-blue); color: white; padding: 25px; border-radius: 8px 8px 0 0; }
+        .stat-card { background: #1e293b; border: 1px solid #334155; padding: 24px; border-radius: 12px; transition: 0.3s; }
+        .stat-card:hover { border-color: var(--gold); transform: translateY(-2px); }
         
-        .field-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .s-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
-        
-        .revenue-panel { background: #f0f9ff; border: 1px solid #bae6fd; padding: 20px; border-radius: 6px; }
-        .tax-line { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; color: #0369a1; font-weight: 700; }
-        
-        .marketing-badge { background: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 99px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+        .module-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .status-online { background: #10b981; box-shadow: 0 0 10px #10b981; }
+
+        .chart-mock { height: 120px; background: linear-gradient(0deg, #1e293b 0%, #334155 100%); border-radius: 6px; position: relative; overflow: hidden; }
+        .bar { position: absolute; bottom: 0; width: 12%; background: var(--accent); border-radius: 2px 2px 0 0; }
+
+        .alert-feed { font-size: 11px; font-family: 'Roboto Mono'; color: #94a3b8; }
+        .critical { color: #f87171; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -38,119 +39,107 @@
             const e = React.createElement;
             const { useState, useEffect } = React;
 
-            // Universal Words GSC
-            const toWords = (n) => {
-                const num = parseFloat(n) || 0;
-                if (num === 0) return "Zero Ghana Cedis Only";
-                const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-                const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-                const convert = (v) => {
-                    if (v < 20) return ones[v];
-                    if (v < 100) return tens[Math.floor(v / 10)] + (v % 10 !== 0 ? " " + ones[v % 10] : "");
-                    if (v < 1000) return ones[Math.floor(v / 100)] + " Hundred" + (v % 100 !== 0 ? " and " + convert(v % 100) : "");
-                    if (v < 1000000) return convert(Math.floor(v / 1000)) + " Thousand " + (v % 1000 !== 0 ? convert(v % 1000) : "");
-                    return v;
-                };
-                const cedis = Math.floor(num);
-                const pesewas = Math.round((num - cedis) * 100);
-                let res = convert(cedis) + " Ghana Cedis";
-                if (pesewas > 0) res += " and " + convert(pesewas) + " Pesewas";
-                return res + " Only";
-            };
-
             function App() {
-                const [subtotal, setSubtotal] = useState(0);
-                const [tax, setTax] = useState({ vat: 0, nhil: 0, levy: 0 });
-                const [grandTotal, setGrandTotal] = useState(0);
-
-                useEffect(() => {
-                    const s = parseFloat(subtotal) || 0;
-                    const nhil = s * 0.025;
-                    const levy = s * 0.025;
-                    const vatVal = (s + nhil + levy) * 0.15; // Ghana VAT Logic
-                    
-                    setTax({ vat: vatVal, nhil, levy });
-                    setGrandTotal(s + nhil + levy + vatVal);
-                }, [subtotal]);
+                const [time, setTime] = useState(new Date().toLocaleTimeString());
+                useEffect(() => { const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000); return () => clearInterval(timer); }, []);
 
                 return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar p-6' },
-                        e('h1', { className: 'text-white text-xl font-black mb-10' }, 'DE-TRUSTED ERP'),
-                        ['Customer CRM', 'Marketing Leads', 'Sales Quotations', 'Tax Invoicing', 'Accounts Receivable', 'Sales Commissions'].map(i => 
-                            e('div', { key: i, className: 'text-sky-200 text-xs font-bold py-3 border-b border-white/10 cursor-pointer hover:text-white' }, i.toUpperCase())
+                    // SIDEBAR
+                    e('aside', { className: 'sidebar p-8' },
+                        e('div', { className: 'mb-12' },
+                            e('h1', { className: 'text-2xl font-black text-white tracking-tighter' }, 'DE-TRUSTED'),
+                            e('span', { className: 'text-[10px] text-gold font-bold tracking-widest' }, 'ULTIMATE ERP v4.0')
+                        ),
+                        ['Overview', 'Intelligence', 'Audit Trail', 'Global Search', 'Sys Admin'].map(m => 
+                            e('div', { key: m, className: 'py-4 text-xs font-bold text-slate-400 hover:text-white cursor-pointer uppercase tracking-wider' }, m)
+                        ),
+                        e('div', { className: 'absolute bottom-10 left-8' },
+                            e('div', { className: 'flex items-center gap-2' },
+                                e('span', { className: 'module-indicator status-online' }),
+                                e('span', { className: 'text-[10px] font-bold text-slate-500' }, 'SYSTEM STABLE')
+                            )
                         )
                     ),
 
-                    e('main', { className: 'workspace flex-1' },
-                        e('div', { className: 'card' },
-                            e('div', { className: 'header-sales flex justify-between items-center' },
-                                e('div', null,
-                                    e('h2', { className: 'text-2xl font-black' }, 'Commercial Tax Invoice'),
-                                    e('p', { className: 'text-xs opacity-80' }, 'Sales > Revenue Recognition')
-                                ),
-                                e('div', { className: 'text-right' },
-                                    e('p', { className: 'text-[10px] font-black' }, 'INVOICE NUMBER'),
-                                    e('span', { className: 'text-xl font-mono font-bold' }, 'INV-2025-8801')
-                                )
+                    // MAIN STAGE
+                    e('main', { className: 'main-stage flex-1' },
+                        // Top Nav
+                        e('header', { className: 'flex justify-between items-end mb-10' },
+                            e('div', null,
+                                e('h2', { className: 'text-3xl font-black' }, 'Global Command Dashboard'),
+                                e('p', { className: 'text-slate-400 text-sm' }, 'Consolidated Enterprise Intelligence | ' + new Date().toDateString())
                             ),
+                            e('div', { className: 'text-right font-mono' },
+                                e('p', { className: 'text-gold text-xl font-bold' }, time),
+                                e('p', { className: 'text-[10px] text-slate-500' }, 'UTC/GMT +0:00 (ACCRA)')
+                            )
+                        ),
 
-                            e('div', { className: 'p-8' },
-                                e('div', { className: 'grid grid-cols-2 gap-10 mb-8' },
-                                    // Marketing Lead Source
-                                    e('div', null,
-                                        e('h3', { className: 'text-xs font-black text-sky-900 border-b pb-2 mb-4 flex justify-between' }, 
-                                            'CUSTOMER DETAILS', e('span', {className: 'marketing-badge'}, 'Source: LinkedIn Campaign')
-                                        ),
-                                        e('label', { className: 'field-label' }, 'Client Name'),
-                                        e('select', { className: 's-input' }, ['Apex Construction Ltd', 'BlueChip Data Systems', 'Volta Hotels'].map(c => e('option', {key:c}, c))),
-                                        e('label', { className: 'field-label' }, 'Customer TIN'),
-                                        e('input', { className: 's-input bg-slate-50', value: 'C00129983X', readOnly: true })
-                                    ),
-                                    // Sales Terms
-                                    e('div', null,
-                                        e('h3', { className: 'text-xs font-black text-sky-900 border-b pb-2 mb-4' }, 'SALES PARAMETERS'),
-                                        e('label', { className: 'field-label' }, 'Payment Terms'),
-                                        e('select', { className: 's-input' }, ['Net 30', 'Cash on Delivery', '50% Upfront', 'Immediate'].map(t => e('option', {key:t}, t))),
-                                        e('label', { className: 'field-label' }, 'Sales Executive (from HR)'),
-                                        e('input', { className: 's-input bg-slate-50', value: 'EMP-4421 | Ama Serwaa', readOnly: true })
-                                    )
-                                ),
+                        // CORE KPIs
+                        e('div', { className: 'grid grid-cols-4 gap-6 mb-10' },
+                            [
+                                { label: 'TOTAL REVENUE (YTD)', val: 'GHS 4.2M', trend: '+12.4%', color: 'text-emerald-400' },
+                                { label: 'OPEX EFFICIENCY', val: '64.2%', trend: '-2.1%', color: 'text-sky-400' },
+                                { label: 'CASH ON HAND', val: 'GHS 842K', trend: 'STABLE', color: 'text-gold' },
+                                { label: 'HEADCOUNT', val: '142 Staff', trend: '4 Pending', color: 'text-purple-400' }
+                            ].map(k => e('div', { key: k.label, className: 'stat-card' },
+                                e('p', { className: 'text-[10px] font-bold text-slate-500 mb-1' }, k.label),
+                                e('h3', { className: 'text-2xl font-black' }, k.val),
+                                e('span', { className: `text-[10px] font-bold ${k.color}` }, k.trend)
+                            ))
+                        ),
 
-                                e('h3', { className: 'text-xs font-black text-sky-900 border-b pb-2 mb-4' }, 'INVOICE LINE ITEMS'),
-                                e('div', { className: 'mb-8 bg-slate-50 p-4 rounded border' },
-                                    e('div', { className: 'grid grid-cols-4 gap-4' },
-                                        e('div', { className: 'col-span-2' }, e('label', {className:'field-label'}, 'Product/Service Description'), e('input', {className:'s-input', defaultValue: 'Industrial Steel Beam - Grade A'})),
-                                        e('div', null, e('label', {className:'field-label'}, 'Qty'), e('input', {className:'s-input', type:'number', defaultValue: 10})),
-                                        e('div', null, e('label', {className:'field-label'}, 'Unit Price'), e('input', {className:'s-input', type:'number', onChange: (x) => setSubtotal(x.target.value * 10)}))
-                                    )
-                                ),
-
-                                e('div', { className: 'grid grid-cols-2 gap-10' },
-                                    e('div', null,
-                                        e('p', { className: 'text-[10px] font-black uppercase text-slate-400 mb-2' }, 'Legal Amount in Words'),
-                                        e('div', { className: 'text-sm font-bold text-sky-800 italic p-4 bg-sky-50 border border-sky-100 rounded' }, toWords(grandTotal))
-                                    ),
-                                    e('div', { className: 'revenue-panel' },
-                                        e('div', { className: 'tax-line' }, e('span', null, 'Sub-Total:'), e('span', null, `GHS ${subtotal.toLocaleString()}`)),
-                                        e('div', { className: 'tax-line' }, e('span', null, 'NHIL (2.5%):'), e('span', null, `GHS ${tax.nhil.toLocaleString()}`)),
-                                        e('div', { className: 'tax-line' }, e('span', null, 'GETFund (2.5%):'), e('span', null, `GHS ${tax.levy.toLocaleString()}`)),
-                                        e('div', { className: 'tax-line border-b border-sky-200 pb-2 mb-2' }, e('span', null, 'VAT (15%):'), e('span', null, `GHS ${tax.vat.toLocaleString()}`)),
-                                        e('div', { className: 'flex justify-between items-center mt-2' }, 
-                                            e('span', { className: 'font-black text-sky-900 uppercase' }, 'Grand Total:'), 
-                                            e('span', { className: 'text-3xl font-black text-sky-900 font-mono' }, `GHS ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}`)
-                                        )
+                        // MODULE HEALTH & ALERTS
+                        e('div', { className: 'grid grid-cols-3 gap-8' },
+                            // Left Col: Module Status
+                            e('div', { className: 'col-span-2' },
+                                e('div', { className: 'stat-card h-full' },
+                                    e('h3', { className: 'text-sm font-black mb-6 uppercase tracking-widest text-slate-400' }, 'Departmental Performance & Flow'),
+                                    e('div', { className: 'space-y-6' },
+                                        [
+                                            { d: 'FINANCE & LEDGER', p: 98, sub: 'All reconciliation current' },
+                                            { d: 'SALES & MARKETING', p: 72, sub: 'Q4 Target: GHS 1.5M Remaining' },
+                                            { d: 'PRODUCTION & WHSE', p: 85, sub: 'Raw material stock optimal' },
+                                            { d: 'HR & PAYROLL', p: 100, sub: 'Statutory filings (SSNIT/PAYE) completed' }
+                                        ].map(m => e('div', { key: m.d },
+                                            e('div', { className: 'flex justify-between text-xs font-bold mb-2' },
+                                                e('span', null, m.d),
+                                                e('span', { className: 'text-gold' }, `${m.p}%`)
+                                            ),
+                                            e('div', { className: 'w-full bg-slate-700 h-1.5 rounded-full' },
+                                                e('div', { className: 'bg-accent h-full rounded-full', style: { width: `${m.p}%` } })
+                                            ),
+                                            e('p', { className: 'text-[9px] text-slate-500 mt-1' }, m.sub)
+                                        ))
                                     )
                                 )
                             ),
 
-                            e('div', { className: 'p-8 bg-slate-50 border-t flex justify-between items-center' },
-                                e('p', { className: 'text-[10px] font-bold text-slate-400 max-w-sm' }, 
-                                    'REVENUE RECOGNITION: Posting this invoice will increase Accounts Receivable and reduce Finished Goods Inventory.'),
-                                e('div', { className: 'flex gap-4' },
-                                    e('button', { className: 'px-8 py-3 bg-white border border-slate-300 font-bold text-xs rounded' }, 'PREVIEW QUOTE'),
-                                    e('button', { className: 'px-10 py-3 bg-sky-700 text-white font-bold text-xs rounded' }, 'POST INVOICE')
+                            // Right Col: Audit Feed
+                            e('div', { className: 'space-y-6' },
+                                e('div', { className: 'stat-card' },
+                                    e('h3', { className: 'text-xs font-black mb-4 uppercase text-slate-400' }, 'Critical Audit Feed'),
+                                    e('div', { className: 'alert-feed space-y-3' },
+                                        e('p', { className: 'critical' }, '[SECURITY] Duplicate Receipt Attempt: RCP-99801 (BLOCKED)'),
+                                        e('p', null, '[FINANCE] PV-2025-0012 Approved by Controller'),
+                                        e('p', null, '[PROCUR] New Supplier "Global Parts" Enrolled'),
+                                        e('p', { className: 'text-gold' }, '[SALES] Tax Invoice INV-8801 Generated (GHS 25k)'),
+                                        e('p', null, '[SYSTEM] Automated Ledger Backup Successful')
+                                    )
+                                ),
+                                e('div', { className: 'stat-card bg-indigo-900/20 border-indigo-500/30' },
+                                    e('h3', { className: 'text-xs font-black mb-2 uppercase text-indigo-400' }, 'Compliance Radar'),
+                                    e('p', { className: 'text-xl font-black' }, 'GHS 142,500'),
+                                    e('p', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, 'Estimated Tax Liability (VAT/NHIL/PAYE)')
                                 )
                             )
+                        ),
+
+                        // FOOTER ACTIONS
+                        e('footer', { className: 'mt-10 flex gap-4' },
+                            e('button', { className: 'px-6 py-2 bg-gold text-navy font-black text-[10px] rounded uppercase' }, 'Generate Annual Report'),
+                            e('button', { className: 'px-6 py-2 border border-slate-700 font-black text-[10px] rounded uppercase' }, 'System Audit Log'),
+                            e('button', { className: 'px-6 py-2 border border-slate-700 font-black text-[10px] rounded uppercase' }, 'User RBAC Settings')
                         )
                     )
                 );
