@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Advanced Finance & AP Master</title>
+    <title>DE-TRUSTED ERP | Unified Admin & Finance Hub</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -58,9 +58,18 @@
             const VENDORS = ["Qualiplast Ltd", "Paints & Chemicals Ltd", "Mainland Containers", "Ghana Water Co", "ECG", "Custom Packaging"];
 
             const SYSTEM_REGISTRY = {
-                "Executive": { desk: "Executive", isWelcome: true },
+                // --- ADMINISTRATION DESK: ALL RESTORED FEATURES ---
+                "Department Purpose": { desk: "Administration", isWelcome: true },
                 "Regulatory Master": { desk: "Administration", title: "Regulatory Agency Master", table: "regulatory_bodies", fields: ["Agency Name", "Contact Person Name", "Phone Number", "Rank/Designation", "Primary Email", "Office Location", "GPS Address", "Governing Act", "Remarks"] },
+                "Statutory Setup": { desk: "Administration", title: "Statutory Requirements Master", table: "statutory_requirements", fields: ["Agency Name", "Requirement Name", "Reference No.", "Legal Reference Code", "Renewal Cycle", "Remarks"] },
+                "Permit Register": { desk: "Administration", title: "Live License & Permit Register", table: "licenses_permits", fields: ["Agency Name", "Reference No.", "Permit Serial #", "Issue Date", "Expiry Date", "Department Lead", "GPS Address", "Remarks"] },
                 "Corporate Assets": { desk: "Administration", title: "Fixed Asset Registry", table: "corporate_assets", fields: ["Asset Category", "Asset Description", "Serial Number", "Purchase Date", "Current Location", "Assigned Staff", "Asset Condition", "Remarks"] },
+                "Insurance & Liabilities": { desk: "Administration", title: "Insurance & Policy Tracking", table: "insurance_logs", fields: ["Policy Provider", "Policy Number", "Type", "Effective Date", "Expiry Date", "Premium Amount", "Reference No.", "Remarks"] },
+                "Renewal Transaction": { desk: "Administration", title: "Permit Renewal Workflow", table: "renewals", fields: ["Agency Name", "Reference No.", "Current Permit #", "Last Renewal Date", "Next Expiry Date", "Renewal Status", "Remarks"] },
+                "Site Inspections": { desk: "Administration", title: "Regulatory Inspection Log", table: "inspections", fields: ["Agency Name", "Reference No.", "Inspection Type", "Inspectors Present", "Contact Phone", "GPS Address", "Compliance Finding", "Remarks"] },
+                "Compliance Breaches": { desk: "Administration", title: "Incident & Breach Registry", table: "compliance_incidents", fields: ["Agency Name", "Reference No.", "Incident Date", "Root Cause Analysis", "Immediate Mitigation", "Closure Ref", "Remarks"] },
+                
+                // --- FINANCE DESK: ALL RESTORED FEATURES ---
                 "Accounts Payable": { 
                     desk: "Finance", 
                     title: "Accounts Payable (AP) Master", 
@@ -80,72 +89,64 @@
                 const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
                 const [form, setForm] = useState({});
 
-                // ERP Logic: Auto-calculations for Accounts Payable
+                // Automated Logic for AP Calculations
                 useEffect(() => {
                     if (activeSub === "Accounts Payable") {
                         const base = parseFloat(form["Base Amount"]) || 0;
-                        const tax = base * 0.15; // Ghana VAT 15%
+                        const tax = base * 0.15;
                         const total = base + tax;
                         
-                        let dueDate = "";
+                        let dueDate = form["Due Date"];
                         if (form["Invoice Date"] && form["Payment Terms"]) {
                             const dateObj = new Date(form["Invoice Date"]);
-                            const days = parseInt(form["Payment Terms"].replace(' days', ''));
+                            const days = parseInt(form["Payment Terms"]);
                             dateObj.setDate(dateObj.getDate() + days);
                             dueDate = dateObj.toISOString().split('T')[0];
                         }
-
-                        if (tax !== form["Tax / VAT (15%)"] || total !== form["Total Amount Payable"] || dueDate !== form["Due Date"]) {
-                            setForm(prev => ({ 
-                                ...prev, 
-                                "Tax / VAT (15%)": tax.toFixed(2), 
-                                "Total Amount Payable": total.toFixed(2),
-                                "Due Date": dueDate
-                            }));
+                        
+                        if (tax.toFixed(2) !== form["Tax / VAT (15%)"] || dueDate !== form["Due Date"]) {
+                            setForm(prev => ({ ...prev, "Tax / VAT (15%)": tax.toFixed(2), "Total Amount Payable": total.toFixed(2), "Due Date": dueDate }));
                         }
                     }
                 }, [form["Base Amount"], form["Invoice Date"], form["Payment Terms"], activeSub]);
 
-                const handleInput = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
-
                 const renderField = (label) => {
                     const isReadOnly = ["Invoice ID (Auto)", "Tax / VAT (15%)", "Total Amount Payable", "Due Date"].includes(label);
-                    const isSelect = label.includes("Dropdown") || label.includes("Status") || label.includes("Method") || label.includes("Terms") || label === "Supplier (Dropdown)" || label === "Currency";
-                    const isFull = label === "Notes" || label === "Description";
+                    const isSelect = label.includes("Agency") || label.includes("Dropdown") || label.includes("Status") || label.includes("Method") || label.includes("Terms") || label === "Currency";
+                    const isFull = label === "Remarks" || label === "Notes" || label === "Description" || label.includes("Analysis") || label === "Compliance Finding";
 
                     return e('div', { key: label, className: isFull ? "col-span-2" : "" },
                         e('label', { className: 'field-label' }, label),
                         isSelect ? 
-                            e('select', { className: 'select-linked', value: form[label] || '', onChange: (x) => handleInput(label, x.target.value) }, 
+                            e('select', { className: 'select-linked', value: form[label] || '', onChange: (x) => setForm({...form, [label]: x.target.value}) }, 
                                 e('option', { value: '' }, `-- Select ${label} --`),
+                                label.includes("Agency") ? GH_AGENCIES.map(a => e('option', {key:a}, a)) :
                                 label === "Supplier (Dropdown)" ? VENDORS.map(v => e('option', {key:v}, v)) :
-                                label === "Currency" ? CURRENCIES.map(c => e('option', {key:c}, c)) :
-                                label === "Payment Terms" ? ["30 days", "60 days", "90 days"].map(t => e('option', {key:t}, t)) :
-                                label === "Payment Method" ? ["Bank Transfer", "Cash", "Cheque", "Mobile Money"].map(m => e('option', {key:m}, m)) :
-                                ["Pending", "Paid", "Partially Paid"].map(o => e('option', {key:o}, o))
+                                label === "Payment Terms" ? ["30", "60", "90"].map(t => e('option', {key:t, value:t}, `${t} days`)) :
+                                ["Pending", "Paid", "Active", "Draft"].map(o => e('option', {key:o}, o))
                             ) :
-                        e('input', { 
-                            className: `input-linked ${isReadOnly ? 'input-readonly' : ''}`, 
+                        e(isFull ? 'textarea' : 'input', { 
+                            className: `input-linked ${isReadOnly ? 'input-readonly' : ''} ${isFull ? 'h-24' : ''}`, 
                             readOnly: isReadOnly,
                             type: label.includes("Date") ? "date" : label.includes("Amount") || label === "Base Amount" ? "number" : "text",
-                            value: form[label] || (label === "Invoice ID (Auto)" ? "AP-"+Date.now().toString().slice(-6) : ""),
-                            onChange: (x) => handleInput(label, x.target.value)
+                            value: form[label] || (label === "Invoice ID (Auto)" ? "INV-"+Date.now().toString().slice(-5) : ""),
+                            onChange: (x) => setForm({...form, [label]: x.target.value})
                         })
                     );
                 };
 
                 if (currentDesk === 'Executive') {
                     return e('div', { className: 'fade-in' },
-                        e('h1', { className: 'text-3xl cambria text-blue-900 font-bold mb-8' }, 'Executive Dashboard'),
+                        e('h1', { className: 'text-3xl cambria text-blue-900 font-bold mb-8' }, 'Executive Overview'),
                         e('div', { className: 'grid grid-cols-3 gap-6 mb-12' },
-                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[10px] font-bold text-slate-400 uppercase'}, 'Current Liabilities'), e('h2', {className:'text-3xl font-black text-red-600'}, 'GHS 124,500')),
-                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[10px] font-bold text-slate-400 uppercase'}, 'Monthly GHS Expense'), e('h2', {className:'text-3xl font-black text-emerald-600'}, '245,000')),
-                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[10px] font-bold text-slate-400 uppercase'}, 'Days Payable Outstanding'), e('h2', {className:'text-3xl font-black text-amber-600'}, '42 Days'))
+                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[10px] font-bold text-slate-400 uppercase'}, 'Pending AP'), e('h2', {className:'text-3xl font-black text-red-600'}, 'GHS 84,200')),
+                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[10px] font-bold text-slate-400 uppercase'}, 'Regulatory Compliance'), e('h2', {className:'text-3xl font-black text-blue-900'}, '92%')),
+                            e('div', { className: 'dash-stat-card' }, e('p', {className:'text-[10px] font-bold text-slate-400 uppercase'}, 'Active Permits'), e('h2', {className:'text-3xl font-black text-amber-600'}, '12'))
                         ),
                         e('div', { className: 'workspace-card' }, 
-                             e('h2', { className: 'text-lg font-bold text-blue-900 mb-4' }, 'Manufacturing Priority Notice'),
-                             e('div', { className: 'strat-card' }, 'Finance Alert: 3 Supplier Invoices past 30-day term.'),
-                             e('div', { className: 'strat-card' }, 'Regulatory: Ashalaja EPA factory assessment scheduled for January.')
+                             e('h2', { className: 'text-lg font-bold text-blue-900 mb-4' }, 'System Alerts'),
+                             e('div', { className: 'strat-card' }, 'Administration: 2 EPA Permits require renewal data entry.'),
+                             e('div', { className: 'strat-card' }, 'Finance: Accounts Payable aging report updated.')
                         )
                     );
                 }
@@ -154,14 +155,14 @@
                     e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
                         e('div', null, 
                             e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, `${currentDesk} Desk`),
-                            e('p', { className: 'text-blue-700 text-sm font-medium' }, `DE-TRUSTED | ERP Kernel 2.0`)
+                            e('p', { className: 'text-blue-700 text-sm font-medium' }, `DE-TRUSTED | 2025 MASTER COMMAND`)
                         ),
-                        e('div', { className: 'flex gap-2' }, e('span', { className: 'royal-badge' }, 'AP_MODULE_ACTIVE'), e('span', { className: 'royal-badge' }, 'AUTO_CALC_ON'))
+                        e('div', { className: 'flex gap-2' }, e('span', { className: 'royal-badge' }, 'AUTH: EXECUTIVE'), e('span', { className: 'royal-badge' }, 'LIVE_SYNC_ON'))
                     ),
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
                             e('div', { className: 'admin-sub-card shadow-lg' },
-                                e('div', { className: 'branch-label' }, 'Operational Registry'),
+                                e('div', { className: 'branch-label' }, 'Module Nav'),
                                 Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
                                     e('div', { 
                                         key: name, 
@@ -173,19 +174,24 @@
                         ),
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card fade-in', key: activeSub },
-                                e('div', null,
+                                schema.isWelcome ? e('div', null,
+                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Operational Status'),
+                                    e('p', { className: 'intro-text mb-8' }, "Welcome to the De-Trusted Paint Manufacturing control center. All modules for regulatory tracking and financial integrity are active."),
+                                    e('div', { className: 'strat-card shadow-sm' }, e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'Administration & Compliance Modules Locked and Loaded')),
+                                    e('div', { className: 'strat-card shadow-sm' }, e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'Finance & Accounts Payable Logic Synchronized'))
+                                ) : e('div', null,
                                     currentDesk === 'Finance' && e('div', { className: 'finance-header' }, 
-                                        e('div', null, e('p', { className: 'text-[9px] uppercase' }, 'Accounts Payable Engine'), e('p', { className: 'text-xl font-black' }, 'LIABILITY TRACKING')),
+                                        e('div', null, e('p', { className: 'text-[9px] uppercase' }, 'Accounts Payable Engine'), e('p', { className: 'text-xl font-black' }, 'LIABILITY MASTER')),
                                         e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] uppercase' }, 'Reference'), e('p', { className: 'text-xl font-black' }, 'AP-GEN-2025'))
                                     ),
                                     e('div', { className: 'flex justify-between items-start mb-10' },
                                         e('div', null, e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title), e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `DATABASE: ${schema.table}`)),
-                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Post to General Ledger')
+                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Post Record')
                                     ),
                                     e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-6' }, schema.fields.map(renderField)),
                                     e('div', { className: 'prepared-by' },
-                                        e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'AUTHENTICATED BY'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, 'De-Trusted Finance Desk')),
-                                        e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'SYSTEM TIMESTAMP'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, '2025-12-30 | 14:12 GMT'))
+                                        e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'AUTHENTICATED BY'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, 'Executive Admin')),
+                                        e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'SYSTEM TIMESTAMP'), e('p', { className: 'text-[12px] font-bold text-blue-900' }, '2025-12-30 | 14:24 GMT'))
                                     )
                                 )
                             )
