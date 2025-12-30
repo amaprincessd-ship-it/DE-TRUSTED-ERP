@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | INVENTORY GUARDIAN</title>
+    <title>DE-TRUSTED ERP | HR & PAYROLL SUITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -15,11 +15,9 @@
         .main-content { margin-left: 260px; height: 100vh; overflow-y: auto; padding: 40px; }
         .nav-link { cursor: pointer; padding: 12px 20px; font-size: 11px; font-weight: 700; color: #64748b; border-left: 4px solid transparent; transition: 0.2s; text-transform: uppercase; }
         .nav-link.active { background: #1e293b; border-left: 4px solid #fbbf24; color: white; }
-        .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; position: relative; }
+        .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .input-box { background: #020617; border: 1px solid #334155; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 5px; font-size: 13px; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; width: 100%; cursor: pointer; border: none; }
-        .alert-pulse { animation: pulse 1.5s infinite; background: #991b1b; color: white; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; margin-bottom: 20px; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -27,47 +25,27 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useEffect, useRef } = React;
+            const { useState } = React;
 
             function App() {
                 const [user, setUser] = useState({ auth: false, role: '', name: '' });
                 const [password, setPassword] = useState('');
                 const [activeDesk, setActiveDesk] = useState('DASHBOARD');
                 
-                // DATA STATE
-                const [revenueData] = useState([1200, 1900, 800, 500, 4500, 0, 0]);
-                const [inventory, setInventory] = useState([
-                    { id: 1, name: 'Raw Material A', stock: 50 },
-                    { id: 2, name: 'Finished Product B', stock: 8 } // LOW STOCK ITEM
-                ]);
+                // PAYROLL STATE
+                const [basicSalary, setBasicSalary] = useState(0);
+                const ssnitRate = 0.055; // 5.5% Employee contribution
+                const taxRate = 0.15; // Simplified 15% flat tax for demo
                 
-                const chartRef = useRef(null);
-                const lowStockItems = inventory.filter(item => item.stock < 10);
+                const ssnitAmount = basicSalary * ssnitRate;
+                const taxAmount = (basicSalary - ssnitAmount) * taxRate;
+                const netPay = basicSalary - ssnitAmount - taxAmount;
 
                 const handleLogin = (val) => {
                     val.preventDefault();
                     if(password === 'SUPER2025') setUser({ auth: true, role: 'ADMIN', name: 'Director' });
                     else alert("INVALID KEY");
                 };
-
-                const updateStock = (id, newVal) => {
-                    setInventory(inventory.map(item => item.id === id ? {...item, stock: parseInt(newVal) || 0} : item));
-                };
-
-                useEffect(() => {
-                    if (user.auth && activeDesk === 'DASHBOARD') {
-                        const ctx = document.getElementById('analyticsChart');
-                        if (chartRef.current) chartRef.current.destroy();
-                        chartRef.current = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                                datasets: [{ label: 'Revenue (GHS)', data: revenueData, backgroundColor: '#fbbf24' }]
-                            },
-                            options: { responsive: true, scales: { y: { beginAtZero: true, ticks: {color:'#94a3b8'} }, x: {ticks:{color:'#94a3b8'}} } }
-                        });
-                    }
-                }, [user.auth, activeDesk]);
 
                 if (!user.auth) {
                     return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
@@ -86,38 +64,57 @@
                             e('p', { className: 'text-[9px] text-yellow-500 font-bold' }, user.name)
                         ),
                         e('nav', { className: 'mt-4' },
-                            [{id:'DASHBOARD', n:'Dashboard', i:'📊'}, {id:'WHSE', n:'Warehouse', i:'📦'}].map(d => 
+                            [
+                                {id:'DASHBOARD', n:'Dashboard', i:'📊'}, 
+                                {id:'HR', n:'HR & Payroll', i:'👥'},
+                                {id:'WHSE', n:'Warehouse', i:'📦'}
+                            ].map(d => 
                                 e('div', { key: d.id, onClick: () => setActiveDesk(d.id), className: `nav-link ${activeDesk === d.id ? 'active' : ''}` }, d.i + ' ' + d.n)
                             )
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
-                        e('h2', { className: 'text-3xl font-black mb-6' }, activeDesk),
+                        e('h2', { className: 'text-3xl font-black mb-6 uppercase' }, activeDesk.replace('HR', 'HR & Payroll')),
                         
-                        activeDesk === 'DASHBOARD' && e('div', null,
-                            lowStockItems.length > 0 && e('div', { className: 'alert-pulse' }, 
-                                `⚠️ CRITICAL ALERT: ${lowStockItems.length} ITEM(S) BELOW SAFETY THRESHOLD`
-                            ),
-                            e('div', { className: 'glass-card' },
-                                e('h3', { className: 'text-xs font-bold mb-4 text-slate-400 uppercase' }, 'Warehouse Stock Distribution'),
-                                e('canvas', { id: 'analyticsChart' })
-                            )
+                        activeDesk === 'DASHBOARD' && e('div', { className: 'glass-card' },
+                            e('p', { className: 'text-slate-500' }, 'Welcome to the Command Center. Select a desk to begin operations.')
                         ),
 
-                        activeDesk === 'WHSE' && e('div', { className: 'glass-card' },
-                            e('h3', { className: 'text-lg font-bold mb-6' }, 'Inventory Stock Control'),
-                            inventory.map(item => e('div', { key: item.id, className: 'flex items-center justify-between mb-4 bg-slate-900 p-4 rounded' },
-                                e('span', {className: 'font-bold'}, item.name),
-                                e('div', { className: 'flex items-center gap-4' },
-                                    e('span', { className: item.stock < 10 ? 'text-red-500 font-bold' : 'text-emerald-500' }, `Qty: ${item.stock}`),
-                                    e('input', { 
-                                        type: 'number', 
-                                        className: 'input-box w-24', 
-                                        placeholder: 'New Qty',
-                                        onChange: (v) => updateStock(item.id, v.target.value)
-                                    })
+                        activeDesk === 'HR' && e('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-8' },
+                            // INPUT CARD
+                            e('div', { className: 'glass-card' },
+                                e('h3', { className: 'text-lg font-bold mb-4' }, 'Salary Calculator'),
+                                e('label', { className: 'text-[10px] text-slate-400' }, 'BASIC SALARY (GHS)'),
+                                e('input', { 
+                                    type: 'number', 
+                                    className: 'input-box mb-6', 
+                                    placeholder: 'Enter amount',
+                                    onChange: (v) => setBasicSalary(parseFloat(v.target.value) || 0)
+                                }),
+                                e('button', { className: 'btn-gold', onClick: () => alert("Payroll Entry Saved") }, 'APPROVE PAYSLIP')
+                            ),
+                            // BREAKDOWN CARD
+                            e('div', { className: 'glass-card bg-slate-900/50' },
+                                e('h3', { className: 'text-xs font-bold text-slate-500 mb-6 uppercase' }, 'Deduction Breakdown'),
+                                e('div', { className: 'space-y-4' },
+                                    e('div', { className: 'flex justify-between border-b border-slate-800 pb-2' }, 
+                                        e('span', { className: 'text-slate-400' }, 'Gross Salary'),
+                                        e('span', { className: 'font-bold' }, `GHS ${basicSalary.toLocaleString()}`)
+                                    ),
+                                    e('div', { className: 'flex justify-between border-b border-slate-800 pb-2' }, 
+                                        e('span', { className: 'text-red-400' }, 'SSNIT (5.5%)'),
+                                        e('span', { className: 'text-red-400' }, `- ${ssnitAmount.toLocaleString()}`)
+                                    ),
+                                    e('div', { className: 'flex justify-between border-b border-slate-800 pb-2' }, 
+                                        e('span', { className: 'text-red-400' }, 'PAYE Tax (15%)'),
+                                        e('span', { className: 'text-red-400' }, `- ${taxAmount.toLocaleString()}`)
+                                    ),
+                                    e('div', { className: 'flex justify-between pt-4' }, 
+                                        e('span', { className: 'text-emerald-500 font-bold' }, 'NET TAKE-HOME'),
+                                        e('span', { className: 'text-emerald-500 font-black text-xl' }, `GHS ${netPay.toLocaleString()}`)
+                                    )
                                 )
-                            ))
+                            )
                         )
                     )
                 );
