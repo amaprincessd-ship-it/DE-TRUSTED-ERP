@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | GL AUTO-POST ENGINE</title>
+    <title>DE-TRUSTED ERP | PETTY CASH ENGINE</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -14,26 +14,30 @@
         
         body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #f1f5f9; color: #1e293b; overflow: hidden; }
 
+        /* CORE HEADER */
         .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; height: 65px; }
-        .sidebar { background: #001f3f; height: calc(100vh - 65px); position: fixed; width: 260px; top: 65px; overflow-y: auto; padding-bottom: 100px; border-right: 1px solid rgba(255,255,255,0.1); }
+        
+        /* SIDEBAR */
+        .sidebar { background: #001f3f; height: calc(100vh - 65px); position: fixed; width: 260px; top: 65px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.1); }
         .nav-btn { width: 100%; text-align: left; padding: 14px 25px; font-size: 11px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-btn.active { background: #003366; color: #fbbf24; border-left: 6px solid #fbbf24; font-weight: 800; }
 
+        /* WORKSPACE */
         .workspace { margin-left: 260px; padding: 90px 40px 40px 40px; height: 100vh; overflow-y: auto; }
-        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 950px; }
+        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 900px; }
         
-        /* ACCOUNTING COMPONENTS */
-        .ledger-preview { background: #0f172a; border-radius: 4px; padding: 20px; font-family: 'Roboto Mono', monospace; margin-top: 25px; border-left: 4px solid #10b981; }
-        .ledger-table { width: 100%; color: #34d399; font-size: 11px; margin-top: 10px; border-collapse: collapse; }
-        .ledger-table th { text-align: left; border-bottom: 1px solid #1e293b; padding-bottom: 8px; color: #94a3b8; }
-        .ledger-table td { padding: 8px 0; }
-
+        /* PETTY CASH SPECIAL UI */
+        .balance-strip { background: #0f172a; color: #fff; padding: 15px 25px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-top: 4px solid #10b981; }
+        .balance-alert { background: #fef2f2; border: 1px solid #fee2e2; color: #991b1b; padding: 10px; border-radius: 4px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        
         .section-header { font-size: 11px; font-weight: 900; color: #1e40af; background: #eff6ff; padding: 8px 15px; border-radius: 4px; margin: 25px 0 15px 0; text-transform: uppercase; border-left: 4px solid #1e40af; }
         .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px; }
         .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #fff; margin-bottom: 15px; border-radius: 4px; }
-        
-        .status-badge { background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 99px; font-size: 9px; font-weight: 900; border: 1px solid #f59e0b; }
+        .readonly { background: #f8fafc; font-weight: bold; color: #64748b; }
+
+        .words-panel { background: #f0fdf4; border: 1px dashed #16a34a; color: #166534; padding: 12px; font-size: 12px; font-weight: 700; border-radius: 4px; margin-top: -10px; margin-bottom: 15px; }
         .btn-post { background: #001f3f; color: white; padding: 16px 45px; font-weight: 800; border-radius: 4px; text-transform: uppercase; cursor: pointer; border: none; }
+        .btn-blocked { background: #94a3b8; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -44,26 +48,35 @@
             const e = React.createElement;
             const { useState, useEffect } = React;
 
-            function App() {
-                const [gross, setGross] = useState(0);
-                const [targetAccount, setTargetAccount] = useState('Operating Expense');
-                const [creditAccount, setCreditAccount] = useState('Main Bank Account');
-                const [workflowStep, setWorkflowStep] = useState(1); // 1 to 4
-                const [isPosted, setIsPosted] = useState(false);
+            const gscToWords = (n) => {
+                if (!n || n <= 0) return "Zero Ghana Cedis Only";
+                const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+                const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+                const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+                let num = Math.floor(n);
+                let res = "";
+                if (num >= 1000) { res += ones[Math.floor(num/1000)] + " Thousand "; num %= 1000; }
+                if (num >= 100) { res += ones[Math.floor(num/100)] + " Hundred "; num %= 100; }
+                if (num >= 20) { res += tens[Math.floor(num/10)] + " "; num %= 10; }
+                if (num >= 10) { res += teens[num-10] + " "; num = 0; }
+                if (num > 0) { res += ones[num] + " "; }
+                return res.trim() + " Ghana Cedis Only";
+            };
 
-                // Simulation of auto-posting upon final approval
-                const handleApproval = () => {
-                    if (workflowStep < 4) {
-                        setWorkflowStep(prev => prev + 1);
-                    } else {
-                        setIsPosted(true);
-                    }
-                };
+            function App() {
+                const [amount, setAmount] = useState(0);
+                const [availableBalance, setAvailableBalance] = useState(4500.00); // Simulated Float
+                const DAILY_CEILING = 1000.00;
+                const DEPT_LIMIT = 2500.00;
+                
+                const isOverDaily = amount > DAILY_CEILING;
+                const isOverBalance = amount > availableBalance;
+                const isBlocked = isOverDaily || isOverBalance;
 
                 return e('div', null,
                     e('div', { className: 'bank-header shadow-lg' },
                         e('h1', { className: 'text-2xl font-black tracking-tighter' }, 'DE-TRUSTED ERP'),
-                        e('span', { className: 'bg-green-600 px-3 py-1 text-[10px] font-black rounded ml-4' }, 'AUTO_POST_ENGINE_READY')
+                        e('div', { className: 'bg-green-600 text-white px-3 py-1 text-[11px] font-black rounded' }, 'CASH_MGMT_v2.0_ACTIVE')
                     ),
 
                     e('div', { className: 'sidebar' },
@@ -74,93 +87,93 @@
 
                     e('main', { className: 'workspace' },
                         e('div', { className: 'bank-card' },
-                            e('div', { className: 'flex justify-between items-center border-b pb-6' },
+                            
+                            // BALANCE CHECK STRIP
+                            e('div', { className: 'balance-strip' },
                                 e('div', null,
-                                    e('h2', { className: 'text-3xl font-black' }, 'Payment Voucher'),
-                                    e('div', { className: 'flex gap-2 mt-2' }, 
-                                        e('span', { className: 'status-badge' }, `STEP ${workflowStep}: ${['Preparer', 'Reviewer', 'Approver', 'Controller'][workflowStep-1]}`),
-                                        isPosted && e('span', { className: 'bg-green-100 text-green-800 px-2 py-1 text-[9px] font-black rounded border border-green-300' }, 'POSTED TO GL')
-                                    )
+                                    e('p', { className: 'text-[10px] text-slate-400 font-bold uppercase' }, 'Global Petty Cash Float'),
+                                    e('p', { className: 'text-2xl font-black text-green-400' }, `GHS ${availableBalance.toLocaleString()}`)
                                 ),
                                 e('div', { className: 'text-right' },
-                                    e('p', { className: 'text-[10px] font-black text-slate-400' }, 'TRANSACTION REF'),
-                                    e('p', { className: 'text-xl font-mono font-bold' }, `TRX-${Date.now().toString().slice(-6)}`)
+                                    e('p', { className: 'text-[10px] text-slate-400 font-bold uppercase' }, 'Daily Spending Ceiling'),
+                                    e('p', { className: 'text-xl font-black' }, `GHS ${DAILY_CEILING.toLocaleString()}`)
                                 )
                             ),
 
-                            e('div', { className: 'section-header' }, '1. Accounting Destination (Debit Mapping)'),
+                            // BLOCKING ALERTS
+                            isOverBalance && e('div', { className: 'balance-alert mb-4' }, '⚠ BLOCKING_RULE: REQUEST EXCEEDS AVAILABLE CASH FLOAT.'),
+                            isOverDaily && e('div', { className: 'balance-alert mb-4' }, '⚠ CEILING_LIMIT: DAILY TRANSACTION LIMIT IS GHS 1,000.00.'),
+
+                            e('div', { className: 'flex justify-between items-center border-b pb-6' },
+                                e('div', null,
+                                    e('h2', { className: 'text-3xl font-black' }, 'Petty Cash Voucher'),
+                                    e('p', { className: 'text-xs text-slate-500 font-bold' }, 'Finance > Cash Management')
+                                ),
+                                e('div', { className: 'text-right' },
+                                    e('p', { className: 'text-[10px] font-black text-slate-400' }, 'VOUCHER ID'),
+                                    e('p', { className: 'text-xl font-mono font-bold' }, 'PCV-882-2025')
+                                )
+                            ),
+
+                            e('div', { className: 'section-header' }, '1. Requestor Information'),
                             e('div', { className: 'grid grid-cols-2 gap-x-10' },
                                 e('div', null,
-                                    e('label', { className: 'field-label' }, 'Account Type'),
-                                    e('select', { 
-                                        className: 'bank-input', 
-                                        onChange: (x) => setTargetAccount(x.target.value) 
-                                    }, ['Expense Account', 'Inventory Account', 'Fixed Asset Account'].map(o => e('option', {key:o}, o))),
-                                    e('label', { className: 'field-label' }, 'Gross Amount'),
-                                    e('input', { className: 'bank-input', type: 'number', value: gross, onChange: (x) => setGross(x.target.value) })
+                                    e('label', { className: 'field-label' }, 'Employee Name'),
+                                    e('input', { className: 'bank-input', placeholder: 'Search Employee...' }),
+                                    e('label', { className: 'field-label' }, 'Department'),
+                                    e('input', { className: 'bank-input', placeholder: 'Auto-fill from HR...' })
                                 ),
                                 e('div', null,
-                                    e('label', { className: 'field-label' }, 'Specific GL Code'),
-                                    e('select', { className: 'bank-input' }, 
-                                        ['6001 - Office Supplies', '1201 - Raw Materials', '1501 - Computer Equipment'].map(o => e('option', {key:o}, o))
+                                    e('label', { className: 'field-label' }, 'Employee ID (Auto-Fill)'),
+                                    e('input', { className: 'bank-input readonly', value: 'EMP-9902', readOnly: true }),
+                                    e('label', { className: 'field-label' }, 'Transaction Date'),
+                                    e('input', { className: 'bank-input', type: 'date', defaultValue: '2025-12-30' })
+                                )
+                            ),
+
+                            e('div', { className: 'section-header' }, '2. Expense Details'),
+                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Expense Category'),
+                                    e('select', { className: 'bank-input' }, ['Office', 'Transport', 'Fuel', 'Repairs', 'Misc'].map(o => e('option', {key:o}, o)))
+                                ),
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Purpose'),
+                                    e('textarea', { className: 'bank-input h-[80px]', placeholder: 'State specific reason for cash request...' })
+                                )
+                            ),
+
+                            e('div', { className: 'section-header' }, '3. Financials & Receipt'),
+                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Request Amount (Numeric)'),
+                                    e('input', { 
+                                        className: `bank-input ${isBlocked ? 'border-red-500 bg-red-50' : ''}`, 
+                                        type: 'number', 
+                                        onChange: (x) => setAmount(x.target.value) 
+                                    }),
+                                    e('div', { className: 'words-panel' }, gscToWords(amount))
+                                ),
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Receipt Upload (Mandatory)'),
+                                    e('div', { className: 'border-2 border-dashed border-slate-300 p-6 text-center' },
+                                        e('button', { className: 'text-xs font-bold text-blue-600' }, 'UPLOAD IMAGE/PDF')
                                     )
                                 )
                             ),
 
-                            e('div', { className: 'section-header' }, '2. Funding Source (Credit Mapping)'),
-                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
-                                e('div', null,
-                                    e('label', { className: 'field-label' }, 'Credit From'),
-                                    e('select', { 
-                                        className: 'bank-input', 
-                                        onChange: (x) => setCreditAccount(x.target.value)
-                                    }, ['Main Bank Account', 'Petty Cash Float', 'Mobile Money Wallet'].map(o => e('option', {key:o}, o)))
+                            e('div', { className: 'mt-10 pt-6 border-t flex justify-between items-center' },
+                                e('div', { className: 'text-[10px] font-mono text-slate-400' }, 
+                                    `RULE_ENG: ${isBlocked ? 'BLOCK_IF_INSUFFICIENT (ACTIVE)' : 'VALID_ENTRY'}`
                                 ),
-                                e('div', null,
-                                    e('label', { className: 'field-label' }, 'Reference Number'),
-                                    e('input', { className: 'bank-input', placeholder: 'Cheque or Transfer ID...' })
+                                e('div', { className: 'flex gap-4' },
+                                    e('button', { className: 'px-8 py-4 bg-slate-100 font-bold text-xs' }, 'SAVE AS DRAFT'),
+                                    e('button', { 
+                                        className: `btn-post ${isBlocked ? 'btn-blocked' : ''}`,
+                                        disabled: isBlocked,
+                                        onClick: () => alert('Petty Cash Approved and Paid.')
+                                    }, isBlocked ? 'Authorization Blocked' : 'Authorize & Disburse')
                                 )
-                            ),
-
-                            // LEDGER PREVIEW PANEL
-                            e('div', { className: 'ledger-preview' },
-                                e('div', { className: 'flex justify-between items-center border-b border-slate-800 pb-2' },
-                                    e('h3', { className: 'text-xs text-white' }, 'GENERAL LEDGER PREVIEW (AUTO-POST SIMULATION)'),
-                                    e('span', { className: 'text-[9px] text-slate-500' }, isPosted ? 'STATUS: FINALIZED' : 'STATUS: PENDING APPROVAL')
-                                ),
-                                e('table', { className: 'ledger-table' },
-                                    e('thead', null, 
-                                        e('tr', null, 
-                                            e('th', null, 'ACCOUNT'), 
-                                            e('th', null, 'DESCRIPTION'), 
-                                            e('th', null, 'DEBIT'), 
-                                            e('th', null, 'CREDIT')
-                                        )
-                                    ),
-                                    e('tbody', null, 
-                                        e('tr', null, 
-                                            e('td', null, targetAccount.toUpperCase()), 
-                                            e('td', null, 'Voucher Disbursement'), 
-                                            e('td', null, gross || '0.00'), 
-                                            e('td', null, '0.00')
-                                        ),
-                                        e('tr', null, 
-                                            e('td', null, creditAccount.toUpperCase()), 
-                                            e('td', null, 'Funding Settlement'), 
-                                            e('td', null, '0.00'), 
-                                            e('td', null, gross || '0.00')
-                                        )
-                                    )
-                                )
-                            ),
-
-                            e('div', { className: 'mt-10 pt-6 border-t flex justify-end gap-4' },
-                                !isPosted && e('button', { 
-                                    className: 'btn-post', 
-                                    onClick: handleApproval 
-                                }, workflowStep < 4 ? `Approve to ${['Reviewer', 'Approver', 'Controller'][workflowStep-1]}` : 'Authorize & Auto-Post to GL'),
-                                
-                                isPosted && e('button', { className: 'px-8 py-4 bg-green-600 text-white font-bold text-xs rounded' }, 'DOWNLOAD ACCOUNTING ADVICE')
                             )
                         )
                     )
