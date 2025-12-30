@@ -3,65 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | PRODUCTIVITY ROI</title>
+    <title>DE-TRUSTED ERP | TOTAL LOCK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
-        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
+        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; overflow-x: hidden; }
         
-        #hard-security-lock {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #020617; z-index: 999999 !important; display: flex;
-            align-items: center; justify-content: center;
+        /* THE "UNBREAKABLE" LAYER: FORCED FRONT-OF-SCREEN */
+        #security-engine {
+            position: fixed; top: 0; left: 0; 
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+            z-index: 2147483647 !important; /* Max CSS Z-index possible */
+            display: flex; align-items: center; justify-content: center;
         }
         
         .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; z-index: 50; }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
-        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 10px; }
-        .performance-spike { color: #10b981; animation: pulse-green 2s infinite; }
-        @keyframes pulse-green { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        .bar { height: 100%; transition: height 1s ease-in-out; }
+        .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 12px; border-radius: 6px; width: 100%; font-family: 'Roboto Mono', monospace; font-size: 16px; outline: none; }
+        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 14px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; }
+        .hiring-alert { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 20px; border-radius: 12px; animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     </style>
 </head>
 <body>
 
-    <div id="hard-security-lock">
-        <div class="glass-card w-96 text-center border-yellow-500/50 shadow-2xl">
-            <h1 class="text-3xl font-black mb-1 italic">DE-TRUSTED</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em]">PRODUCTIVITY SYNC</p>
-            <input type="password" id="gate-key" class="input-box bg-slate-900 border border-slate-700 text-white p-2 text-center mb-6 w-full" placeholder="••••" autofocus>
-            <button onclick="unlock()" class="btn-gold w-full py-4 uppercase font-black">Open Intelligence Suite</button>
+    <div id="security-engine">
+        <div class="glass-card w-full max-w-sm text-center border-yellow-500/50 shadow-[0_0_100px_rgba(251,191,36,0.15)]">
+            <h1 class="text-4xl font-black mb-2 italic">DE-TRUSTED</h1>
+            <p class="text-[10px] text-yellow-500 font-bold mb-10 tracking-[0.6em] uppercase">Security Core v43.0</p>
+            <div class="space-y-4">
+                <input type="password" id="gate-pass" class="input-box text-center border-yellow-500/20" placeholder="MASTER KEY" autofocus>
+                <button onclick="grantAccess()" class="btn-gold w-full text-sm tracking-widest">AUTHENTICATE SYSTEM</button>
+            </div>
+            <p class="text-[9px] text-slate-500 mt-8">ENCRYPTION: AES-256 | ACCESS: EXECUTIVE ONLY</p>
         </div>
     </div>
 
     <div id="root"></div>
 
     <script>
-        function unlock() {
-            if (document.getElementById('gate-key').value === 'SUPER2025') {
-                document.getElementById('hard-security-lock').style.display = 'none';
-            } else { alert("ACCESS DENIED"); }
+        function grantAccess() {
+            if (document.getElementById('gate-pass').value === 'SUPER2025') {
+                document.getElementById('security-engine').remove(); // Physically remove the gate from code
+            } else {
+                alert("CRITICAL SECURITY BREACH: INVALID KEY");
+                location.reload(); // Hard reset on fail
+            }
         }
+        // Enter Key Listener
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter' && document.getElementById('security-engine')) grantAccess();
+        });
 
         window.onload = function() {
             const e = React.createElement;
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('PERFORMANCE');
-                const [metrics] = useState([
-                    { name: "Mon", pre: 70, post: 85 },
-                    { name: "Tue", pre: 72, post: 88 },
-                    { name: "Wed", pre: 68, post: 92 },
-                    { name: "Thu", pre: 65, post: 94 },
-                    { name: "Fri", pre: 40, post: 98 } // Friday half-day impact
-                ]);
-
+                const [view, setView] = useState('SCALABILITY');
+                
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
                         e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
-                        e('nav', { className: 'mt-6 text-[10px] font-bold uppercase' },
-                            e('div', { onClick:()=>setView('PERFORMANCE'), className:`p-4 cursor-pointer ${view==='PERFORMANCE'?'bg-slate-800 text-yellow-500':''
+                        e('nav', { className: 'mt-6 text-[10px] font-bold uppercase tracking-tighter' },
+                            e('div', { onClick:()=>setView('SCALABILITY'), className:`p-4 cursor-pointer ${view==='SCALABILITY'?'bg-slate-800 text-yellow-500 border-l-4 border-yellow-500':''}`}, '📡 Hiring Predictor'),
+                            e('div', { onClick:()=>setView('PROD'), className:`p-4 cursor-pointer ${view==='PROD'?'bg-slate-800 text-yellow-500':''}`}, '📊 Productivity logs')
+                        )
+                    ),
+                    e('main', { className: 'main-content flex-1' },
+                        
+                        view === 'SCALABILITY' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Workforce Scalability Matrix'),
+                            
+                            e('div', {className:'hiring-alert mb-8 flex items-center gap-6'},
+                                e('div', {className:'text-4xl font-black'}, '⚠️'),
+                                e('div', null,
+                                    e('h3', {className:'text-lg font-black uppercase'}, 'Hiring Warning: Sales Department'),
+                                    e('p', {className:'text
