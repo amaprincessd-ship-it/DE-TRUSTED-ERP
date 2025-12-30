@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | PRODUCTION ARCHITECTURE</title>
+    <title>DE-TRUSTED ERP | CASH & CLAIMS ENGINE</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,33 +12,32 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        :root { --navy: #001f3f; --gold: #fbbf24; --slate: #f1f5f9; }
+        :root { --navy: #001f3f; --gold: #fbbf24; --slate: #f1f5f9; --crimson: #991b1b; }
         body { font-family: 'Ubuntu', sans-serif; background: var(--slate); color: #1e293b; margin: 0; }
 
-        /* PRODUCTION UI COMPONENTS */
         .app-shell { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
         .sidebar { background: var(--navy); color: white; padding: 20px; border-right: 4px solid var(--gold); }
         .main-content { overflow-y: auto; padding: 40px; }
 
-        .form-container { background: white; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; overflow: hidden; border: 1px solid #e2e8f0; }
-        .form-header { background: var(--navy); color: white; padding: 30px; border-bottom: 4px solid var(--gold); }
+        .form-container { background: white; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 950px; margin: 0 auto; border: 1px solid #e2e8f0; }
+        .form-header { background: var(--navy); color: white; padding: 25px 35px; display: flex; justify-content: space-between; align-items: center; }
         
-        .section-box { padding: 25px; border-bottom: 1px solid #f1f5f9; }
-        .section-title { font-size: 11px; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        .section-title::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+        .control-bar { background: #fffbeb; border-bottom: 1px solid #fde68a; padding: 12px 35px; display: flex; gap: 20px; font-size: 11px; font-weight: 800; color: #92400e; }
+        .section-box { padding: 30px 35px; border-bottom: 1px solid #f1f5f9; }
+        .section-title { font-size: 11px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 20px; border-left: 4px solid var(--navy); padding-left: 10px; }
 
-        .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
-        .label { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; }
-        .input { border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; font-family: 'Roboto Mono', monospace; font-size: 14px; transition: 0.2s; }
-        .input:focus { border-color: var(--navy); outline: none; box-shadow: 0 0 0 3px rgba(0,31,63,0.1); }
-
-        .financial-summary { background: #0f172a; color: white; padding: 30px; border-radius: 8px; margin-top: 20px; }
-        .net-amount { font-size: 32px; font-weight: 900; color: var(--gold); font-family: 'Roboto Mono'; }
+        .input-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .label { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .input { width: 100%; border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; font-family: 'Roboto Mono', monospace; font-size: 14px; }
+        .input:focus { border-color: var(--navy); outline: none; ring: 2px rgba(0,31,63,0.1); }
         
-        .audit-badge { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; font-family: 'Roboto Mono'; font-size: 10px; color: #64748b; }
-        .status-pill { padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .alert-block { background: #fef2f2; border: 1px solid #fee2e2; color: var(--crimson); padding: 15px; border-radius: 6px; margin-bottom: 20px; font-size: 12px; font-weight: 700; }
+        .words-output { background: #f0fdf4; border: 1px dashed #16a34a; color: #166534; padding: 15px; border-radius: 6px; font-size: 13px; font-weight: 700; margin-top: 10px; }
         
-        @media print { .no-print { display: none; } .app-shell { display: block; } .sidebar { display: none; } .main-content { padding: 0; } .form-container { box-shadow: none; border: none; } }
+        .btn-primary { background: var(--navy); color: white; padding: 14px 30px; border-radius: 6px; font-weight: 800; text-transform: uppercase; font-size: 12px; cursor: pointer; transition: 0.2s; }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+        .tab-btn { padding: 10px 20px; font-weight: 800; font-size: 12px; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn.active { border-bottom-color: var(--gold); color: var(--navy); }
     </style>
 </head>
 <body>
@@ -49,149 +48,6 @@
             const e = React.createElement;
             const { useState, useEffect } = React;
 
-            // CORE GSC: Figure-to-Words Engine
+            // GSC: Figure-to-Words Engine
             const toWords = (n) => {
-                const num = parseFloat(n) || 0;
-                if (num === 0) return "Zero Ghana Cedis Only";
-                const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-                const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-                const convert = (v) => {
-                    if (v < 20) return ones[v];
-                    if (v < 100) return tens[Math.floor(v / 10)] + (v % 10 !== 0 ? " " + ones[v % 10] : "");
-                    if (v < 1000) return ones[Math.floor(v / 100)] + " Hundred" + (v % 100 !== 0 ? " and " + convert(v % 100) : "");
-                    if (v < 1000000) return convert(Math.floor(v / 1000)) + " Thousand " + (v % 1000 !== 0 ? convert(v % 1000) : "");
-                    return v;
-                };
-                const cedis = Math.floor(num);
-                const pesewas = Math.round((num - cedis) * 100);
-                let res = convert(cedis) + " Ghana Cedis";
-                if (pesewas > 0) res += " and " + convert(pesewas) + " Pesewas";
-                return res + " Only";
-            };
-
-            function App() {
-                const [form, setForm] = useState({
-                    gross: 0, vat: 0, wht: 0, other: 0,
-                    payee: '', payeeType: 'Supplier', mode: 'Bank Transfer'
-                });
-                const [net, setNet] = useState(0);
-                const [userRole] = useState('ADMIN'); // Simulation for RBAC
-
-                useEffect(() => {
-                    const calculated = (parseFloat(form.gross) || 0) + (parseFloat(form.vat) || 0) - (parseFloat(form.wht) || 0) - (parseFloat(form.other) || 0);
-                    setNet(calculated > 0 ? calculated : 0);
-                }, [form]);
-
-                return e('div', { className: 'app-shell' },
-                    e('aside', { className: 'sidebar no-print' },
-                        e('h2', { className: 'text-xl font-black mb-10 tracking-tighter' }, 'DE-TRUSTED ERP'),
-                        ['Dashboard', 'Accounts Payable', 'Cash Management', 'General Ledger', 'Audit Logs', 'Settings'].map(item => 
-                            e('div', { key: item, className: 'py-3 text-sm font-bold opacity-70 hover:opacity-100 cursor-pointer' }, item.toUpperCase())
-                        )
-                    ),
-
-                    e('main', { className: 'main-content' },
-                        e('div', { className: 'form-container' },
-                            
-                            // 1. HEADER SECTION
-                            e('header', { className: 'form-header flex justify-between items-start' },
-                                e('div', null,
-                                    e('h1', { className: 'text-2xl font-black uppercase tracking-widest' }, 'Payment Voucher'),
-                                    e('p', { className: 'text-[11px] font-bold opacity-70 mt-1' }, 'DE-TRUSTED GROUP LTD | FINANCIAL SERVICES DIVISION')
-                                ),
-                                e('div', { className: 'text-right' },
-                                    e('div', { className: 'text-[10px] font-black opacity-60' }, 'REF NUMBER'),
-                                    e('div', { className: 'text-xl font-mono font-bold text-gold' }, 'PV-2025-1230-01'),
-                                    e('div', { className: 'status-pill bg-white/20 mt-2 inline-block' }, 'Pending Approval')
-                                )
-                            ),
-
-                            // 2. PARTY INFORMATION
-                            e('section', { className: 'section-box' },
-                                e('h3', { className: 'section-title' }, 'Party Information'),
-                                e('div', { className: 'grid grid-cols-2 gap-8' },
-                                    e('div', { className: 'input-group' },
-                                        e('label', { className: 'label' }, 'Payee Name'),
-                                        e('input', { className: 'input', placeholder: 'Enter Legal Entity Name', onChange: x => setForm({...form, payee: x.target.value}) })
-                                    ),
-                                    e('div', { className: 'input-group' },
-                                        e('label', { className: 'label' }, 'Payee Type'),
-                                        e('select', { className: 'input' }, ['Supplier', 'Contractor', 'Service Provider'].map(o => e('option', {key:o}, o)))
-                                    )
-                                )
-                            ),
-
-                            // 3. TRANSACTION DETAILS
-                            e('section', { className: 'section-box' },
-                                e('h3', { className: 'section-title' }, 'Transaction Details'),
-                                e('div', { className: 'grid grid-cols-2 gap-8' },
-                                    e('div', { className: 'input-group' },
-                                        e('label', { className: 'label' }, 'Payment Mode'),
-                                        e('select', { className: 'input' }, ['Bank Transfer', 'Cash', 'Cheque', 'Mobile Money'].map(o => e('option', {key:o}, o)))
-                                    ),
-                                    e('div', { className: 'input-group' },
-                                        e('label', { className: 'label' }, 'Invoice/Reference #'),
-                                        e('input', { className: 'input', placeholder: 'INV-000-000' })
-                                    ),
-                                    e('div', { className: 'input-group col-span-2' },
-                                        e('label', { className: 'label' }, 'Narration / Purpose'),
-                                        e('textarea', { className: 'input h-20', placeholder: 'Provide full context for payment...' })
-                                    )
-                                )
-                            ),
-
-                            // 4. FINANCIAL BREAKDOWN
-                            e('section', { className: 'section-box' },
-                                e('h3', { className: 'section-title' }, 'Financial Breakdown'),
-                                e('div', { className: 'grid grid-cols-4 gap-4' },
-                                    [['Gross Amount', 'gross'], ['VAT (+)', 'vat'], ['WHT (-)', 'wht'], ['Other (-)', 'other']].map(([label, key]) => 
-                                        e('div', { key, className: 'input-group' },
-                                            e('label', { className: 'label' }, label),
-                                            e('input', { 
-                                                className: 'input', 
-                                                type: 'number', 
-                                                value: form[key],
-                                                onChange: x => setForm({...form, [key]: x.target.value}) 
-                                            })
-                                        )
-                                    )
-                                ),
-                                e('div', { className: 'financial-summary' },
-                                    e('div', { className: 'flex justify-between items-end' },
-                                        e('div', null,
-                                            e('p', { className: 'text-[10px] font-black text-slate-400 uppercase mb-2' }, 'Net Amount Payable'),
-                                            e('p', { className: 'net-amount' }, `GHS ${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`)
-                                        ),
-                                        e('div', { className: 'text-right max-w-md' },
-                                            e('p', { className: 'text-[10px] font-black text-slate-400 uppercase mb-1' }, 'Amount in Words (Auto)'),
-                                            e('p', { className: 'text-xs italic font-bold text-slate-300' }, toWords(net))
-                                        )
-                                    )
-                                )
-                            ),
-
-                            // 5. APPROVAL & AUDIT (RBAC Protected)
-                            e('section', { className: 'section-box bg-slate-50' },
-                                e('div', { className: 'flex justify-between items-center' },
-                                    e('div', { className: 'flex gap-4' },
-                                        e('button', { className: 'bg-navy text-white px-8 py-3 rounded font-bold text-xs uppercase' }, 'Submit for Review'),
-                                        e('button', { className: 'border border-navy text-navy px-8 py-3 rounded font-bold text-xs uppercase no-print', onClick: () => window.print() }, 'Download PDF')
-                                    ),
-                                    userRole === 'ADMIN' && e('div', { className: 'audit-badge' },
-                                        e('p', null, 'Audit ID: ' + Math.random().toString(36).substring(7).toUpperCase()),
-                                        e('p', null, 'Captured IP: 102.176.44.11'),
-                                        e('p', null, 'Timestamp: ' + new Date().toLocaleString())
-                                    )
-                                )
-                            )
-                        )
-                    )
-                );
-            }
-
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(e(App));
-        };
-    </script>
-</body>
-</html>
+                const num = parseFloat(n) ||
