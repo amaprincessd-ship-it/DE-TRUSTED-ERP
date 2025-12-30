@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | BRANDED REPORTING</title>
+    <title>DE-TRUSTED ERP | ANALYTICS SUITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
         body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; overflow: hidden; }
@@ -16,8 +17,8 @@
         .nav-link { cursor: pointer; padding: 12px 20px; font-size: 11px; font-weight: 700; color: #64748b; border-left: 4px solid transparent; transition: 0.2s; text-transform: uppercase; }
         .nav-link.active { background: #1e293b; border-left: 4px solid #fbbf24; color: white; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
-        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; width: 100%; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-gold:hover { background: #eab308; }
+        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; width: 100%; cursor: pointer; border: none; }
+        canvas { max-height: 300px !important; }
     </style>
 </head>
 <body>
@@ -25,12 +26,13 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState } = React;
+            const { useState, useEffect, useRef } = React;
 
             function App() {
                 const [user, setUser] = useState({ auth: false, role: '', name: '' });
                 const [password, setPassword] = useState('');
                 const [activeDesk, setActiveDesk] = useState('DASHBOARD');
+                const chartRef = useRef(null);
 
                 const handleLogin = (val) => {
                     val.preventDefault();
@@ -40,62 +42,40 @@
                     else alert("INVALID KEY");
                 };
 
-                const generateBrandedPDF = () => {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    
-                    // ADDING A LOGO (Using a simple vector shape placeholder)
-                    // In a real scenario, you'd use a Base64 string for an image
-                    doc.setFillColor(251, 191, 36); // Gold color
-                    doc.rect(20, 15, 15, 15, 'F'); // This represents your Logo icon
-                    
-                    doc.setFont("helvetica", "bold");
-                    doc.setFontSize(24);
-                    doc.setTextColor(20, 30, 50);
-                    doc.text("DE-TRUSTED ERP", 40, 27);
-                    
-                    doc.setFontSize(10);
-                    doc.setTextColor(100);
-                    doc.text("Enterprise Intelligence & Logistics Solutions", 40, 32);
-
-                    // Divider
-                    doc.setDrawColor(200);
-                    doc.line(20, 40, 190, 40);
-                    
-                    // Metadata Table Header
-                    doc.setFillColor(245, 245, 245);
-                    doc.rect(20, 45, 170, 30, 'F');
-                    
-                    doc.setFontSize(11);
-                    doc.setTextColor(50);
-                    doc.text(`REPORT ID: #ERP-${Date.now().toString().slice(-6)}`, 25, 52);
-                    doc.text(`DATE GENERATED: ${new Date().toLocaleDateString()}`, 25, 59);
-                    doc.text(`ISSUED BY: ${user.name} (${user.role})`, 25, 66);
-                    
-                    // Body
-                    doc.setFontSize(14);
-                    doc.setTextColor(0);
-                    doc.text("EXECUTIVE SUMMARY", 20, 90);
-                    
-                    doc.setFont("helvetica", "normal");
-                    doc.setFontSize(11);
-                    doc.text("1. All system modules are currently synchronized with the central server.", 20, 100);
-                    doc.text("2. Financial auditing for the current month shows zero discrepancies.", 20, 110);
-                    doc.text("3. Warehouse stock levels are within the safety threshold.", 20, 120);
-
-                    // Footer
-                    doc.setFontSize(9);
-                    doc.setTextColor(150);
-                    doc.text("Confidential Document - Internal Use Only", 105, 285, null, null, "center");
-                    
-                    doc.save(`Branded_Report_${user.role}.pdf`);
-                };
+                // Initialize Chart when Dashboard is active
+                useEffect(() => {
+                    if (user.auth && activeDesk === 'DASHBOARD') {
+                        const ctx = document.getElementById('analyticsChart');
+                        if (chartRef.current) chartRef.current.destroy();
+                        
+                        chartRef.current = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                                datasets: [{
+                                    label: 'Revenue (GHS)',
+                                    data: [12000, 19000, 3000, 5000, 20000, 30000, 45000],
+                                    backgroundColor: '#fbbf24',
+                                    borderRadius: 5
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                                scales: {
+                                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                                }
+                            }
+                        });
+                    }
+                }, [user.auth, activeDesk]);
 
                 if (!user.auth) {
                     return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
                         e('form', { onSubmit: handleLogin, className: 'glass-card w-96 text-center' },
                             e('h1', { className: 'text-2xl font-black italic text-white mb-8' }, 'DE-TRUSTED ERP'),
-                            e('input', { type: 'password', className: 'input-box text-center mb-6 focus:border-yellow-500 outline-none', placeholder: 'ACCESS KEY', value: password, onChange: (v) => setPassword(v.target.value) }),
+                            e('input', { type: 'password', className: 'input-box text-center mb-6', placeholder: 'ACCESS KEY', value: password, onChange: (v) => setPassword(v.target.value) }),
                             e('button', { type: 'submit', className: 'btn-gold' }, 'INITIALIZE')
                         )
                     );
@@ -120,22 +100,25 @@
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
-                        e('header', { className: 'flex justify-between items-center mb-10' },
-                            e('h2', { className: 'text-4xl font-black text-white' }, activeDesk),
-                            e('div', { className: 'text-right' },
-                                e('p', { className: 'text-xs text-slate-500' }, 'SERVER STATUS'),
-                                e('p', { className: 'text-xs text-emerald-500 font-bold' }, 'CONNECTED')
-                            )
-                        ),
+                        e('h2', { className: 'text-4xl font-black mb-6' }, activeDesk),
                         activeDesk === 'DASHBOARD' && e('div', { className: 'grid grid-cols-1 gap-6' },
                             e('div', { className: 'glass-card' },
-                                e('h3', { className: 'text-lg font-bold mb-2' }, 'Generate Official Report'),
-                                e('p', { className: 'text-slate-400 mb-8 text-sm' }, 'Export system-wide data into a branded PDF document with corporate headers.'),
-                                e('button', { 
-                                    onClick: generateBrandedPDF,
-                                    className: 'btn-gold w-64' 
-                                }, 'Download Branded Report')
+                                e('h3', { className: 'text-sm font-bold mb-6 text-slate-400 uppercase tracking-widest' }, 'Weekly Revenue Analytics'),
+                                e('canvas', { id: 'analyticsChart' })
+                            ),
+                            e('div', { className: 'grid grid-cols-2 gap-6' },
+                                e('div', { className: 'glass-card text-center' }, 
+                                    e('p', { className: 'text-[10px] text-slate-500 font-bold' }, 'AVG DAILY SALES'),
+                                    e('p', { className: 'text-2xl font-black text-emerald-400' }, 'GHS 18,400')
+                                ),
+                                e('div', { className: 'glass-card text-center' }, 
+                                    e('p', { className: 'text-[10px] text-slate-500 font-bold' }, 'SYSTEM LOAD'),
+                                    e('p', { className: 'text-2xl font-black text-blue-400' }, '0.04ms')
+                                )
                             )
+                        ),
+                        activeDesk !== 'DASHBOARD' && e('div', { className: 'glass-card h-64 flex items-center justify-center border-dashed border-slate-700' },
+                            e('p', { className: 'text-slate-500 font-bold' }, `Workspace for ${activeDesk} is ready for data entry.`)
                         )
                     )
                 );
