@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED PAINT ERP | Master Data Command</title>
+    <title>DE-TRUSTED PAINT ERP | Professional Command</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -12,46 +12,66 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;600;800&display=swap');
+        /* OFFICIAL CORPORATE FONTS */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap');
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #f8fafc;
+            background-color: #f3f4f6;
             margin: 0;
-            padding: 0;
             overflow: hidden;
         }
 
-        .brand-title { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase; }
-        .sidebar-glass { background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(10px); }
-        .locked-card { border-left: 6px solid #2563eb; background: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* FORM STYLING */
-        input, select, textarea { 
-            background: #f1f5f9; 
-            border: 1px solid #e2e8f0; 
-            padding: 10px; 
-            font-size: 12px; 
-            font-weight: 600; 
-            width: 100%;
-            border-radius: 4px;
-            outline-color: #2563eb;
-        }
-        label { 
-            font-size: 9px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            color: #64748b; 
-            letter-spacing: 0.1em; 
-            margin-bottom: 4px; 
-            display: block; 
+        /* CAMBRIA STYLE HEADINGS (Official & Light) */
+        h1, h2, h3, .cambria-font { 
+            font-family: 'Cambria', 'Georgia', serif; 
+            font-weight: 400; 
+            color: #1e293b;
         }
 
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .sidebar-light { background: #f8fafc; border-right: 1px solid #e2e8f0; }
+        
+        .nav-button {
+            width: 100%;
+            text-align: left;
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #64748b;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            font-weight: 400;
+        }
+
+        .nav-button:hover { background: #f1f5f9; color: #0f172a; }
+        .nav-button.active { 
+            background: #ffffff; 
+            color: #2563eb; 
+            border-left: 3px solid #2563eb; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        /* FORM REFINEMENT */
+        label { 
+            font-size: 11px; 
+            color: #64748b; 
+            margin-bottom: 5px; 
+            display: block; 
+            font-weight: 400;
+        }
+
+        input, select, textarea { 
+            border: 1px solid #d1d5db; 
+            padding: 8px 12px; 
+            font-size: 13px; 
+            width: 100%;
+            border-radius: 4px;
+            color: #374151;
+            background: #fff;
+        }
+
+        input:focus, select:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+
+        .form-card { background: white; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -60,179 +80,170 @@
     <script type="text/babel">
         const { useState } = React;
 
-        const SidebarItem = ({ name, active, onClick }) => (
-            <button 
-                onClick={() => onClick(name)}
-                className={`w-full text-left p-3 mb-1 font-bold transition-all uppercase text-[9px] tracking-[0.15em] border-l-4 ${active === name ? 'bg-blue-600 text-white border-blue-400 shadow-lg' : 'text-slate-400 border-transparent hover:bg-slate-800 hover:text-blue-400'}`}
-            >
-                {name} DESK
-            </button>
-        );
-
-        const FormSection = ({ title, children, onSubmit }) => (
-            <div className="bg-white p-8 shadow-2xl rounded border border-slate-200 fade-in">
-                <h2 className="text-xl font-black uppercase tracking-tighter mb-6 border-b-4 border-slate-900 inline-block">{title}</h2>
-                <form onSubmit={(e) => { e.preventDefault(); alert('Data Logged Successfully'); }}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {children}
-                    </div>
-                    <button type="submit" className="mt-8 w-full bg-slate-900 text-white py-4 font-black uppercase text-xs tracking-widest hover:bg-blue-600 transition-all">Submit Entry to Central Server</button>
-                </form>
-            </div>
-        );
-
         const Dashboard = () => {
             const [currentDesk, setCurrentDesk] = useState('Executive');
+            
+            // Cascading Logic States
+            const [finType, setFinType] = useState("");
+            const [prodCat, setProdCat] = useState("");
+            const [hrAction, setHrAction] = useState("");
 
-            // --- EXECUTIVE DASHBOARD ---
+            const SidebarItem = ({ name }) => (
+                <button 
+                    onClick={() => setCurrentDesk(name)}
+                    className={`nav-button ${currentDesk === name ? 'active' : ''}`}
+                >
+                    {name} Desk
+                </button>
+            );
+
+            // --- DEPARTMENTS ---
+
             const ExecutiveDesk = () => (
                 <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Executive <span className="text-slate-500">Summary</span></h1>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div className="bg-white p-6 shadow-xl border-t-4 border-blue-600">
-                            <p className="text-[10px] font-black text-slate-400 uppercase">System Status</p>
-                            <p className="text-2xl font-black text-blue-600">LIVE</p>
-                        </div>
-                        <div className="bg-white p-6 shadow-xl border-t-4 border-green-600">
-                            <p className="text-[10px] font-black text-slate-400 uppercase">Data Points</p>
-                            <p className="text-2xl font-black text-green-600 italic">SECURE</p>
-                        </div>
+                    <h1 className="text-3xl mb-6">Corporate Executive Overview</h1>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="form-card"><p className="text-xs text-slate-400">Net Position</p><p className="text-2xl font-light">GHS 1,420,000</p></div>
+                        <div className="form-card"><p className="text-xs text-slate-400">Site Compliance</p><p className="text-2xl font-light text-green-600">Certified</p></div>
                     </div>
-                    <p className="bg-slate-900 text-white p-4 text-[10px] font-black uppercase tracking-widest">Select a desk to begin data collection.</p>
                 </div>
             );
 
-            // --- DEPARTMENTS WITH FORMS ---
-            
-            const FinanceForm = () => (
-                <FormSection title="Finance Entry (GRA Standard)">
-                    <div><label>Voucher Number</label><input type="text" placeholder="PV-2025-001" /></div>
-                    <div><label>Payment Mode</label><select><option>Bank Transfer</option><option>Mobile Money (Merchant)</option><option>Cheque</option><option>Cash</option></select></div>
-                    <div><label>Gross Amount (GHS)</label><input type="number" step="0.01" /></div>
-                    <div><label>Tax Component</label><select><option>Standard (VAT 15%, NHIL, GETFund)</option><option>WHT (3%)</option><option>Zero Rated</option></select></div>
-                    <div className="md:col-span-2"><label>Account Narration</label><textarea rows="2"></textarea></div>
-                </FormSection>
+            const FinanceDesk = () => (
+                <div className="fade-in">
+                    <h1 className="text-3xl mb-6">Financial Ledger Entry</h1>
+                    <div className="form-card">
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label>Transaction Type</label>
+                                <select onChange={(e) => setFinType(e.target.value)} value={finType}>
+                                    <option value="">Select Category...</option>
+                                    <option value="revenue">Revenue / Sales Inflow</option>
+                                    <option value="expense">Operational Expense (OPEX)</option>
+                                    <option value="statutory">Statutory / Tax Payment</option>
+                                </select>
+                            </div>
+                            
+                            {finType && (
+                                <div className="fade-in">
+                                    <label>Specific Ledger Sub-Account</label>
+                                    <select>
+                                        {finType === "revenue" && <><option>Direct Paint Sales</option><option>Distribution Commission</option></>}
+                                        {finType === "expense" && <><option>Raw Material Procurement</option><option>Electricity / Utility</option><option>Maintenance</option></>}
+                                        {finType === "statutory" && <><option>GRA VAT Return</option><option>SSNIT Contribution</option><option>GSA Annual Fee</option></>}
+                                    </select>
+                                </div>
+                            )}
+                            
+                            <div><label>Currency</label><select><option>GHS (Ghana Cedi)</option><option>USD (Reference Only)</option></select></div>
+                            <div><label>Total Amount</label><input type="number" placeholder="0.00" /></div>
+                        </div>
+                        <button className="mt-8 bg-slate-800 text-white px-6 py-2 rounded text-sm hover:bg-blue-700 transition-colors">Post to Ledger</button>
+                    </div>
+                </div>
             );
 
-            const ProductionForm = () => (
-                <FormSection title="Production Batch Log (GSA Standard)">
-                    <div><label>Batch ID</label><input type="text" placeholder="BP-25-EM-001" /></div>
-                    <div><label>Product Line</label><select><option>Premium Gloss</option><option>Weather Shield</option><option>Emulsion</option></select></div>
-                    <div><label>Raw Material Batch Ref</label><input type="text" /></div>
-                    <div><label>Actual Weight (KG)</label><input type="number" /></div>
-                    <div><label>Machine Op ID</label><input type="text" /></div>
-                    <div><label>Viscosity Check</label><select><option>Pass</option><option>Fail</option></select></div>
-                </FormSection>
+            const ProductionDesk = () => (
+                <div className="fade-in">
+                    <h1 className="text-3xl mb-6">Production Quality & Batching</h1>
+                    <div className="form-card">
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label>Product Category</label>
+                                <select onChange={(e) => setProdCat(e.target.value)} value={prodCat}>
+                                    <option value="">Select Category...</option>
+                                    <option value="water">Water Based (Emulsions)</option>
+                                    <option value="oil">Oil Based (Gloss/Enamel)</option>
+                                </select>
+                            </div>
+
+                            {prodCat && (
+                                <div className="fade-in">
+                                    <label>Verified Formula Standard</label>
+                                    <select>
+                                        {prodCat === "water" && <><option>Standard Emulsion GSA-01</option><option>Premium Weather-Shield GSA-04</option></>}
+                                        {prodCat === "oil" && <><option>High-Gloss Enamel GSA-09</option><option>Undercoat Primer GSA-12</option></>}
+                                    </select>
+                                </div>
+                            )}
+                            
+                            <div><label>Batch Size (Litres)</label><input type="number" /></div>
+                            <div><label>QA Supervisor ID</label><input type="text" /></div>
+                        </div>
+                    </div>
+                </div>
             );
 
-            const HRForm = () => (
-                <FormSection title="HR Personnel Enrolment">
-                    <div><label>Full Legal Name</label><input type="text" /></div>
-                    <div><label>Ghana Card PIN</label><input type="text" placeholder="GHA-XXXXXXXXX-X" /></div>
-                    <div><label>SSNIT Number</label><input type="text" /></div>
-                    <div><label>Bank Name & Branch</label><input type="text" /></div>
-                    <div><label>Basic Salary (GHS)</label><input type="number" /></div>
-                    <div><label>Department</label><select><option>Production</option><option>Logistics</option><option>Sales</option><option>Admin</option></select></div>
-                </FormSection>
-            );
+            const HRDesk = () => (
+                <div className="fade-in">
+                    <h1 className="text-3xl mb-6">Human Resource Management</h1>
+                    <div className="form-card">
+                        <div className="grid grid-cols-1 gap-6 mb-6">
+                            <div>
+                                <label>Primary HR Action</label>
+                                <select onChange={(e) => setHrAction(e.target.value)} value={hrAction}>
+                                    <option value="">Choose action...</option>
+                                    <option value="payroll">Monthly Payroll Processing</option>
+                                    <option value="new">Staff Onboarding</option>
+                                    <option value="leave">Leave & Absence Management</option>
+                                </select>
+                            </div>
+                        </div>
 
-            const LogisticsForm = () => (
-                <FormSection title="Logistics & Trip Log">
-                    <div><label>Vehicle Reg No.</label><input type="text" placeholder="GR-1234-25" /></div>
-                    <div><label>Driver Name</label><input type="text" /></div>
-                    <div><label>Trip Start Location</label><input type="text" value="Ashalaja Factory" readOnly /></div>
-                    <div><label>Destination</label><input type="text" /></div>
-                    <div><label>Waybill Reference</label><input type="text" /></div>
-                    <div><label>Fuel Level At Start</label><select><option>Full</option><option>Half</option><option>Refill Needed</option></select></div>
-                </FormSection>
-            );
-
-            const AdminForm = () => (
-                <FormSection title="Admin & Compliance Task">
-                    <div><label>Activity Type</label><select><option>Statutory License Renewal</option><option>Facility Maintenance</option><option>Meeting Minutes</option><option>Memo Distribution</option></select></div>
-                    <div><label>Agency Involved</label><select><option>GSA (Standard Authority)</option><option>EPA (Environment)</option><option>Ghana Fire Service</option><option>Municipal Authority</option></select></div>
-                    <div><label>Expiry Date (If License)</label><input type="date" /></div>
-                    <div><label>Cost of Maintenance</label><input type="number" /></div>
-                    <div className="md:col-span-2"><label>Memo/Minute Text Content</label><textarea rows="4"></textarea></div>
-                </FormSection>
-            );
-
-            const SalesForm = () => (
-                <FormSection title="Sales Order Entry">
-                    <div><label>Customer Name/ID</label><input type="text" /></div>
-                    <div><label>Contact Phone</label><input type="text" /></div>
-                    <div><label>Paint Type Ordered</label><select><option>Gloss</option><option>Emulsion</option><option>Undercoat</option></select></div>
-                    <div><label>Quantity (Units)</label><input type="number" /></div>
-                    <div><label>Tinting Code (RAL)</label><input type="text" /></div>
-                    <div><label>Total Price (GHS)</label><input type="number" /></div>
-                </FormSection>
-            );
-
-            const ProcurementForm = () => (
-                <FormSection title="Procurement Requisition">
-                    <div><label>Item Description</label><input type="text" /></div>
-                    <div><label>Supplier Name</label><input type="text" /></div>
-                    <div><label>Quantity Requested</label><input type="text" /></div>
-                    <div><label>Estimated Cost</label><input type="number" /></div>
-                    <div><label>Urgency Level</label><select><option>Critical (Stop-Work)</option><option>Routine</option><option>Project-Based</option></select></div>
-                </FormSection>
-            );
-
-            const WarehouseForm = () => (
-                <FormSection title="Warehouse Inventory In/Out">
-                    <div><label>Movement Type</label><select><option>Stock In (Inbound)</option><option>Stock Out (Production Issue)</option><option>Finished Goods Entry</option></select></div>
-                    <div><label>SKU / Item Name</label><input type="text" /></div>
-                    <div><label>Quantity Moved</label><input type="number" /></div>
-                    <div><label>Location (Aisle/Bin)</label><input type="text" /></div>
-                </FormSection>
-            );
-
-            const ReceptionForm = () => (
-                <FormSection title="Visitor/Reception Log">
-                    <div><label>Visitor Name</label><input type="text" /></div>
-                    <div><label>Purpose of Visit</label><select><option>Client Meeting</option><option>Supplier Delivery</option><option>Interview</option><option>Audit/Inspection</option></select></div>
-                    <div><label>Contact Person On-Site</label><input type="text" /></div>
-                    <div><label>Time In</label><input type="time" /></div>
-                </FormSection>
+                        {hrAction === 'payroll' && (
+                            <div className="fade-in grid grid-cols-2 gap-4 p-4 bg-slate-50 border rounded">
+                                <div><label>Pay Cycle</label><input type="month" /></div>
+                                <div><label>Include Overtime?</label><select><option>Yes</option><option>No</option></select></div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             );
 
             return (
                 <div className="flex h-screen overflow-hidden">
                     {/* SIDEBAR */}
-                    <div className="w-72 sidebar-glass flex flex-col justify-between p-6 z-10 shadow-2xl overflow-y-auto custom-scroll">
+                    <nav className="w-64 sidebar-light flex flex-col justify-between py-8">
                         <div>
-                            <div className="mb-10">
-                                <h1 className="brand-title text-white text-xl">DE-TRUSTED <span className="text-blue-500 font-normal italic uppercase">Paint</span></h1>
-                                <p className="text-[8px] text-slate-500 font-black tracking-widest uppercase mt-1">Ashalaja Site Master</p>
+                            <div className="px-8 mb-10">
+                                <h1 className="text-lg tracking-tight text-slate-800">DE-TRUSTED</h1>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-widest">Enterprise Resource</p>
                             </div>
-                            <SidebarItem name="Executive" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Administration" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Finance" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Logistics" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Procurement" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Production" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Sales" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Reception" active={currentDesk} onClick={setCurrentDesk} />
+                            <div className="space-y-1">
+                                <SidebarItem name="Executive" />
+                                <SidebarItem name="Administration" />
+                                <SidebarItem name="Finance" />
+                                <SidebarItem name="Logistics" />
+                                <SidebarItem name="Procurement" />
+                                <SidebarItem name="Production" />
+                                <SidebarItem name="Sales" />
+                                <SidebarItem name="Warehouse" />
+                                <SidebarItem name="HR" />
+                                <SidebarItem name="Reception" />
+                            </div>
                         </div>
-                        <div className="bg-slate-800/50 p-3 rounded mt-4 border border-slate-700">
-                            <p className="text-white text-[9px] font-mono">NODE: ASHALAJA_V2_DATA</p>
+                        <div className="px-8 text-[10px] text-slate-400">
+                            v2.1.0-STABLE <br/> Ashalaja Site Hub
                         </div>
-                    </div>
+                    </nav>
 
-                    {/* MAIN CONTENT AREA */}
-                    <main className="flex-1 overflow-y-auto p-16 relative bg-slate-100">
-                        {currentDesk === 'Executive' && <ExecutiveDesk />}
-                        {currentDesk === 'Administration' && <AdminForm />}
-                        {currentDesk === 'Finance' && <FinanceForm />}
-                        {currentDesk === 'Logistics' && <LogisticsForm />}
-                        {currentDesk === 'Procurement' && <ProcurementForm />}
-                        {currentDesk === 'Production' && <ProductionForm />}
-                        {currentDesk === 'Sales' && <SalesForm />}
-                        {currentDesk === 'Warehouse' && <WarehouseForm />}
-                        {currentDesk === 'HR' && <HRForm />}
-                        {currentDesk === 'Reception' && <ReceptionForm />}
+                    {/* MAIN */}
+                    <main className="flex-1 overflow-y-auto p-12 bg-white">
+                        <div className="max-w-4xl mx-auto">
+                            {currentDesk === 'Executive' && <ExecutiveDesk />}
+                            {currentDesk === 'Finance' && <FinanceDesk />}
+                            {currentDesk === 'Production' && <ProductionDesk />}
+                            {currentDesk === 'HR' && <HRDesk />}
+                            {['Administration', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'Reception'].includes(currentDesk) && (
+                                <div className="fade-in">
+                                    <h1 className="text-3xl mb-6">{currentDesk} Module</h1>
+                                    <div className="form-card">
+                                        <p className="text-sm text-slate-500 italic">This module is active. Please select an action from the dropdowns below to populate fields.</p>
+                                        <div className="mt-4"><label>Action Selection</label><select><option>Initialize New Record</option><option>View Historical Data</option></select></div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </main>
                 </div>
             );
