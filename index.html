@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED PAINT ERP | Safe-Boot Executive</title>
+    <title>DE-TRUSTED ERP | Auto-Sync Archive</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -11,110 +11,109 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7fa; margin: 0; padding: 0; color: #0f172a; }
-        h1, h2, h3, .cambria-light { font-family: 'Cambria', 'Georgia', serif; font-weight: 400 !important; color: #0f172a; }
-        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 280px; z-index: 50; border-right: 1px solid #1e293b; }
-        .executive-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2rem; }
-        input, select, textarea { border: 1px solid #cbd5e1; padding: 12px; font-size: 14px; width: 100%; border-radius: 6px; background: #fff; color: #1e293b; }
-        label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: block; letter-spacing: 0.05em; }
-        .nav-btn { width: 100%; text-align: left; padding: 16px 28px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; font-weight: 500; cursor: pointer; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; color: #0f172a; }
+        h1, h2, h3, .cambria-light { font-family: 'Cambria', 'Georgia', serif; font-weight: 400 !important; }
+        
+        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 280px; z-index: 50; }
+        .nav-btn { width: 100%; text-align: left; padding: 16px 28px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
         .nav-btn.active { background: #0f172a; color: #3b82f6; border-left-color: #3b82f6; font-weight: 700; }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .data-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .linked-item { cursor: pointer; transition: 0.2s; border-left: 3px solid transparent; }
+        .linked-item:hover { background: #f1f5f9; border-left-color: #2563eb; }
+        .linked-item.selected { background: #eff6ff; border-left-color: #2563eb; }
+
+        label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px; display: block; }
+        .auto-field { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 500; min-height: 40px; display: flex; align-items: center; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div id="root">
-        <div style="padding: 50px; text-align: center; font-family: sans-serif;">
-            <h2>System Initializing...</h2>
-            <p>If this screen persists, please check your internet connection for the CDN libraries.</p>
-        </div>
-    </div>
+    <div id="root"></div>
 
     <script>
-        // SAFE-BOOT WRAPPER: Ensures libraries are loaded before running
         window.onload = function() {
             const e = React.createElement;
             const useState = React.useState;
 
+            // --- DATABASE: THE LINKED DATA REPOSITORY ---
+            const MOCK_DATABASE = {
+                "GSA-2025": { title: "GSA Product Certification", agency: "Ghana Standards Authority", ref: "GSA/PAINT/001/25", status: "Active", expiry: "2026-06-12", notes: "Ashalaja Batch Alpha certified for ECOWAS distribution." },
+                "EPA-AUDIT": { title: "Environmental Audit Report", agency: "Environmental Protection Agency", ref: "EPA/ASH/AUD/44", status: "Review Pending", expiry: "2026-01-30", notes: "Annual chemical waste management audit for Ashalaja site." },
+                "ETLS-NIG": { title: "ECOWAS Certificate of Origin", agency: "MoTI / GRA", ref: "ETLS/GH/2025/998", status: "Authorized", expiry: "N/A", notes: "Duty-free export clearance for Lagos distribution center." },
+                "MSDS-GLO": { title: "Global Chemical Safety Sheet", agency: "HSSE Dept", ref: "MSDS/CHM/P-02", status: "Valid", expiry: "2027-12-01", notes: "GHS Standard label for solvent-based paints." }
+            };
+
             function AdministrationDesk() {
-                const [subTab, setSubTab] = useState('Compliance Hub');
-                const menuTabs = ['Compliance Hub', 'Trade & ECOWAS', 'Chemical & MSDS', 'Assets & Maintenance', 'HSSE Control'];
+                const [selectedDocID, setSelectedDocID] = useState("GSA-2025");
+                const currentData = MOCK_DATABASE[selectedDocID];
 
                 return e('div', { className: 'fade-in' },
-                    e('div', { className: 'mb-12 flex justify-between items-end border-b border-slate-200 pb-8' },
-                        e('div', null,
-                            e('h1', { className: 'text-5xl cambria-light tracking-tight' }, 'Corporate Operations Management'),
-                            e('p', { className: 'text-lg text-slate-500 mt-2 font-light' }, 'Ashalaja Industrial Complex | Administrative & Regulatory Command')
-                        )
+                    e('div', { className: 'mb-10 border-b pb-6' },
+                        e('h1', { className: 'text-4xl cambria-light' }, 'Executive Command & Print Archive'),
+                        e('p', { className: 'text-slate-500' }, 'Direct Linkage between Statutory Filings and Data Analysis')
                     ),
 
-                    e('div', { className: 'flex space-x-2 bg-slate-200 p-1.5 rounded-xl mb-10' },
-                        menuTabs.map(tab => 
-                            e('button', {
-                                key: tab,
-                                onClick: () => setSubTab(tab),
-                                className: `flex-1 py-3.5 px-6 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all ${subTab === tab ? 'bg-white text-blue-600 shadow-md' : 'text-slate-600 hover:text-slate-900'}`
-                            }, tab)
-                        )
-                    ),
-
-                    e('div', { className: 'grid grid-cols-1 lg:grid-cols-4 gap-10' },
-                        e('div', { className: 'lg:col-span-3' },
-                            e('div', { className: 'executive-card' },
-                                e('h2', { className: 'text-3xl cambria-light mb-10' }, subTab),
-                                
-                                subTab === 'Compliance Hub' && e('div', { className: 'space-y-8 fade-in' },
-                                    e('div', { className: 'grid grid-cols-2 gap-10' },
-                                        e('div', null, e('label', null, 'Statutory Body'), e('select', null, 
-                                            e('option', null, 'Ghana Standards Authority (GSA)'),
-                                            e('option', null, 'Environmental Protection Agency (EPA)'),
-                                            e('option', null, 'Registrar-General’s Dept (RGD)')
-                                        )),
-                                        e('div', null, e('label', null, 'Filing Type'), e('select', null, 
-                                            e('option', null, 'Product Quality Certification'),
-                                            e('option', null, 'Environmental Audit Report')
-                                        ))
-                                    ),
-                                    e('div', { className: 'grid grid-cols-2 gap-10' },
-                                        e('div', null, e('label', null, 'Cert #'), e('input', { type: 'text' })),
-                                        e('div', null, e('label', null, 'Deadline'), e('input', { type: 'date' }))
-                                    )
-                                ),
-
-                                subTab === 'Trade & ECOWAS' && e('div', { className: 'space-y-8 fade-in' },
-                                    e('div', { className: 'bg-blue-50 p-6 rounded-lg mb-6 border border-blue-100' },
-                                        e('h4', { className: 'text-xs font-bold text-blue-700 uppercase' }, 'ECOWAS ETLS Protocol Active'),
-                                        e('p', { className: 'text-xs text-blue-600 mt-1' }, 'Cross-referencing with Ministry of Trade (MoTI) portal...')
-                                    ),
-                                    e('div', { className: 'grid grid-cols-2 gap-10' },
-                                        e('div', null, e('label', null, 'Trade Instrument'), e('select', null, e('option', null, 'Certificate of Origin'), e('option', null, 'Certificate of Conformity'))),
-                                        e('div', null, e('label', null, 'Export Port'), e('input', { type: 'text', placeholder: 'e.g. Tema Harbor' }))
-                                    )
-                                ),
-
-                                subTab === 'Chemical & MSDS' && e('div', { className: 'space-y-8 fade-in' },
-                                    e('div', null, e('label', null, 'GHS Hazard Classification'), e('select', null, e('option', null, 'Category 3: Flammable Liquid'), e('option', null, 'Non-Hazardous Water-Base'))),
-                                    e('div', null, e('label', null, 'Chemical Properties Summary'), e('textarea', { rows: 4 }))
-                                ),
-
-                                e('div', { className: 'mt-12 pt-10 border-t flex justify-end gap-4' },
-                                    e('button', { className: 'px-8 py-4 bg-slate-100 text-[11px] font-bold rounded uppercase' }, 'Draft'),
-                                    e('button', { 
-                                        className: 'px-10 py-4 bg-blue-600 text-white text-[11px] font-bold rounded uppercase shadow-xl',
-                                        onClick: () => alert('Executive Authorization Granted')
-                                    }, 'Authorize & Archive')
+                    e('div', { className: 'grid grid-cols-12 gap-8' },
+                        // LEFT COLUMN: DOCUMENT LIST (THE HEADINGS)
+                        e('div', { className: 'col-span-4 space-y-3' },
+                            e('h3', { className: 'text-xs font-bold text-slate-400 uppercase tracking-widest mb-4' }, 'Select Heading to Pull Data'),
+                            Object.keys(MOCK_DATABASE).map(id => 
+                                e('div', { 
+                                    key: id,
+                                    onClick: () => setSelectedDocID(id),
+                                    className: `linked-item p-4 rounded-lg border shadow-sm ${selectedDocID === id ? 'selected shadow-md' : 'bg-white'}`
+                                },
+                                    e('p', { className: 'text-[9px] font-bold text-blue-600 uppercase mb-1' }, MOCK_DATABASE[id].agency),
+                                    e('h4', { className: 'text-sm font-semibold' }, MOCK_DATABASE[id].title),
+                                    e('p', { className: 'text-[10px] text-slate-400 mt-1' }, `Ref: ${MOCK_DATABASE[id].ref}`)
                                 )
                             )
                         ),
 
-                        e('div', { className: 'lg:col-span-1' },
-                            e('div', { className: 'bg-slate-900 text-white p-8 rounded-2xl shadow-2xl' },
-                                e('h3', { className: 'text-sm font-bold text-blue-400 uppercase mb-6 tracking-widest' }, 'Site Health'),
-                                e('div', { className: 'space-y-4 text-[11px]' },
-                                    e('div', { className: 'flex justify-between' }, e('span', null, 'GSA Compliance'), e('span', { className: 'text-emerald-400 font-bold' }, '100%')),
-                                    e('div', { className: 'flex justify-between' }, e('span', null, 'EPA Permit'), e('span', { className: 'text-amber-400 font-bold' }, 'RENEW REQ.')),
-                                    e('div', { className: 'flex justify-between' }, e('span', null, 'RGD Status'), e('span', { className: 'text-emerald-400 font-bold' }, 'CURRENT'))
+                        // RIGHT COLUMN: AUTOMATIC DATA DISPLAY (ANALYSIS & PRINT)
+                        e('div', { className: 'col-span-8' },
+                            e('div', { className: 'data-card fade-in', key: selectedDocID },
+                                e('div', { className: 'flex justify-between items-start mb-8 border-b pb-6' },
+                                    e('div', null,
+                                        e('h2', { className: 'text-3xl cambria-light' }, currentData.title),
+                                        e('p', { className: 'text-xs text-slate-400 mt-1 uppercase font-bold tracking-tighter' }, 'Linked Data Record')
+                                    ),
+                                    e('div', { className: 'flex gap-2' },
+                                        e('button', { 
+                                            className: 'px-4 py-2 bg-slate-900 text-white text-[10px] font-bold uppercase rounded shadow-lg flex items-center gap-2',
+                                            onClick: () => window.print()
+                                        }, 'Print Page'),
+                                        e('button', { 
+                                            className: 'px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase rounded shadow-lg',
+                                            onClick: () => alert('Generating CSV for Analysis...')
+                                        }, 'Export Analysis')
+                                    )
+                                ),
+
+                                e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
+                                    e('div', null, e('label', null, 'Filing Authority'), e('div', { className: 'auto-field' }, currentData.agency)),
+                                    e('div', null, e('label', null, 'Reference ID'), e('div', { className: 'auto-field' }, currentData.ref))
+                                ),
+
+                                e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
+                                    e('div', null, 
+                                        e('label', null, 'Compliance Status'), 
+                                        e('div', { className: `auto-field font-bold ${currentData.status.includes('Active') ? 'text-emerald-600' : 'text-amber-600'}` }, currentData.status)
+                                    ),
+                                    e('div', null, e('label', null, 'Expiry / Review Date'), e('div', { className: 'auto-field' }, currentData.expiry))
+                                ),
+
+                                e('div', null, 
+                                    e('label', null, 'Executive Analysis & Brief'),
+                                    e('div', { className: 'auto-field h-auto py-4 items-start leading-relaxed' }, currentData.notes)
+                                ),
+
+                                e('div', { className: 'mt-10 p-6 bg-slate-50 border-2 border-dashed rounded-xl text-center' },
+                                    e('p', { className: 'text-[10px] text-slate-400 font-bold uppercase mb-2' }, 'Scanned Document Attachment'),
+                                    e('div', { className: 'text-blue-600 text-xs font-semibold cursor-pointer underline' }, 'View_Scanned_Certificate_Copy.pdf')
                                 )
                             )
                         )
@@ -130,7 +129,7 @@
                     e('div', { className: 'sidebar-executive' },
                         e('div', { className: 'p-10 mb-6' },
                             e('h1', { className: 'cambria-light text-white text-3xl' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Master Command')
+                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Data Engine')
                         ),
                         desks.map(name => 
                             e('button', {
