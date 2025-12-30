@@ -3,47 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED PAINT ERP | Optimized UX</title>
+    <title>DE-TRUSTED PAINT ERP | Executive Administration</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; padding: 0; color: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fa; margin: 0; padding: 0; color: #0f172a; }
         h1, h2, h3, .cambria-light { font-family: 'Cambria', 'Georgia', serif; font-weight: 400 !important; color: #0f172a; }
         
-        .sidebar-glass { background: #0f172a; min-height: 100vh; position: fixed; width: 260px; z-index: 50; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        
-        /* User-Friendly Form Styling */
-        .form-group { transition: all 0.2s; border-radius: 6px; }
-        .form-group:focus-within { background: #f8fafc; border-color: #2563eb; }
-        
+        .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 280px; z-index: 50; border-right: 1px solid #1e293b; }
+        .executive-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2rem; transition: all 0.2s; }
+        .executive-card:hover { border-color: #2563eb; }
+
         input, select, textarea { 
-            border: 1px solid #cbd5e1; 
-            padding: 12px; 
-            font-size: 14px; 
-            width: 100%; 
-            border-radius: 6px; 
-            background: #fff; 
-            transition: border 0.2s;
+            border: 1px solid #cbd5e1; padding: 12px; font-size: 14px; width: 100%; border-radius: 6px; 
+            background: #fff; transition: all 0.2s; color: #1e293b;
         }
-        input:focus { border-color: #2563eb; outline: none; ring: 2px ring-blue-500; }
+        input:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         
-        label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #475569; margin-bottom: 6px; display: block; letter-spacing: 0.05em; }
+        label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: block; letter-spacing: 0.05em; }
         
-        .nav-btn { width: 100%; text-align: left; padding: 14px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #94a3b8; }
-        .nav-btn:hover { background: #1e293b; color: #fff; }
-        .nav-btn.active { background: #1e293b; color: #3b82f6; border-left-color: #3b82f6; font-weight: 600; }
+        .nav-btn { width: 100%; text-align: left; padding: 16px 28px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; font-weight: 500; }
+        .nav-btn:hover { color: #fff; background: #0f172a; }
+        .nav-btn.active { background: #0f172a; color: #3b82f6; border-left-color: #3b82f6; font-weight: 700; }
+        
+        .status-pill { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .pill-success { background: #ecfdf5; color: #065f46; }
+        .pill-warning { background: #fffbeb; color: #92400e; }
         
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .btn-submit { background: #0f172a; color: white; padding: 14px 32px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; transition: all 0.2s; }
-        .btn-submit:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
     </style>
 </head>
 <body>
@@ -54,33 +47,216 @@
         const useState = React.useState;
 
         function AdministrationDesk() {
-            const [subTab, setSubTab] = useState('Office Management');
+            const [subTab, setSubTab] = useState('Compliance Hub');
 
-            const menuItems = [
-                'Office Management', 
-                'Asset & Inventory', 
-                'Vendor & Procurement', 
-                'HSSE & Security', 
-                'Business Continuity'
+            const menuTabs = [
+                'Compliance Hub', 
+                'Trade & ECOWAS', 
+                'Chemical & MSDS', 
+                'Assets & Maintenance',
+                'HSSE Control'
             ];
 
-            return e('div', { className: 'fade-in max-w-5xl mx-auto' },
-                e('div', { className: 'mb-10' },
-                    e('h1', { className: 'text-5xl cambria-light mb-2' }, 'Administrative Portal'),
-                    e('p', { className: 'text-md text-slate-500' }, 'Manage core Ashalaja facility systems and international standard documentation.')
-                ),
-
-                // USER-FRIENDLY SUB-NAVIGATION (TABS)
-                e('div', { className: 'flex space-x-1 bg-slate-200 p-1 rounded-xl mb-8' },
-                    menuItems.map(item => 
-                        e('button', {
-                            key: item,
-                            onClick: () => setSubTab(item),
-                            className: `flex-1 py-3 px-4 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${subTab === item ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`
-                        }, item)
+            return e('div', { className: 'fade-in' },
+                // HEADER SECTION
+                e('div', { className: 'mb-12 flex justify-between items-end border-b border-slate-200 pb-8' },
+                    e('div', null,
+                        e('h1', { className: 'text-5xl cambria-light tracking-tight' }, 'Corporate Operations Management'),
+                        e('p', { className: 'text-lg text-slate-500 mt-2 font-light' }, 'Ashalaja Industrial Complex | Administrative & Regulatory Command')
+                    ),
+                    e('div', { className: 'text-right' },
+                        e('p', { className: 'text-[10px] uppercase font-bold text-slate-400 tracking-widest' }, 'Current Operating Date'),
+                        e('p', { className: 'text-xl font-semibold' }, 'Dec 30, 2025')
                     )
                 ),
 
-                e('div', { className: 'grid grid-cols-1 lg:grid-cols-3 gap-10' },
-                    e('div', { className: 'lg:col-span-2' },
-                        e('div', { className: 'bg-white rounded-2xl shadow-xl p-10 border border-slate-100' },
+                // EXECUTIVE TABS
+                e('div', { className: 'flex space-x-2 bg-slate-200 p-1.5 rounded-xl mb-10' },
+                    menuTabs.map(tab => 
+                        e('button', {
+                            key: tab,
+                            onClick: () => setSubTab(tab),
+                            className: `flex-1 py-3.5 px-6 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all ${subTab === tab ? 'bg-white text-blue-600 shadow-md' : 'text-slate-600 hover:text-slate-900'}`
+                        }, tab)
+                    )
+                ),
+
+                e('div', { className: 'grid grid-cols-1 lg:grid-cols-4 gap-10' },
+                    // MAIN CONTENT AREA
+                    e('div', { className: 'lg:col-span-3' },
+                        e('div', { className: 'executive-card' },
+                            e('div', { className: 'flex items-center justify-between mb-10 border-b pb-6' },
+                                e('h2', { className: 'text-3xl cambria-light' }, subTab),
+                                e('button', { className: 'bg-slate-900 text-white text-[10px] px-6 py-2 rounded font-bold uppercase tracking-widest' }, 'Print Statement')
+                            ),
+
+                            // 1. REGULATORY & COMPLIANCE (GRA, GSA, EPA, RGD)
+                            subTab === 'Compliance Hub' && e('div', { className: 'space-y-8 fade-in' },
+                                e('div', { className: 'grid grid-cols-2 gap-10' },
+                                    e('div', null, 
+                                        e('label', null, 'Statutory Body'),
+                                        e('select', null, 
+                                            e('option', null, 'Ghana Standards Authority (GSA)'),
+                                            e('option', null, 'Environmental Protection Agency (EPA)'),
+                                            e('option', null, 'Registrar-General’s Dept (RGD)'),
+                                            e('option', null, 'Ghana Revenue Authority (Customs)'),
+                                            e('option', null, 'Ministry of Trade & Industry (MoTI)')
+                                        )
+                                    ),
+                                    e('div', null, 
+                                        e('label', null, 'Filing Type'),
+                                        e('select', null, 
+                                            e('option', null, 'Product Quality Certification'),
+                                            e('option', null, 'Environmental Audit Report'),
+                                            e('option', null, 'Company Annual Returns'),
+                                            e('option', null, 'Import Declaration (ICUMS)')
+                                        )
+                                    )
+                                ),
+                                e('div', { className: 'grid grid-cols-3 gap-6' },
+                                    e('div', null, e('label', null, 'Certificate / Ref #'), e('input', { type: 'text', placeholder: 'REF-2025-XXXX' })),
+                                    e('div', null, e('label', null, 'Effective Date'), e('input', { type: 'date' })),
+                                    e('div', null, e('label', null, 'Renewal Deadline'), e('input', { type: 'date' }))
+                                )
+                            ),
+
+                            // 2. TRADE & ECOWAS (ETLS)
+                            subTab === 'Trade & ECOWAS' && e('div', { className: 'space-y-8 fade-in' },
+                                e('div', { className: 'bg-blue-50 p-6 rounded-lg mb-6 border border-blue-100' },
+                                    e('h4', { className: 'text-xs font-bold text-blue-700 uppercase mb-1' }, 'ETLS Protocol'),
+                                    e('p', { className: 'text-xs text-blue-600' }, 'Ensure all Certificates of Origin are cross-referenced with the MoTI digital portal.')
+                                ),
+                                e('div', { className: 'grid grid-cols-2 gap-10' },
+                                    e('div', null, 
+                                        e('label', null, 'Trade Instrument'),
+                                        e('select', null, 
+                                            e('option', null, 'Certificate of Origin (ECOWAS)'),
+                                            e('option', null, 'Certificate of Conformity'),
+                                            e('option', null, 'ETLS Approval Document')
+                                        )
+                                    ),
+                                    e('div', null, e('label', null, 'Export Destination'), e('input', { type: 'text', placeholder: 'Country & Port of Entry' }))
+                                ),
+                                e('div', null, e('label', null, 'Consignment Description'), e('textarea', { rows: 4 }))
+                            ),
+
+                            // 3. CHEMICAL STANDARDS & MSDS
+                            subTab === 'Chemical & MSDS' && e('div', { className: 'space-y-8 fade-in' },
+                                e('div', { className: 'grid grid-cols-2 gap-10' },
+                                    e('div', null, e('label', null, 'Product Formulation Code'), e('input', { type: 'text' })),
+                                    e('div', null, 
+                                        e('label', null, 'GHS Hazard Classification'),
+                                        e('select', null, e('option', null, 'Category 3: Flammable Liquid'), e('option', null, 'Category 2: Skin Irritant'), e('option', null, 'Non-Hazardous Water-Base'))
+                                    )
+                                ),
+                                e('div', null, e('label', null, 'Material Safety Data Sheet (MSDS) Detail'), e('textarea', { rows: 5 }))
+                            ),
+
+                            // 4. ASSETS & MAINTENANCE
+                            subTab === 'Assets & Maintenance' && e('div', { className: 'space-y-8 fade-in' },
+                                e('div', { className: 'grid grid-cols-2 gap-10' },
+                                    e('div', null, e('label', null, 'Asset Category'), e('select', null, e('option', null, 'Manufacturing Plant'), e('option', null, 'Utility / Gen-Set'), e('option', null, 'Laboratory Equipment'))),
+                                    e('div', null, e('label', null, 'Maintenance Type'), e('select', null, e('option', null, 'Preventative'), e('option', null, 'Corrective'), e('option', null, 'Calibration')))
+                                ),
+                                e('div', null, e('label', null, 'Service Provider Details'), e('input', { type: 'text' }))
+                            ),
+
+                            // 5. HSSE CONTROL
+                            subTab === 'HSSE Control' && e('div', { className: 'space-y-8 fade-in' },
+                                e('div', { className: 'grid grid-cols-2 gap-10' },
+                                    e('div', null, e('label', null, 'Incident Category'), e('select', null, e('option', null, 'Unsafe Act / Condition'), e('option', null, 'First Aid Injury'), e('option', null, 'Environmental Spill'))),
+                                    e('div', null, e('label', null, 'Safety Officer on Duty'), e('input', { type: 'text' }))
+                                ),
+                                e('div', null, e('label', null, 'Correction / Mitigation Action'), e('textarea', { rows: 4 }))
+                            ),
+
+                            // COMMON UPLOAD & AUTHORIZE
+                            e('div', { className: 'mt-12 pt-10 border-t border-slate-100' },
+                                e('label', null, 'Digital Archive (Certificate / Document Scan)'),
+                                e('div', { className: 'border-2 border-dashed border-slate-200 p-16 text-center rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer' },
+                                    e('p', { className: 'text-sm text-slate-500 font-medium' }, 'Drag & Drop PDF Evidence here'),
+                                    e('p', { className: 'text-[10px] text-slate-400 mt-2 uppercase' }, 'Maximum file size: 25MB (Encrypted storage)')
+                                )
+                            ),
+
+                            e('div', { className: 'mt-10 flex justify-end gap-4' },
+                                e('button', { className: 'px-8 py-4 bg-slate-100 text-slate-600 text-[11px] font-bold rounded uppercase tracking-widest' }, 'Save Workspace'),
+                                e('button', { 
+                                    className: 'px-10 py-4 bg-blue-600 text-white text-[11px] font-bold rounded uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all',
+                                    onClick: () => alert('Executive Filing Finalized')
+                                }, 'Authorize & Archive')
+                            )
+                        )
+                    ),
+
+                    // EXECUTIVE METRICS SIDEBAR
+                    e('div', { className: 'lg:col-span-1' },
+                        e('div', { className: 'space-y-6 sticky top-10' },
+                            e('div', { className: 'bg-slate-900 text-white p-8 rounded-2xl shadow-2xl' },
+                                e('h3', { className: 'text-sm font-bold text-blue-400 uppercase mb-6 tracking-widest' }, 'Compliance Health'),
+                                e('div', { className: 'space-y-6' },
+                                    e('div', null, 
+                                        e('div', { className: 'flex justify-between text-[10px] mb-2 font-bold uppercase text-slate-400' }, e('span', null, 'GSA Quality Status'), e('span', { className: 'text-emerald-400' }, '100%')),
+                                        e('div', { className: 'w-full bg-slate-800 h-1.5 rounded-full' }, e('div', { className: 'bg-emerald-500 h-1.5 rounded-full', style: { width: '100%' } }))
+                                    ),
+                                    e('div', null, 
+                                        e('div', { className: 'flex justify-between text-[10px] mb-2 font-bold uppercase text-slate-400' }, e('span', null, 'EPA Environmental'), e('span', { className: 'text-amber-400' }, '82%')),
+                                        e('div', { className: 'w-full bg-slate-800 h-1.5 rounded-full' }, e('div', { className: 'bg-amber-500 h-1.5 rounded-full', style: { width: '82%' } }))
+                                    ),
+                                    e('div', null, 
+                                        e('div', { className: 'flex justify-between text-[10px] mb-2 font-bold uppercase text-slate-400' }, e('span', null, 'RGD Returns'), e('span', { className: 'text-emerald-400' }, 'Current')),
+                                        e('div', { className: 'w-full bg-slate-800 h-1.5 rounded-full' }, e('div', { className: 'bg-emerald-500 h-1.5 rounded-full', style: { width: '100%' } }))
+                                    )
+                                )
+                            ),
+                            e('div', { className: 'executive-card p-6 border-l-4 border-l-red-500' },
+                                e('h3', { className: 'text-[10px] font-black text-slate-400 uppercase mb-3' }, 'Regulatory Alerts'),
+                                e('div', { className: 'space-y-3 text-xs' },
+                                    e('div', { className: 'pb-2 border-b' }, e('p', { className: 'font-bold' }, 'EPA Permit Review'), e('p', { className: 'text-red-500 mt-1' }, 'Expires in 15 days')),
+                                    e('div', null, e('p', { className: 'font-bold' }, 'MoTI Audit'), e('p', { className: 'text-slate-500 mt-1' }, 'Scheduled: Jan 2026'))
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        function App() {
+            const [currentDesk, setCurrentDesk] = useState('Administration');
+            const desks = ['Executive', 'Administration', 'Finance', 'Production', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'HR', 'Reception'];
+
+            return e('div', { className: 'flex' },
+                // SIDEBAR
+                e('div', { className: 'sidebar-executive' },
+                    e('div', { className: 'p-10 mb-6' },
+                        e('h1', { className: 'cambria-light text-white text-3xl leading-none' }, 'DE-TRUSTED'),
+                        e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Master Command')
+                    ),
+                    desks.map(name => 
+                        e('button', {
+                            key: name,
+                            onClick: () => setCurrentDesk(name),
+                            className: `nav-btn ${currentDesk === name ? 'active' : ''}`
+                        }, name)
+                    ),
+                    e('div', { className: 'mt-auto p-10' },
+                        e('div', { className: 'text-[9px] text-slate-500 font-mono italic' }, 'System Sec: SHA-256 Enabled'),
+                        e('div', { className: 'text-[9px] text-slate-500 font-mono italic mt-1' }, 'Node: Accra-Industrial-A1')
+                    )
+                ),
+                // MAIN CONTENT
+                e('main', { className: 'flex-1 ml-[280px] min-h-screen p-24 bg-[#f8fafc]' },
+                    currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'text-center py-40 fade-in' }, 
+                        e('h1', { className: 'text-6xl cambria-light text-slate-300' }, currentDesk),
+                        e('p', { className: 'text-slate-400 uppercase text-xs tracking-widest mt-6' }, 'Module Deployment in Progress...')
+                    )
+                )
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(e(App));
+    </script>
+</body>
+</html>
