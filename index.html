@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | SECURITY & AUDIT ENFORCED</title>
+    <title>DE-TRUSTED ERP | SECURE 16-MODULE ENGINE</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -17,7 +17,7 @@
         }
 
         /* BANK HEADER STYLE */
-        .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #d4af37; position: fixed; width: 100%; top: 0; z-index: 100; }
+        .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; }
         .search-bar { background: #ffffff; color: #333; border: none; padding: 8px 20px; border-radius: 4px; width: 450px; font-weight: 700; border: 2px solid #002366; outline: none; }
 
         /* SIDEBAR */
@@ -27,21 +27,18 @@
 
         /* MAIN CONTENT */
         .workspace { margin-left: 240px; padding: 100px 40px 40px 40px; }
-        .bank-card { background: white; border-radius: 2px; border: 1px solid #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 30px; position: relative; }
+        .bank-card { background: white; border-radius: 2px; border: 1px solid #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 30px; }
         
-        /* SECURITY UI ELEMENTS */
-        .audit-tag { font-family: 'Roboto Mono', monospace; font-size: 9px; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 3px; font-weight: bold; margin-left: 10px; }
-        .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; }
+        /* AUDIT & SECURITY UI */
+        .audit-badge { font-family: 'Roboto Mono', monospace; font-size: 9px; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 3px; font-weight: bold; }
+        .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
         .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #f8fafc; margin-bottom: 15px; border-radius: 4px; }
         .bank-input:focus { border-color: #001f3f; background: #fff; outline: none; }
-        
         .security-select { background: #fffbeb !important; border-left: 4px solid #fbbf24 !important; font-weight: bold; }
-        .validation-hint { font-size: 9px; color: #64748b; margin-top: -12px; margin-bottom: 10px; font-style: italic; }
+        .validation-hint { font-size: 9px; color: #64748b; margin-top: -12px; margin-bottom: 12px; font-style: italic; }
 
         .btn-post { background: #001f3f; color: white; padding: 14px 40px; font-weight: 800; border-radius: 2px; text-transform: uppercase; cursor: pointer; border: none; }
-        .btn-post:hover { background: #003366; }
-        
-        .role-badge { background: #fbbf24; color: #001f3f; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 900; }
+        .status-tag { background: #334155; color: #fff; padding: 2px 8px; border-radius: 3px; font-family: 'Roboto Mono', monospace; font-size: 10px; }
     </style>
 </head>
 <body>
@@ -52,56 +49,49 @@
             const e = React.createElement;
             const { useState } = React;
 
-            // REGISTRY WITH INTEGRATED SECURITY FIELDS
+            // --- THE 16 PROTECTED MODULES REGISTRY (ADMIN + FINANCE) ---
             const SYSTEM_REGISTRY = {
                 "Executive": { desk: "Executive", isWelcome: true },
                 
-                // FINANCE (ENFORCED)
+                // FINANCE (6 MODULES)
                 "Financial Reporting": { 
                     desk: "Finance", 
-                    title: "IFRS Consolidated Reporting Hub", 
-                    fields: ["Reporting Period (Search)", "IFRS Standard Applied", "Revenue Accounts (Auto)", "Cost of Sales (Auto)", "Total Assets", "Total Liabilities", "Equity (Locked)", "External Auditor Review Status", "Notes / Adjustments"] 
+                    title: "IFRS Financial Reporting Hub", 
+                    fields: ["Reporting Period (Search)", "IFRS Standard Mapping", "Revenue Accounts (Auto)", "Cost of Sales (Auto)", "Expenses (Auto)", "Total Assets", "Total Liabilities", "Equity (Auto-calc)", "External Audit Status", "Notes / Adjustments"] 
                 },
-                "Accounts Receivable": { 
-                    desk: "Finance", 
-                    title: "AR Ledger & Retrieval", 
-                    fields: ["Invoice # (Search)", "Customer Name", "Currency (Validation)", "Base Amount", "Total Receivable", "Supporting Document Ref", "Workflow Approval Status", "Entry Timestamp (Auto)"] 
-                },
-                "Cash & Bank": { 
-                    desk: "Finance", 
-                    title: "Bank Transaction Master", 
-                    fields: ["Transaction ID (Search)", "Bank Account Name", "Currency", "Debit/Credit Amount", "Approval Workflow Stage", "Upload Receipt (Link)", "Audit Trail Memo"] 
-                },
-                "Accounts Payable": { desk: "Finance", title: "Payables Control", fields: ["Voucher ID", "Supplier", "Invoice Date", "Net Payable", "Approval Status", "Tax Mapping (IFRS)"] },
-                "General Ledger": { desk: "Finance", title: "GL Entry Inquiry", fields: ["Entry ID", "Account Code", "Debit", "Credit", "Authorized By", "Posting Timestamp"] },
-                "Import Costing": { desk: "Finance", title: "Import Duty Analytics", fields: ["Import ID", "FOB Value", "Duty Mapping", "Currency Conversion Rate", "Status"] },
+                "Accounts Receivable": { desk: "Finance", title: "AR Ledger & Retrieval", fields: ["Invoice # (Search)", "Customer Name", "Currency (Validation)", "Base Amount", "Total Receivable", "Supporting Doc Ref", "Approval Workflow Status", "Entry Timestamp"] },
+                "Cash & Bank": { desk: "Finance", title: "Bank Transaction Master", fields: ["Transaction ID (Search)", "Account Name", "Amount", "Currency", "Receipt Upload Link", "Authorized By", "Reference #"] },
+                "Accounts Payable": { desk: "Finance", title: "Payables Control", fields: ["Voucher ID", "Supplier", "Invoice Date", "Net Payable", "Tax Compliance Status", "Workflow Approval"] },
+                "General Ledger": { desk: "Finance", title: "GL Entry Inquiry", fields: ["Entry ID", "Date", "Account Name", "Debit", "Credit", "Narration", "Journal Hash"] },
+                "Import Costing": { desk: "Finance", title: "Duty & Landed Cost", fields: ["Import ID", "FOB Value", "Duty Amount", "VAT Mapping", "Exchange Rate Validation", "Status"] },
 
-                // ADMINISTRATION (ENFORCED)
-                "Fixed Assets": { desk: "Administration", title: "Asset Registry Inquiry", fields: ["Asset ID (Search)", "Asset Name", "Purchase Cost", "Useful Life", "Depreciation Mapping (IFRS)", "Custodian Name", "Asset Status"] },
-                "Regulatory Master": { desk: "Administration", title: "Regulatory Master Hub", fields: ["Agency ID (Search)", "Agency Name", "Governing Act", "Status", "Last Audit Date"] },
-                "Statutory Setup": { desk: "Administration", title: "Statutory Requirements", fields: ["Stat ID", "Requirement Name", "Legal Code", "Compliance Verification"] },
-                "Permit Register": { desk: "Administration", title: "License & Permit Register", fields: ["Permit # (Search)", "Expiry Date", "Compliance Lead", "Digital Signature Required"] },
-                "Renewal Workflow": { desk: "Administration", title: "Renewal Lifecycle", fields: ["Permit Ref", "Approval Stage", "Fee Validation", "Officer Stamp"] },
-                "Insurance Master": { desk: "Administration", title: "Insurance Management", fields: ["Policy # (Search)", "Provider", "Premium Validation", "Coverage Status"] },
-                "Facility & Maintenance": { desk: "Administration", title: "Maintenance Log", fields: ["Machine ID", "Safety Standard Check", "Last Service Timestamp", "Status"] },
-                "Site Inspections": { desk: "Administration", title: "Inspection Registry", fields: ["Visit ID", "Findings Hash", "Score Validation", "Auditor ID"] },
-                "Compliance Breaches": { desk: "Administration", title: "Incident Registry", fields: ["Incident ID", "Penalty Amount", "Corrective Action Approval", "Root Cause Analysis"] }
+                // ADMINISTRATION (9 MODULES)
+                "Fixed Assets": { desk: "Administration", title: "Asset Registry Inquiry", fields: ["Asset ID (Search)", "Asset Name", "Category", "Purchase Cost", "Useful Life", "Depreciation Method (IFRS)", "Current Location", "Asset Custodian"] },
+                "Regulatory Master": { desk: "Administration", title: "Regulatory Master Hub", fields: ["Agency ID (Search)", "Agency Name", "Contact Person", "Governing Act", "Last Audit Date", "Compliance Status"] },
+                "Statutory Setup": { desk: "Administration", title: "Statutory Requirements", fields: ["Stat ID", "Requirement Name", "Legal Code", "Frequency", "Standard Fee", "Verifying Officer"] },
+                "Permit Register": { desk: "Administration", title: "License & Permit Register", fields: ["Permit # (Search)", "Permit Name", "Effective Date", "Expiry Date", "Department", "Digital Signature Status"] },
+                "Renewal Workflow": { desk: "Administration", title: "Renewal Lifecycle", fields: ["Permit Ref", "Next Renewal Due", "Associated Costs", "Approval Level", "Payment Reference"] },
+                "Insurance Master": { desk: "Administration", title: "Insurance Management", fields: ["Policy # (Search)", "Provider", "Coverage Type", "Premium Amount", "End Date", "Claim Status"] },
+                "Facility & Maintenance": { desk: "Administration", title: "Maintenance Log", fields: ["Machine ID", "Asset Name", "Last Service", "Next Due", "Technician ID", "Safety Standard Status"] },
+                "Site Inspections": { desk: "Administration", title: "Inspection Registry", fields: ["Visit ID", "Agency", "Date", "Findings", "Auditor ID", "Score Validation"] },
+                "Compliance Breaches": { desk: "Administration", title: "Incident Registry", fields: ["Incident ID", "Regulation Violated", "Penalty Amount", "Corrective Action Status", "Closure Approval"] }
             };
 
             const MOCK_DB = {
-                "Q4-2025": { "IFRS Standard Applied": "IFRS 15 / IAS 1", "Revenue Accounts (Auto)": "1,240,500.00", "Total Assets": "3,290,000.00", "External Auditor Review Status": "PENDING_REVIEW" },
-                "INV-9901": { "Customer Name": "Mainline Distribution", "Currency (Validation)": "GHS", "Total Receivable": "51,750.00", "Workflow Approval Status": "LEVEL_2_APPROVED", "Supporting Document Ref": "DOC-AR-2025-001" }
+                "Q4-2025": { "IFRS Standard Mapping": "IFRS 15 / IAS 1", "Revenue Accounts (Auto)": "1,240,500.00", "External Audit Status": "PENDING_REVIEW" },
+                "INV-9901": { "Customer Name": "Mainline Distribution", "Currency (Validation)": "GHS", "Total Receivable": "51,750.00", "Approval Workflow Status": "LEVEL_2_APPROVED" }
             };
 
             function App() {
                 const [currentDesk, setCurrentDesk] = useState('Finance');
                 const [activeSub, setActiveSub] = useState('Accounts Receivable');
                 const [form, setForm] = useState({});
-                const [role, setRole] = useState('Finance');
+                const [searchQuery, setSearchQuery] = useState('');
 
                 const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
 
                 const handleSearch = (val) => {
+                    setSearchQuery(val);
                     if (MOCK_DB[val]) {
                         if (val.includes("-202")) setActiveSub("Financial Reporting");
                         if (val.startsWith("INV")) setActiveSub("Accounts Receivable");
@@ -110,36 +100,30 @@
                 };
 
                 return e('div', null,
-                    e('div', { className: 'bank-header shadow-lg' },
-                        e('div', { className: 'flex items-center gap-6' },
+                    e('div', { className: 'bank-header shadow-md' },
+                        e('div', { className: 'flex items-center gap-4' },
                             e('h1', { className: 'text-xl font-black tracking-tighter' }, 'DE-TRUSTED BANK CORE'),
-                            e('span', { className: 'role-badge' }, `ROLE: ${role.toUpperCase()}`)
+                            e('span', { className: 'status-tag' }, 'AUDIT_TRAIL_ACTIVE')
                         ),
                         e('input', { 
                             className: 'search-bar', 
-                            placeholder: 'AUDIT SEARCH (ID, Period, or Reference)...',
+                            placeholder: 'GLOBAL RETRIEVAL (Invoice, Asset, or Reporting Period)...',
                             onChange: (x) => handleSearch(x.target.value)
                         }),
-                        e('div', { className: 'flex gap-4' },
-                            e('select', { className: 'bg-transparent text-xs font-bold border-none outline-none', onChange: (x) => setRole(x.target.value) },
-                                e('option', { value: 'Finance' }, 'Finance'),
-                                e('option', { value: 'Management' }, 'Management'),
-                                e('option', { value: 'Auditor' }, 'Auditor')
-                            )
-                        )
+                        e('div', { className: 'text-right text-[10px] font-bold' }, '30-DEC-2025 | SYSTEM_SECURED')
                     ),
 
                     e('div', { className: 'sidebar' },
                         ['Executive', 'Administration', 'Finance', 'Logistics', 'Procurement'].map(d => 
-                            e('div', { key: d, onClick: () => setCurrentDesk(d), className: `nav-btn ${currentDesk === d ? 'active' : ''}` }, d)
+                            e('div', { key: d, onClick: () => { setCurrentDesk(d); const first = Object.keys(SYSTEM_REGISTRY).find(k => SYSTEM_REGISTRY[k].desk === d); if(first) setActiveSub(first); }, className: `nav-btn ${currentDesk === d ? 'active' : ''}` }, d)
                         )
                     ),
 
                     e('main', { className: 'workspace' },
                         e('div', { className: 'flex gap-6' },
-                            e('div', { className: 'w-64' },
-                                e('div', { className: 'bg-white border border-slate-300 h-[650px] overflow-y-auto' },
-                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-900 border-b tracking-widest' }, 'SECURE REGISTRY'),
+                            e('div', { className: 'w-1/4' },
+                                e('div', { className: 'bg-white border border-slate-300 h-[700px] overflow-y-auto' },
+                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-900 border-b tracking-widest' }, 'CONSOLIDATED REGISTRY'),
                                     Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
                                         e('div', { key: name, onClick: () => { setActiveSub(name); setForm({}); }, className: `p-4 text-sm cursor-pointer hover:bg-blue-50 border-b ${activeSub === name ? 'bg-blue-100 font-bold text-blue-900' : ''}` }, name)
                                     )
@@ -147,34 +131,36 @@
                             ),
                             e('div', { className: 'flex-1' },
                                 e('div', { className: 'bank-card' },
-                                    schema.isWelcome ? e('div', { className: 'py-20 text-center' }, e('h2', { className: 'text-3xl text-slate-300 font-black' }, 'AUDIT ENGINE ACTIVE')) :
+                                    schema.isWelcome ? e('div', { className: 'py-20 text-center' }, e('h2', { className: 'text-3xl text-slate-300 font-black' }, 'SYSTEM READY')) :
                                     e('div', null,
                                         e('div', { className: 'flex justify-between border-b pb-4 mb-8' },
                                             e('h2', { className: 'text-2xl font-bold text-slate-800' }, schema.title),
-                                            e('span', { className: 'audit-tag' }, 'SECURITY_ENFORCED')
+                                            e('span', { className: 'audit-badge' }, 'SECURITY ENFORCED')
                                         ),
                                         e('div', { className: 'grid grid-cols-2 gap-x-10' },
                                             schema.fields.map(label => e('div', { key: label },
-                                                e('label', { className: 'field-label' }, label, label.includes("Approval") && e('span', { className: 'ml-2 text-[8px] bg-red-100 text-red-600 px-1' }, 'MANDATORY')),
-                                                label.includes("Status") || label.includes("Role") || label.includes("Applied") ? 
+                                                e('label', { className: 'field-label' }, 
+                                                    e('span', null, label),
+                                                    (label.includes("Approval") || label.includes("Status") || label.includes("Audit")) && e('span', { className: 'text-[8px] text-red-600 bg-red-50 px-1' }, 'MANDATORY')
+                                                ),
+                                                label.includes("Status") || label.includes("Workflow") || label.includes("Method") ? 
                                                     e('select', { className: 'bank-input security-select', value: form[label] || '' }, 
-                                                        e('option', null, '-- Select Approved State --'),
-                                                        e('option', { value: 'PENDING' }, 'Pending Review'),
+                                                        e('option', null, `-- Select --`),
+                                                        e('option', { value: 'PENDING' }, 'Pending Authorization'),
                                                         e('option', { value: 'APPROVED' }, 'Authorized'),
-                                                        e('option', { value: 'FLAGGED' }, 'Flagged for Audit')
+                                                        e('option', { value: 'FLAGGED' }, 'Requires Audit')
                                                     ) :
-                                                e('input', { 
-                                                    className: `bank-input ${label.includes("(Search)") ? 'border-blue-500' : ''} ${label.includes("Auto") ? 'bg-slate-100 italic' : ''}`,
-                                                    value: form[label] || "",
-                                                    placeholder: label.includes("Mapping") ? "Enter IFRS Standard Code..." : "",
-                                                    readOnly: label.includes("Auto")
+                                                e(label.includes("Notes") || label.includes("Findings") ? 'textarea' : 'input', { 
+                                                    className: `bank-input ${label.includes("(Search)") || label.includes("Period") ? 'border-blue-500' : ''} ${label.includes("Auto") ? 'bg-slate-100 italic' : ''}`,
+                                                    value: form[label] || (label.includes("(Search)") || label.includes("Period") ? searchQuery : ""),
+                                                    onChange: (x) => (label.includes("(Search)") || label.includes("Period")) ? handleSearch(x.target.value) : null
                                                 }),
-                                                label.includes("Mapping") && e('p', { className: 'validation-hint' }, 'Real-time validation against chart of accounts active.')
+                                                (label.includes("Mapping") || label.includes("IFRS")) && e('p', { className: 'validation-hint' }, 'Validation against international standards active.')
                                             ))
                                         ),
                                         e('div', { className: 'mt-10 flex justify-end gap-4 bg-slate-50 p-6 border-t' },
-                                            e('button', { className: 'px-6 py-3 bg-white border border-slate-300 text-xs font-bold' }, 'VIEW AUDIT LOG'),
-                                            e('button', { className: 'btn-post' }, 'Authorize & Commit')
+                                            e('button', { className: 'px-6 py-3 bg-white border border-slate-300 text-xs font-bold' }, 'VIEW TRANSACTION LOG'),
+                                            e('button', { className: 'btn-post' }, 'Authorize & Post')
                                         )
                                     )
                                 )
