@@ -3,62 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | LIVE STATUS</title>
+    <title>DE-TRUSTED ERP | PRODUCTION DEPLOYMENT</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Ubuntu:wght@700&display=swap');
-        body { background: #020617; color: #94a3b8; font-family: 'Roboto Mono', monospace; }
-        .pulse-green { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;700&display=swap');
+        
+        :root { --navy: #020617; --gold: #fbbf24; }
+        body { font-family: 'Ubuntu', sans-serif; background: #0f172a; margin: 0; color: #f8fafc; overflow: hidden; }
+
+        .sidebar { background: #020617; width: 260px; height: 100vh; position: fixed; border-right: 1px solid #1e293b; z-index: 50; }
+        .content { margin-left: 260px; height: 100vh; overflow-y: auto; background: #0f172a; }
+        
+        .deploy-button { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); transition: 0.3s; }
+        .deploy-button:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
+        
+        .log-terminal { font-family: 'Roboto Mono', monospace; font-size: 11px; background: #000; color: #10b981; padding: 20px; border-radius: 8px; border: 1px solid #1e293b; }
     </style>
 </head>
-<body class="p-10">
+<body>
     <div id="root"></div>
+
     <script>
         window.onload = function() {
             const e = React.createElement;
             const { useState, useEffect } = React;
 
             function App() {
-                const [logs, setLogs] = useState([
-                    "> [08:00] SYSTEM INITIALIZED",
-                    "> [08:01] CONNECTED TO POSTGRES_DB_PROD",
-                    "> [08:05] ALL 10 DESKS REPORTING READY"
-                ]);
+                const [isDeployed, setIsDeployed] = useState(false);
+                const [status, setStatus] = useState('SYSTEM IDLE');
+                const [progress, setProgress] = useState(0);
 
-                useEffect(() => {
-                    const timer = setInterval(() => {
-                        const modules = ["FINANCE", "HR", "SALES", "WHSE", "PROD", "LOGS"];
-                        const mod = modules[Math.floor(Math.random() * modules.length)];
-                        setLogs(prev => [...prev.slice(-8), `> [${new Date().toLocaleTimeString()}] ${mod} TRANSIT ACTIVE... OK`]);
-                    }, 3000);
-                    return () => clearInterval(timer);
-                }, []);
+                const handleDeploy = () => {
+                    setStatus('INITIALIZING DEPLOYMENT...');
+                    let val = 0;
+                    const interval = setInterval(() => {
+                        val += 2;
+                        setProgress(val);
+                        if (val === 20) setStatus('CONNECTING TO POSTGRESQL DB...');
+                        if (val === 40) setStatus('UPLOADING CHART OF ACCOUNTS...');
+                        if (val === 60) setStatus('CONFIGURING GRA TAX ENGINES...');
+                        if (val === 80) setStatus('SECURING DESK ACCESS (RBAC)...');
+                        if (val >= 100) {
+                            clearInterval(interval);
+                            setStatus('SYSTEM LIVE');
+                            setIsDeployed(true);
+                        }
+                    }, 50);
+                };
 
-                return e('div', { className: 'max-w-3xl mx-auto' },
-                    e('div', { className: 'border border-slate-800 rounded-lg overflow-hidden' },
-                        e('div', { className: 'bg-slate-900 p-4 border-b border-slate-800 flex justify-between' },
-                            e('span', { className: 'text-xs font-bold text-emerald-500' }, "● SYSTEM HEARTBEAT"),
-                            e('span', { className: 'text-[10px]' }, "DE-TRUSTED ERP v4.0.0")
+                return e('div', { className: 'flex' },
+                    // NAVIGATION
+                    e('aside', { className: 'sidebar p-8' },
+                        e('div', { className: 'mb-12' },
+                            e('h1', { className: 'text-2xl font-black text-white' }, 'DE-TRUSTED'),
+                            e('p', { className: 'text-[10px] text-yellow-500 font-bold tracking-widest' }, 'ERP PRODUCTION')
                         ),
-                        e('div', { className: 'p-6 bg-black h-64 overflow-hidden' },
-                            logs.map((log, i) => e('p', { key: i, className: 'text-xs mb-1' }, log)),
-                            e('p', { className: 'text-emerald-500 pulse-green' }, "> _")
+                        ['Admin Settings', 'Database Logs', 'User Access', 'API Keys', 'Backup/Restore'].map(m => 
+                            e('div', { key: m, className: 'py-3 text-xs font-bold text-slate-500 hover:text-white cursor-pointer' }, m.toUpperCase())
                         )
                     ),
-                    e('div', { className: 'grid grid-cols-3 gap-4 mt-6' },
-                        ['CPU: 12%', 'RAM: 2.4GB', 'DB Lateny: 14ms'].map(stat => 
-                            e('div', { key: stat, className: 'bg-slate-900 border border-slate-800 p-3 rounded text-[10px] text-center' }, stat)
+
+                    // MAIN STAGE
+                    e('main', { className: 'content flex-1 p-12' },
+                        !isDeployed ? e('div', { className: 'flex flex-col items-center justify-center h-full' },
+                            e('div', { className: 'text-center' },
+                                e('h2', { className: 'text-4xl font-black mb-4' }, 'Ready for Final Deployment?'),
+                                e('p', { className: 'text-slate-400 mb-10 max-w-md mx-auto' }, 
+                                    'This will initialize the global ledger, secure the database tables, and activate all 10 departmental desks.'),
+                                
+                                e('div', { className: 'w-64 bg-slate-800 h-2 rounded-full mb-8 mx-auto overflow-hidden' },
+                                    e('div', { className: 'bg-yellow-500 h-full transition-all duration-300', style: { width: `${progress}%` } })
+                                ),
+                                
+                                e('button', { 
+                                    onClick: handleDeploy,
+                                    className: 'deploy-button text-black px-12 py-4 rounded-full font-black text-sm uppercase' 
+                                }, 'Execute System Deployment'),
+                                
+                                e('p', { className: 'mt-6 text-[10px] font-mono text-slate-500' }, status)
+                            )
+                        ) : e('div', { className: 'animate-fade-in' },
+                            e('div', { className: 'flex justify-between items-end mb-10' },
+                                e('div', null,
+                                    e('h2', { className: 'text-3xl font-black text-emerald-500' }, 'SYSTEM ONLINE'),
+                                    e('p', { className: 'text-slate-400' }, 'Enterprise Resource Planning successfully deployed.')
+                                ),
+                                e('div', { className: 'text-right' },
+                                    e('p', { className: 'text-xs text-slate-500' }, 'SERVER UPTIME'),
+                                    e('p', { className: 'font-mono text-emerald-500' }, '00:00:14:22')
+                                )
+                            ),
+
+                            e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
+                                e('div', { className: 'bg-slate-800 p-8 rounded-xl border border-slate-700' },
+                                    e('h3', { className: 'text-xs font-black text-yellow-500 mb-4 uppercase' }, 'Connectivity Monitor'),
+                                    e('div', { className: 'space-y-3' },
+                                        ['Database (PostgreSQL)', 'Auth Server (JWT)', 'S3 Storage (Files)', 'GRA Tax Engine'].map(s => 
+                                            e('div', { key: s, className: 'flex justify-between text-xs' }, 
+                                                e('span', null, s), e('span', { className: 'text-emerald-500 font-bold' }, 'CONNECTED')
+                                            )
+                                        )
+                                    )
+                                ),
+                                e('div', { className: 'log-terminal' },
+                                    e('p', null, '> Booting Finance Desk... OK'),
+                                    e('p', null, '> Initializing General Ledger (IFRS)... OK'),
+                                    e('p', null, '> Activating 3-Way Match Validation... OK'),
+                                    e('p', null, '> All Systems Functional. Awaiting First Transaction.')
+                                )
+                            ),
+
+                            e('button', { 
+                                className: 'bg-white text-navy px-10 py-3 rounded font-black text-xs uppercase' 
+                            }, 'Open Executive Command Center')
                         )
-                    ),
-                    e('div', { className: 'mt-10 text-center' },
-                        e('h1', { className: 'text-white text-3xl font-black italic tracking-tighter mb-2', style: {fontFamily: 'Ubuntu'} }, "GO LIVE SUCCESSFUL"),
-                        e('p', { className: 'text-xs text-slate-500' }, "The enterprise is now digitally synchronized.")
                     )
                 );
             }
+
             const root = ReactDOM.createRoot(document.getElementById('root'));
             root.render(e(App));
         };
