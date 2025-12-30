@@ -190,27 +190,20 @@
                                 </div>
                                 <input type="text" placeholder="Tinting Code (RAL/NCS)" className="w-full p-4 bg-slate-50 border rounded font-bold outline-none" />
                             </div>
-                            <div className="mt-8 p-6 bg-slate-900 rounded text-white italic">
-                                <div className="flex justify-between text-xl font-black tracking-tighter uppercase"><span>Total Due</span><span>GHS 12,190.00</span></div>
+                            <div className="mt-8 p-6 bg-slate-900 rounded text-white italic text-right">
+                                <p className="text-[10px] uppercase text-blue-400">Total Due (Incl. VAT/NHIL/GETFund)</p>
+                                <p className="text-3xl font-black">GHS 12,190.00</p>
                             </div>
                             <button className="mt-6 w-full bg-blue-600 text-white py-5 font-black uppercase tracking-widest">Generate Waybill</button>
-                        </div>
-                        <div className="bg-white p-6 shadow rounded border-b-4 border-orange-500 h-fit">
-                            <p className="text-[10px] font-black text-slate-400 uppercase">Credit Status</p>
-                            <p className="text-lg font-black text-slate-800">ACCOUNT CLEAR</p>
                         </div>
                     </div>
                 </div>
             );
 
-            // --- MODULE: EXECUTIVE COCKPIT (MD's DESK) ---
+            // --- MODULE: EXECUTIVE ---
             const ExecutiveDesk = () => (
                 <div className="fade-in">
-                    <div className="mb-8">
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Executive <span className="text-slate-500">Cockpit</span></h1>
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 italic underline decoration-blue-500 decoration-2">Confidential | Managing Director Access</p>
-                    </div>
-                    
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Executive <span className="text-slate-500">Cockpit</span></h1>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                         <div className="exec-card p-6 shadow-xl">
                             <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Monthly Revenue</p>
@@ -220,55 +213,68 @@
                             <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Production Yield</p>
                             <p className="text-2xl font-black text-green-600 tracking-tighter">97.8%</p>
                         </div>
-                        <div className="exec-card p-6 shadow-xl">
-                            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Payroll Liability</p>
-                            <p className="text-2xl font-black text-slate-800 tracking-tighter">GHS 142,000</p>
-                        </div>
-                        <div className="exec-card p-6 shadow-xl">
-                            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">LTI (Safety Days)</p>
-                            <p className="text-2xl font-black text-orange-600 tracking-tighter">412 Days</p>
+                    </div>
+                    <div className="bg-slate-900 p-8 text-white shadow-2xl rounded-tr-[3rem]">
+                        <h3 className="font-black text-xs uppercase text-blue-400 mb-6 tracking-[0.2em]">Statutory Lock Dashboard</h3>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center p-3 border-b border-slate-800">
+                                <span className="text-xs">GRA PAYE Submission</span>
+                                <span className="bg-blue-600 px-2 py-1 rounded text-[10px] font-black uppercase">Validated</span>
+                            </div>
+                            <div className="flex justify-between items-center p-3">
+                                <span className="text-xs font-bold text-orange-400 italic text-[10px]">Financial Month-End Lock</span>
+                                <button className="bg-white text-slate-900 px-4 py-2 font-black text-[10px] uppercase hover:bg-orange-500 hover:text-white transition-all">Seal Record</button>
+                            </div>
                         </div>
                     </div>
+                </div>
+            );
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="bg-white p-8 shadow-2xl border-l-8 border-slate-900">
-                            <h3 className="font-black text-xs uppercase text-slate-500 mb-6">Net Profit/Loss (Real-Time IFRS)</h3>
-                            <div className="space-y-6">
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold mb-1"><span>Gross Revenue</span><span>GHS 842k</span></div>
-                                    <div className="w-full bg-slate-100 h-4 rounded-full overflow-hidden">
-                                        <div className="bg-blue-600 h-full w-[84%]"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold mb-1"><span>Operating Costs (Ashalaja)</span><span>GHS 310k</span></div>
-                                    <div className="w-full bg-slate-100 h-4 rounded-full overflow-hidden">
-                                        <div className="bg-slate-400 h-full w-[31%]"></div>
-                                    </div>
-                                </div>
-                                <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
-                                    <span className="text-[10px] font-black uppercase text-slate-400">Projected Net</span>
-                                    <span className="text-4xl font-black text-slate-900 tracking-tighter">GHS 532,500</span>
-                                </div>
+            // --- MODULE: TRAINING & SECURITY PROTOCOL (NEW) ---
+            const TrainingDesk = () => (
+                <div className="fade-in">
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Security & <span className="text-blue-600">Protocol</span></h1>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Operational Integrity Standards for Ashalaja Site</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="space-y-6">
+                            <div className="locked-card p-6 border-blue-900 bg-slate-50">
+                                <h3 className="font-black text-sm uppercase text-blue-900 mb-2 underline decoration-2">Protocol 01: The "Static" Rule</h3>
+                                <p className="text-xs text-slate-600 leading-relaxed font-bold uppercase tracking-tighter">
+                                    This ERP is designed to be immutable. Once a batch or sale is "Committed," the record is locked to the global audit trail. Staff must verify all input before clicking "Execute."
+                                </p>
+                            </div>
+                            <div className="locked-card p-6 border-orange-600 bg-slate-50">
+                                <h3 className="font-black text-sm uppercase text-orange-600 mb-2 underline decoration-2">Protocol 02: Statutory Duty</h3>
+                                <p className="text-xs text-slate-600 leading-relaxed font-bold uppercase tracking-tighter">
+                                    The HR desk calculates Ghana Revenue Authority (GRA) and SSNIT liabilities automatically. No manual adjustment of tax figures is permitted by site supervisors.
+                                </p>
                             </div>
                         </div>
 
-                        <div className="bg-slate-900 p-8 text-white shadow-2xl rounded-tr-[3rem]">
-                            <h3 className="font-black text-xs uppercase text-blue-400 mb-6 tracking-[0.2em]">Statutory Lock Dashboard</h3>
+                        <div className="bg-white p-8 shadow-2xl rounded-xl border border-slate-200">
+                            <h3 className="font-black text-xs uppercase text-slate-400 mb-6">Staff Training Status</h3>
                             <div className="space-y-4">
-                                <div className="flex justify-between items-center p-3 border-b border-slate-800">
-                                    <span className="text-xs">GRA PAYE Submission</span>
-                                    <span className="bg-blue-600 px-2 py-1 rounded text-[10px] font-black italic uppercase">Validated</span>
+                                <div className="flex items-center gap-4 p-4 border rounded hover:bg-slate-50 transition-all">
+                                    <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-black text-xs">01</div>
+                                    <div className="flex-1">
+                                        <p className="text-xs font-black uppercase tracking-widest">Inventory Management</p>
+                                        <p className="text-[10px] text-slate-400">Status: 100% Certified</p>
+                                    </div>
+                                    <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
                                 </div>
-                                <div className="flex justify-between items-center p-3 border-b border-slate-800">
-                                    <span className="text-xs">SSNIT Contributions (Tier 1 & 2)</span>
-                                    <span className="bg-blue-600 px-2 py-1 rounded text-[10px] font-black italic uppercase">Validated</span>
-                                </div>
-                                <div className="flex justify-between items-center p-3">
-                                    <span className="text-xs font-bold text-orange-400 italic">Financial Month-End Lock</span>
-                                    <button className="bg-white text-slate-900 px-4 py-2 font-black text-[10px] uppercase tracking-tighter hover:bg-orange-500 hover:text-white transition-all">Authenticate Seal</button>
+                                <div className="flex items-center gap-4 p-4 border rounded hover:bg-slate-50 transition-all">
+                                    <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-black text-xs">02</div>
+                                    <div className="flex-1">
+                                        <p className="text-xs font-black uppercase tracking-widest">Production Safety Lock</p>
+                                        <p className="text-[10px] text-slate-400">Status: 95% Verified</p>
+                                    </div>
+                                    <div className="h-2 w-2 bg-orange-500 rounded-full"></div>
                                 </div>
                             </div>
+                            <button className="w-full mt-6 py-4 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:bg-blue-600">Register New Training Session</button>
                         </div>
                     </div>
                 </div>
@@ -288,6 +294,7 @@
                             <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Sales" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
+                            <SidebarItem name="Training" active={currentDesk} onClick={setCurrentDesk} />
                         </div>
                         <div className="bg-slate-800/50 p-4 rounded border border-slate-700">
                             <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">System State</p>
@@ -302,6 +309,7 @@
                         {currentDesk === 'HR' && <HRDesk />}
                         {currentDesk === 'Warehouse' && <WarehouseDesk />}
                         {currentDesk === 'Sales' && <SalesDesk />}
+                        {currentDesk === 'Training' && <TrainingDesk />}
                     </main>
                 </div>
             );
@@ -311,4 +319,4 @@
         root.render(<Dashboard />);
     </script>
 </body>
-</html>
+</html>                   
