@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | ADM-COMP Module</title>
+    <title>DE-TRUSTED ERP | ADM-COMP Agency Hub</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -34,19 +34,15 @@
         .sub-link:hover { background: #fffbeb; color: #002366; }
         .sub-link.active { background: #fef3c7; color: #002366; font-weight: 700; border-left-color: #002366; }
 
-        .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 800px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); position: relative; }
-        
-        /* Typography - Size 12 Intro */
+        .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 850px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); }
         .intro-text { font-size: 12px; color: #002366; line-height: 1.8; font-weight: 500; }
         
         .field-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #002366; margin-bottom: 6px; display: block; }
-        .input-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; border-bottom: 2px solid #eab308; transition: 0.3s; }
-        .input-linked:focus { border-color: #002366; background: #fffdf5; }
+        .input-linked, .select-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; border-bottom: 2px solid #eab308; transition: 0.3s; }
+        .input-linked:focus, .select-linked:focus { border-color: #002366; background: #fffdf5; }
 
         .strat-card { border-left: 4px solid #fbbf24; background: #fffbeb; padding: 15px; margin-bottom: 12px; border-radius: 0 8px 8px 0; }
         .royal-badge { font-size: 8px; font-weight: 900; padding: 3px 10px; border-radius: 20px; background: #002366; color: #fbbf24; }
-        .status-pill { font-size: 9px; font-weight: 800; padding: 4px 12px; border-radius: 100px; text-transform: uppercase; }
-        
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -59,54 +55,31 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            // MODULE REGISTRY BASED ON ADM-COMP PRINCIPLES
-            const COMPLIANCE_REGISTRY = {
-                "Department Purpose": { 
-                    isWelcome: true, 
-                    title: "PURPOSE AND STRATEGIC ROLE", 
-                    table: "CORE_MANDATE" 
-                },
-                "Regulatory Master": { 
-                    title: "Regulatory Bodies (MASTER)", 
-                    table: "regulatory_bodies", 
-                    fields: ["Entity Name", "Governing Act", "Regulator Type", "Primary Contact", "Status (Active/Inactive)"], 
-                    desc: "Centralized directory of governing institutions (GRA, EPA, SSNIT, etc.)." 
-                },
-                "Statutory Setup": { 
-                    title: "Statutory Requirements", 
-                    table: "statutory_requirements", 
-                    fields: ["Requirement Name", "Legal Reference", "Renewal Cycle", "Risk Level (H/M/L)", "Mandatory (Y/N)"], 
-                    desc: "Specific legal mandates linked to regulatory bodies." 
-                },
-                "Permit Register": { 
-                    title: "License & Permit Register", 
-                    table: "licenses_permits", 
-                    fields: ["Permit Number", "Issue Date", "Expiry Date", "Responsible Dept", "Assigned User ID"], 
-                    desc: "Primary data entry for all active institutional certifications." 
-                },
-                "Renewal Console": { 
-                    title: "Renewal Transaction Hub", 
-                    table: "renewals", 
-                    fields: ["Last Renewal Date", "Next Due Date", "Reminder Buffer (Days)", "Evidence URL/File", "Approval Ref"], 
-                    desc: "Transaction logs tracking the continuity of corporate licenses." 
-                },
-                "Inspection Logs": { 
-                    title: "Site Inspection Records", 
-                    table: "inspections", 
-                    fields: ["Inspection Type", "Inspection Date", "Inspectors Present", "Risk Rating", "Corrective Actions"], 
-                    desc: "Tracking routine, follow-up, and incident-based regulatory visits." 
-                },
-                "Compliance Incidents": { 
-                    title: "Breach & Incident Registry", 
-                    table: "compliance_incidents", 
-                    fields: ["Incident Date", "Root Cause Analysis", "Immediate Action", "Management Approval", "Closure Status"], 
-                    desc: "Internal logs for handling regulatory threshold breaches." 
-                }
+            const GH_AGENCIES = [
+                "Ghana Revenue Authority (GRA)",
+                "Environmental Protection Agency (EPA)",
+                "Food and Drugs Authority (FDA)",
+                "Ghana Standards Authority (GSA)",
+                "Social Security & Nat. Insurance (SSNIT)",
+                "Registrar-General’s Department (RGD)",
+                "Ghana Fire Service (GFS)",
+                "Factories Inspectorate Department (FID)",
+                "Local Municipal Assembly (MA)"
+            ];
+
+            const MASTER_SCHEMA = {
+                "Department Purpose": { isWelcome: true, title: "STRATEGIC OVERVIEW" },
+                "Regulatory Master": { title: "Regulatory Bodies Registry", table: "regulatory_bodies", fields: ["Agency Name (Dropdown)", "Governing Act", "Regulator Type", "Primary Email", "Office Contact"], desc: "Master directory for institutional partners." },
+                "Statutory Setup": { title: "Statutory Requirements Master", table: "statutory_requirements", fields: ["Agency Name (Dropdown)", "Requirement Name", "Legal Reference Code", "Renewal Cycle", "Risk Rating"], desc: "Linking specific legal mandates to Ghanaian agencies." },
+                "Permit Register": { title: "Live License & Permit Register", table: "licenses_permits", fields: ["Agency Name (Dropdown)", "Permit Serial #", "Issue Date", "Expiry Date", "Department Lead"], desc: "Central repository for active corporate certifications." },
+                "Renewal Transaction": { title: "Permit Renewal Workflow", table: "renewals", fields: ["Agency Name (Dropdown)", "Current Permit #", "Last Renewal Date", "Next Expiry Date", "Renewal Status"], desc: "Tracking ongoing institutional compliance transactions." },
+                "Site Inspections": { title: "Regulatory Inspection Log", table: "inspections", fields: ["Agency Name (Dropdown)", "Inspection Type", "Inspectors Present", "Compliance Finding", "Correction Deadline"], desc: "Registry of physical site audits and official findings." },
+                "Compliance Breaches": { title: "Incident & Breach Registry", table: "compliance_incidents", fields: ["Agency Name (Dropdown)", "Incident Date", "Root Cause Analysis", "Immediate Mitigation", "Closure Ref"], desc: "Tracking legal or safety threshold violations." }
             };
 
             function AdministrationDesk() {
                 const [activeSub, setActiveSub] = useState('Department Purpose');
-                const schema = COMPLIANCE_REGISTRY[activeSub];
+                const schema = MASTER_SCHEMA[activeSub];
 
                 const SubMenuLink = (name) => e('div', {
                     key: name,
@@ -118,10 +91,10 @@
                     e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
                         e('div', null,
                             e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Administration Desk'),
-                            e('p', { className: 'text-blue-700 text-sm font-medium' }, 'ADM-COMP: Regulatory & Statutory Compliance Module')
+                            e('p', { className: 'text-blue-700 text-sm font-medium' }, 'ADM-COMP: Fully Activated Compliance Hub')
                         ),
                         e('div', { className: 'flex items-center gap-3' },
-                            e('span', { className: 'royal-badge' }, 'RBAC: ADMIN_ACCESS'),
+                            e('span', { className: 'royal-badge' }, 'MASTER_AGENCY_SYNC'),
                             e('div', { className: 'w-3 h-3 bg-blue-600 rounded-full animate-pulse' })
                         )
                     ),
@@ -131,82 +104,54 @@
                             e('div', { className: 'admin-sub-card shadow-lg' },
                                 e('div', { className: 'branch-label' }, 'Executive Overview'),
                                 ["Department Purpose"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Core Data Models'),
+                                e('div', { className: 'branch-label' }, 'Core Registries'),
                                 ["Regulatory Master", "Statutory Setup", "Permit Register"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Transaction Hub'),
-                                ["Renewal Console", "Inspection Logs", "Compliance Incidents"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Reporting'),
-                                e('div', { className: 'sub-link' }, 'Compliance Dashboard'),
-                                e('div', { className: 'sub-link' }, 'Audit Trail (Full Logs)')
+                                e('div', { className: 'branch-label' }, 'Transactional Forms'),
+                                ["Renewal Transaction", "Site Inspections", "Compliance Breaches"].map(SubMenuLink)
                             )
                         ),
 
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card fade-in', key: activeSub },
                                 schema.isWelcome ? e('div', null,
-                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, schema.title),
+                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Official Introduction'),
                                     e('p', { className: 'intro-text mb-8' }, 
                                         "The Administration Department of De-Trusted Paint Manufacturing Company serves as the central coordinating function responsible for ensuring organizational efficiency, regulatory compliance, corporate governance, internal controls, and operational continuity. In line with Ghanaian corporate practice, the department acts as:"
                                     ),
                                     e('div', { className: 'strat-card shadow-sm' }, 
                                         e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The institutional backbone of DE-TRUSTED PAINT'),
-                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Driving foundational excellence.')
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Standardizing internal operations for maximum efficiency.')
                                     ),
                                     e('div', { className: 'strat-card shadow-sm' }, 
                                         e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The custodian of policies, records, and compliance'),
-                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Upholding statutory integrity and legal standing.')
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Guardian of official policies, records, and statutory mandates.')
                                     ),
                                     e('div', { className: 'strat-card shadow-sm' }, 
-                                        e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The strategic interface'),
-                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Bridging management, regulators, and stakeholders.')
-                                    ),
-                                    e('div', { className: 'mt-12 p-6 bg-slate-50 border border-amber-200 rounded-xl' },
-                                        e('h5', { className: 'text-[10px] font-black text-amber-600 uppercase mb-3' }, 'Architectural Principles'),
-                                        e('ul', { className: 'text-[11px] grid grid-cols-2 gap-3 text-slate-500 font-medium' },
-                                            ['• Normalized Data Models', '• Master-Transaction Separation', '• Role-Based Access (RBAC)', '• Date-Driven Automation', '• Document Versioning', '• API-First Rest Design'].map(item => e('li', { key: item }, item))
-                                        )
+                                        e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The interface between management, staff, regulators, and external stakeholders'),
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'The bridge for harmonized corporate relationships.')
                                     )
                                 ) : e('div', null,
                                     e('div', { className: 'flex justify-between items-start mb-10' },
                                         e('div', null,
                                             e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
-                                            e('div', { className: 'flex gap-2 mt-2' }, 
-                                                e('span', { className: 'royal-badge' }, `MODULE_ID: ADM-COMP`),
-                                                e('span', { className: 'royal-badge' }, `TABLE: ${schema.table}`)
-                                            )
+                                            e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `DATABASE: ${schema.table}`)
                                         ),
-                                        e('div', { className: 'flex gap-2' },
-                                            e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-6 py-2.5 rounded-md hover:bg-blue-800 transition-all shadow-md' }, 'Add New Record'),
-                                            e('button', { className: 'border border-amber-400 text-amber-700 text-[9px] font-bold uppercase px-6 py-2.5 rounded-md' }, 'Generate Report')
-                                        )
+                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Save Form Record')
                                     ),
-                                    e('div', { className: 'mb-8 p-4 bg-blue-50 border-l-4 border-blue-900 rounded-r-md' },
-                                        e('p', { className: 'text-[13px] text-blue-800' }, schema.desc)
-                                    ),
-                                    e('div', { className: 'grid grid-cols-2 gap-x-8 gap-y-6' },
+                                    e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' },
                                         schema.fields.map(label => e('div', { key: label },
                                             e('label', { className: 'field-label' }, label),
-                                            e('input', { className: 'input-linked', placeholder: `Enter ${label}...` })
+                                            label.includes("(Dropdown)") ? 
+                                                e('select', { className: 'select-linked' }, 
+                                                    e('option', null, '-- Select Ghanaian Agency --'),
+                                                    GH_AGENCIES.map(agency => e('option', { key: agency }, agency))
+                                                ) : 
+                                                e('input', { className: 'input-linked', placeholder: `Enter ${label}...` })
                                         ))
                                     ),
-                                    e('div', { className: 'mt-12 border-t pt-8' },
-                                        e('h3', { className: 'text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest' }, 'Recent Transaction Audit'),
-                                        e('table', { className: 'w-full text-left text-[11px]' },
-                                            e('thead', { className: 'bg-slate-50 text-slate-500 uppercase' },
-                                                e('tr', null,
-                                                    ['Transaction ID', 'User', 'Action', 'Timestamp', 'Status'].map(h => e('th', { className: 'p-3', key: h }, h))
-                                                )
-                                            ),
-                                            e('tbody', null,
-                                                e('tr', { className: 'border-b border-slate-100' },
-                                                    e('td', { className: 'p-3 font-mono' }, 'TX-9921-A'),
-                                                    e('td', { className: 'p-3' }, 'Admin_Officer'),
-                                                    e('td', { className: 'p-3' }, 'License_Renewal'),
-                                                    e('td', { className: 'p-3' }, '2025-12-30 08:45'),
-                                                    e('td', { className: 'p-3' }, e('span', { className: 'bg-emerald-100 text-emerald-700 px-2 py-1 rounded-sm font-bold' }, 'VERIFIED'))
-                                                )
-                                            )
-                                        )
+                                    e('div', { className: 'mt-24 p-6 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-between opacity-70' },
+                                        e('p', { className: 'text-[10px] font-bold text-blue-900' }, 'All data entries are timestamped and logged under the active Executive Session.'),
+                                        e('span', { className: 'text-[9px] font-mono' }, `REF: ${schema.table.toUpperCase()}_LOG`)
                                     )
                                 )
                             )
