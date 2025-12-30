@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | MEDICAL FINANCE</title>
+    <title>DE-TRUSTED ERP | WELLNESS ROI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -11,7 +11,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
         body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
         
-        /* THE ULTIMATE OVERLAY LOCK - HIGHEST PRIORITY */
         #hard-security-lock {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #020617; z-index: 999999 !important; display: flex;
@@ -21,9 +20,9 @@
         .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; z-index: 50; }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
-        .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 10px; }
-        .finance-tag { font-size: 10px; font-family: 'Roboto Mono', monospace; color: #fbbf24; font-weight: bold; }
+        .roi-positive { color: #10b981; font-family: 'Roboto Mono', monospace; font-weight: bold; }
+        .rotation-slot { background: #020617; border: 1px solid #334155; padding: 8px; border-radius: 4px; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -31,9 +30,9 @@
     <div id="hard-security-lock">
         <div class="glass-card w-96 text-center border-yellow-500/50 shadow-2xl">
             <h1 class="text-3xl font-black mb-1 italic">DE-TRUSTED</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em]">FINANCE GATEWAY</p>
-            <input type="password" id="gate-key" class="input-box text-center mb-6 text-2xl border-yellow-500/40" placeholder="••••" autofocus>
-            <button onclick="unlock()" class="btn-gold w-full py-4 text-sm">SECURE LOGIN</button>
+            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em]">ROI ANALYTICS</p>
+            <input type="password" id="gate-key" class="input-box bg-slate-900 border border-slate-700 text-white p-2 text-center mb-6 w-full" placeholder="••••" autofocus>
+            <button onclick="unlock()" class="btn-gold w-full py-4">INITIALIZE PROJECTION</button>
         </div>
     </div>
 
@@ -51,56 +50,44 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('FINANCE');
-                const [medicalClaims] = useState([
-                    { id: 1, name: "Kofi Mensah", dept: "Sales", diagnosis: "High BP", cost: 1250, date: "2025-12-20" },
-                    { id: 2, name: "Ama Serwaa", dept: "Marketing", diagnosis: "Malaria", cost: 450, date: "2025-11-05" },
-                    { id: 3, name: "John Doe", dept: "Sales", diagnosis: "Stress", cost: 800, date: "2025-12-15" }
+                const [view, setView] = useState('ROI');
+                const [staff] = useState([
+                    { id: 1, name: "Kofi Mensah", dept: "Sales", wellnessDay: "First Friday" },
+                    { id: 2, name: "Ama Serwaa", dept: "Marketing", wellnessDay: "Second Friday" },
+                    { id: 3, name: "John Doe", dept: "Sales", wellnessDay: "Third Friday" },
+                    { id: 4, name: "Abena Mansa", dept: "IT/Ops", wellnessDay: "Fourth Friday" }
                 ]);
 
-                const totalSpend = medicalClaims.reduce((sum, item) => sum + item.cost, 0);
+                // Projected Savings Calculation
+                const currentMedicalSpend = 25000; // Mock Annual Spend
+                const projectedSavings = currentMedicalSpend * 0.22; // Estimated 22% reduction
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
                         e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
                         e('nav', { className: 'mt-6 text-[10px] font-bold uppercase' },
-                            e('div', { onClick:()=>setView('FINANCE'), className:`p-4 cursor-pointer ${view==='FINANCE'?'bg-slate-800 text-yellow-500':''}`}, '💰 Medical Expenses'),
-                            e('div', { onClick:()=>setView('HEALTH'), className:`p-4 cursor-pointer ${view==='HEALTH'?'bg-slate-800 text-yellow-500':''}`}, '🛡️ Health Monitor')
+                            e('div', { onClick:()=>setView('ROI'), className:`p-4 cursor-pointer ${view==='ROI'?'bg-slate-800 text-yellow-500':''}`}, '📈 Wellness ROI'),
+                            e('div', { onClick:()=>setView('ROTATION'), className:`p-4 cursor-pointer ${view==='ROTATION'?'bg-slate-800 text-yellow-500':''}`}, '🔄 Monthly Rotation')
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'FINANCE' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Insurance Expenditure Analysis'),
-                            
-                            e('div', {className:'grid grid-cols-3 gap-6 mb-8'},
-                                e('div', {className:'glass-card bg-emerald-500/10'}, e('p',{className:'text-[10px] text-slate-400 font-bold uppercase'},'Total Claims (Q4)'), e('h1',{className:'text-3xl font-black text-emerald-500'}, `GHS ${totalSpend.toLocaleString()}`)),
-                                e('div', {className:'glass-card bg-yellow-500/10'}, e('p',{className:'text-[10px] text-slate-400 font-bold uppercase'},'Avg Cost/Claim'), e('h1',{className:'text-3xl font-black text-yellow-500'}, `GHS ${(totalSpend/medicalClaims.length).toFixed(0)}`)),
-                                e('div', {className:'glass-card bg-red-500/10'}, e('p',{className:'text-[10px] text-slate-400 font-bold uppercase'},'High Risk Spend'), e('h1',{className:'text-3xl font-black text-red-500'}, `65%`))
-                            ),
-
-                            e('div', {className:'glass-card'},
-                                e('h3', {className:'text-xs font-bold text-slate-500 mb-4 uppercase font-mono'}, 'Detailed Insurance Claim Log'),
-                                e('table', {className:'w-full text-xs text-left'},
-                                    e('thead', null, e('tr', {className:'text-slate-500 border-b border-slate-700'}, 
-                                        e('th',{className:'pb-4'},'STAFF'), e('th',null,'DIAGNOSIS'), e('th',null,'DEPARTMENT'), e('th',null,'CLAIM AMOUNT')
-                                    )),
-                                    e('tbody', null, medicalClaims.map(c => e('tr', {key:c.id, className:'border-b border-slate-800/50'},
-                                        e('td', {className:'py-4 font-bold uppercase'}, c.name),
-                                        e('td', {className:'italic'}, c.diagnosis),
-                                        e('td', null, c.dept),
-                                        e('td', {className:'finance-tag'}, `GHS ${c.cost.toFixed(2)}`)
-                                    )))
+                        view === 'ROI' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase text-emerald-500'}, 'Projected Wellness ROI'),
+                            e('div', {className:'grid grid-cols-2 gap-8 mb-8'},
+                                e('div', {className:'glass-card'},
+                                    e('p', {className:'text-xs text-slate-400 uppercase font-bold'}, 'Annual Medical Liability'),
+                                    e('h1', {className:'text-4xl font-black text-white mt-2'}, `GHS ${currentMedicalSpend.toLocaleString()}`),
+                                    e('p', {className:'text-[10px] mt-4 text-slate-500'}, 'Based on Q3-Q4 recurring stress/fatigue claims.')
+                                ),
+                                e('div', {className:'glass-card border-emerald-500/30'},
+                                    e('p', {className:'text-xs text-emerald-500 uppercase font-bold'}, 'Projected Savings (Wellness Plan)'),
+                                    e('h1', {className:'text-4xl font-black text-emerald-400 mt-2'}, `GHS ${projectedSavings.toLocaleString()}`),
+                                    e('p', {className:'roi-positive mt-4 text-[10px]'}, '↑ 22% Reduction in Claims predicted')
                                 )
-                            )
-                        ),
-
-                        view === 'HEALTH' && e('div', {className:'text-center p-20 opacity-30 text-2xl font-black italic uppercase'}, 'Health Monitor Active')
-                    )
-                );
-            }
-            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
-        };
-    </script>
-</body>
-</html>
+                            ),
+                            e('div', {className:'glass-card'},
+                                e('h3', {className:'text-xs font-bold text-slate-500 mb-4 uppercase'}, 'Impact Analysis'),
+                                e('ul', {className:'text-sm space-y-3 text-slate-300 italic'},
+                                    e('li', null, "• Reduction in burnout-related sick leave (Projected: -15 days/yr)"),
+                                    e('li', null, "• Optimization
