@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Total Operations Suite</title>
+    <title>DE-TRUSTED ERP | Finance & Operations Suite</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -33,14 +33,11 @@
         .sub-link.active { background: #fef3c7; color: #002366; font-weight: 700; border-left-color: #002366; }
 
         .workspace-card { background: #ffffff; border-radius: 16px; border: 1px solid #eab308; padding: 2.5rem; min-height: 850px; box-shadow: 0 10px 30px -5px rgba(184, 134, 11, 0.1); }
-        .intro-text { font-size: 12px; color: #002366; line-height: 1.8; font-weight: 500; }
-        
         .field-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #002366; margin-bottom: 6px; display: block; }
         .input-linked, .select-linked { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; border-bottom: 2px solid #eab308; transition: 0.3s; }
         .input-linked:focus, .select-linked:focus { border-color: #002366; background: #fffdf5; }
 
-        .strat-card { border-left: 4px solid #fbbf24; background: #fffbeb; padding: 15px; margin-bottom: 12px; border-radius: 0 8px 8px 0; }
-        .royal-badge { font-size: 8px; font-weight: 900; padding: 3px 10px; border-radius: 20px; background: #002366; color: #fbbf24; }
+        .finance-summary { background: #002366; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .prepared-by { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-top: 20px; }
     </style>
 </head>
@@ -52,74 +49,22 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            const GH_AGENCIES = ["GRA", "EPA", "FDA", "GSA", "SSNIT", "RGD", "GFS", "FID", "Municipal Assembly"];
-
-            const FULL_OPERATIONS_SCHEMA = {
-                "Department Purpose": { isWelcome: true, title: "EXECUTIVE OVERVIEW" },
-                
-                // PART A: RAW MATERIAL
-                "RM Receipt (GRN)": { 
-                    title: "Raw Material Goods Receipt (GRN)", table: "raw_material_grn", 
-                    fields: ["Reference No.", "Source Type (Dropdown)", "Supplier Name", "Invoice No.", "Raw Material", "Batch Number", "Quantity Received", "Unit Cost", "Expiry Date", "Warehouse Location", "Inspection Status", "GPS Address", "Remarks"], 
-                    desc: "Capture every raw material received (local or imported)." 
+            const FULL_SCHEMA = {
+                // FINANCE DESK - GENERAL LEDGER
+                "General Ledger": { 
+                    title: "General Ledger Entry Console", table: "finance_gl", 
+                    fields: ["Entry ID (Auto)", "Date", "Transaction Type (Dropdown)", "Account Code (CoA)", "Account Name", "Debit Amount", "Credit Amount", "Currency", "Exchange Rate", "Reference No.", "Prepared By", "Approved By", "Status (Dropdown)", "Description / Narration"], 
+                    desc: "Centralized financial transaction hub with automated dual-entry verification.",
+                    isFinance: true
                 },
-                "RM Stock Adjustment": { 
-                    title: "Stock Adjustment Form", table: "stock_adjustments", 
-                    fields: ["Reference No.", "Raw Material", "Adjustment Type", "Quantity Adjusted (+/-)", "Reason", "Approved By", "Evidence Upload (Ref)", "Remarks"], 
-                    desc: "Record losses, damages, or inventory corrections." 
-                },
-                "RM Production Issue": { 
-                    title: "Material Issue to Production", table: "production_issues", 
-                    fields: ["Reference No.", "Production Batch No.", "Raw Material", "Quantity Issued", "Unit", "Production Supervisor", "Remarks"], 
-                    desc: "Track materials issued to factory floor batches." 
-                },
-
-                // PART B: IMPORT MANAGEMENT
-                "Import Consignment": { 
-                    title: "Import Consignment Master", table: "import_consignment", 
-                    fields: ["Reference No.", "Supplier Name", "Country of Origin", "Import Type", "Proforma Invoice No.", "Import Permit Ref", "ETA Date", "Clearing Agent", "Incoterms", "Currency", "Status"], 
-                    desc: "End-to-end tracking of international material shipments." 
-                },
-                "Import Costing": { 
-                    title: "Duty & Landed Cost Breakdown", table: "import_costing", 
-                    fields: ["Import ID (Ref)", "FOB Value", "Freight Cost", "Insurance Cost", "Import Duty (GRA)", "VAT", "NHIL / GETFund", "Total Landed Cost", "Cost Allocation Method", "Remarks"], 
-                    desc: "GRA compliance and precise landed cost calculation." 
-                },
-                "Import Clearance": { 
-                    title: "Import Clearance & Receipt", table: "import_clearance", 
-                    fields: ["Import ID (Ref)", "Reference No.", "Clearing Date", "Customs Entry No.", "Quantity Cleared", "Warehouse Location", "GPS Address", "Remarks"], 
-                    desc: "Final confirmation of port arrival into warehouse." 
-                },
-
-                // PART C: LOCAL DISTRIBUTION
-                "Distributor Master": { 
-                    title: "Customer & Distributor Registry", table: "customer_master", 
-                    fields: ["Customer ID", "Customer Name", "Customer Type", "Contact Person", "Phone Number", "Rank/Designation", "Delivery Address", "GPS Address", "Region", "Credit Terms", "Remarks"], 
-                    desc: "Centralized database for all outbound distribution recipients." 
-                },
-                "Sales/Dist. Request": { 
-                    title: "Sales Order & Request", table: "sales_orders", 
-                    fields: ["Sales Order ID", "Customer Name (Dropdown)", "Order Date", "Delivery Date", "Product Name", "Quantity Ordered", "Unit Price", "Total Value", "Approved By", "Remarks"], 
-                    desc: "Authorization for finished paint distribution." 
-                },
-                "Dispatch Form": { 
-                    title: "Delivery Note & Dispatch Control", table: "dispatch_logs", 
-                    fields: ["Dispatch ID", "Sales Order Ref", "Vehicle No.", "Driver Name", "Quantity Dispatched", "Warehouse", "GPS Address", "POD Upload (Ref)", "Customer Acknowledgement", "Remarks"], 
-                    desc: "Physical movement control and outbound logistics." 
-                },
-                "Distribution Returns": { 
-                    title: "Local Returns Registry", table: "distribution_returns", 
-                    fields: ["Return ID", "Original Dispatch Ref", "Reason for Return", "Quantity Returned", "Condition", "Warehouse Re-entry", "Approved By", "Remarks"], 
-                    desc: "Handle damaged or rejected finished goods." 
-                },
-
-                // PART D: MANAGEMENT
-                "Logistics Dashboard": { isDashboard: true, title: "OPERATIONS DASHBOARD", desc: "Live KPIs for Inventory, Imports, and Distribution." }
+                // PREVIOUS MODULES (MANDATORY RECALL)
+                "RM Receipt (GRN)": { title: "Raw Material Goods Receipt", table: "raw_material_grn", fields: ["Reference No.", "Source Type (Dropdown)", "Supplier Name", "Raw Material", "Batch Number", "Quantity Received", "Unit Cost", "Warehouse Location", "Inspection Status", "GPS Address", "Remarks"] },
+                "Import Costing": { title: "Duty & Landed Costing", table: "import_costing", fields: ["Import ID (Ref)", "FOB Value", "Freight Cost", "Insurance Cost", "Import Duty (GRA)", "VAT", "Total Landed Cost", "Cost Allocation Method", "Remarks"] },
+                "Dispatch Form": { title: "Delivery & Dispatch", table: "dispatch_logs", fields: ["Dispatch ID", "Sales Order Ref", "Vehicle No.", "Driver Name", "Quantity Dispatched", "GPS Address", "POD Upload (Ref)", "Remarks"] }
             };
 
-            function AdministrationDesk() {
-                const [activeSub, setActiveSub] = useState('Department Purpose');
-                const schema = FULL_OPERATIONS_SCHEMA[activeSub];
+            function DeskRenderer({ activeSub, setActiveSub }) {
+                const schema = FULL_SCHEMA[activeSub];
 
                 const SubMenuLink = (name) => e('div', {
                     key: name,
@@ -127,75 +72,60 @@
                     onClick: () => setActiveSub(name)
                 }, name);
 
-                const renderContent = () => {
-                    if (schema.isWelcome) {
-                        return e('div', null,
-                            e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Official Purpose'),
-                            e('p', { className: 'intro-text mb-8' }, "The Administration Department of De-Trusted Paint Manufacturing Company serves as the central coordinating function responsible for ensuring organizational efficiency..."),
-                            e('div', { className: 'strat-card' }, e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'Institutional Backbone')),
-                            e('div', { className: 'strat-card' }, e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'Custodian of Compliance'))
-                        );
-                    }
-                    if (schema.isDashboard) {
-                        return e('div', { className: 'grid grid-cols-3 gap-6' },
-                            ['Stock Levels', 'Import Pipeline', 'Regional Volume'].map(k => e('div', { key: k, className: 'p-8 border border-amber-200 rounded-xl bg-slate-50' }, 
-                                e('h5', { className: 'text-[10px] font-bold text-slate-400 uppercase mb-2' }, k),
-                                e('p', { className: 'text-2xl font-black text-blue-900' }, 'LIVE DATA')
-                            ))
-                        );
-                    }
-                    return e('div', null,
-                        e('div', { className: 'flex justify-between items-start mb-10' },
-                            e('div', null,
-                                e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
-                                e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `DATABASE: ${schema.table}`)
-                            ),
-                            e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Save Form Record')
-                        ),
-                        e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' },
-                            schema.fields.map(label => e('div', { key: label },
-                                e('label', { className: 'field-label' }, label),
-                                label.includes("(Dropdown)") ? 
-                                    e('select', { className: 'select-linked' }, 
-                                        e('option', null, '-- Select Option --'),
-                                        (label.includes("Agency") ? GH_AGENCIES : ["Local", "Import", "Distributor", "Retailer"]).map(opt => e('option', { key: opt }, opt))
-                                    ) : 
-                                    e('input', { className: 'input-linked', placeholder: `Enter ${label}...` })
-                            ))
-                        ),
-                        e('div', { className: 'prepared-by flex justify-between items-center mt-12' },
-                            e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'PREPARED BY'), e('p', { className: 'text-[13px] font-bold' }, 'Logistics Officer')),
-                            e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'TIMESTAMP'), e('p', { className: 'text-[13px] font-bold' }, '2025-12-30 | 13:19 GMT'))
-                        )
-                    );
-                };
-
                 return e('div', { className: 'fade-in' },
                     e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
-                        e('div', null, e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Administration Desk'), e('p', { className: 'text-blue-700 text-sm font-medium' }, 'Total Operations Suite'))
+                        e('div', null, e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Finance & Admin Command'), e('p', { className: 'text-blue-700 text-sm font-medium' }, 'Unified ERP Ecosystem'))
                     ),
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
                             e('div', { className: 'admin-sub-card shadow-lg' },
-                                e('div', { className: 'branch-label' }, 'Executive'),
-                                ["Department Purpose", "Logistics Dashboard"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Raw Materials'),
-                                ["RM Receipt (GRN)", "RM Stock Adjustment", "RM Production Issue"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Import Management'),
-                                ["Import Consignment", "Import Costing", "Import Clearance"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Local Distribution'),
-                                ["Distributor Master", "Sales/Dist. Request", "Dispatch Form", "Distribution Returns"].map(SubMenuLink)
+                                e('div', { className: 'branch-label' }, 'Finance Desk'),
+                                ["General Ledger"].map(SubMenuLink),
+                                e('div', { className: 'branch-label' }, 'Logistics & Supply'),
+                                ["RM Receipt (GRN)", "Import Costing", "Dispatch Form"].map(SubMenuLink)
                             )
                         ),
                         e('div', { className: 'col-span-9' },
-                            e('div', { className: 'workspace-card fade-in', key: activeSub }, renderContent())
+                            e('div', { className: 'workspace-card fade-in', key: activeSub },
+                                schema.isFinance && e('div', { className: 'finance-summary' }, 
+                                    e('div', null, e('p', { className: 'text-[10px] uppercase font-bold text-blue-200' }, 'Trial Balance Status'), e('p', { className: 'text-xl font-black' }, 'BALANCED')),
+                                    e('div', { className: 'text-right' }, e('p', { className: 'text-[10px] uppercase font-bold text-blue-200' }, 'Base Currency'), e('p', { className: 'text-xl font-black' }, 'GHS'))
+                                ),
+                                e('div', { className: 'flex justify-between items-start mb-10' },
+                                    e('div', null,
+                                        e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
+                                        e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `SUBSIDIARY LINK: ${schema.table}`)
+                                    ),
+                                    e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, schema.isFinance ? 'Post to Ledger' : 'Commit Entry')
+                                ),
+                                e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' },
+                                    schema.fields.map(label => e('div', { key: label, className: label === "Description / Narration" ? "col-span-2" : "" },
+                                        e('label', { className: 'field-label' }, label),
+                                        label.includes("(Dropdown)") || label.includes("(CoA)") || label === "Status (Dropdown)" || label === "Currency" ? 
+                                            e('select', { className: 'select-linked' }, 
+                                                e('option', null, `-- Select ${label} --`),
+                                                label === "Currency" ? ["GHS", "USD", "EUR", "GBP"].map(o => e('option', { key: o }, o)) : 
+                                                label === "Status (Dropdown)" ? ["Draft", "Approved", "Posted"].map(o => e('option', { key: o }, o)) :
+                                                ["1001 - Cash at Bank", "2001 - Raw Materials Inventory", "4001 - Sales Revenue", "5001 - Import Duties"].map(o => e('option', { key: o }, o))
+                                            ) : 
+                                        label === "Description / Narration" ? 
+                                            e('textarea', { className: 'input-linked h-24', placeholder: "Mandatory transaction narration..." }) :
+                                            e('input', { className: 'input-linked', type: label.includes("Amount") ? "number" : "text", placeholder: `Enter ${label}...` })
+                                    ))
+                                ),
+                                e('div', { className: 'prepared-by flex justify-between items-center mt-12' },
+                                    e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'PREPARED BY'), e('p', { className: 'text-[13px] font-bold' }, 'Finance Manager')),
+                                    e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'SYSTEM DATE'), e('p', { className: 'text-[13px] font-bold' }, '2025-12-30'))
+                                )
+                            )
                         )
                     )
                 );
             }
 
             function App() {
-                const [currentDesk, setCurrentDesk] = useState('Administration');
+                const [currentDesk, setCurrentDesk] = useState('Finance');
+                const [activeSub, setActiveSub] = useState('General Ledger');
                 const desks = ['Executive', 'Administration', 'Finance', 'Production', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'HR', 'Reception'];
 
                 return e('div', { className: 'flex' },
@@ -204,7 +134,9 @@
                         desks.map(name => e('button', { key: name, onClick: () => setCurrentDesk(name), className: `nav-btn ${currentDesk === name ? 'active' : ''}` }, name))
                     ),
                     e('main', { className: 'flex-1 ml-[260px] min-h-screen p-16' },
-                        currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'py-40 text-center opacity-10' }, e('h1', { className: 'text-8xl font-black text-blue-900' }, currentDesk))
+                        currentDesk === 'Finance' || currentDesk === 'Administration' ? 
+                        e(DeskRenderer, { activeSub, setActiveSub }) : 
+                        e('div', { className: 'py-40 text-center opacity-10' }, e('h1', { className: 'text-8xl font-black text-blue-900' }, currentDesk))
                     )
                 );
             }
