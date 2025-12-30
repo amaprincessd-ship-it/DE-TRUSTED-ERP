@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | ANALYTICS SUITE</title>
+    <title>DE-TRUSTED ERP | LIVE CONNECTED DATA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -17,8 +17,9 @@
         .nav-link { cursor: pointer; padding: 12px 20px; font-size: 11px; font-weight: 700; color: #64748b; border-left: 4px solid transparent; transition: 0.2s; text-transform: uppercase; }
         .nav-link.active { background: #1e293b; border-left: 4px solid #fbbf24; color: white; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
+        .input-box { background: #020617; border: 1px solid #334155; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 5px; font-size: 13px; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; width: 100%; cursor: pointer; border: none; }
-        canvas { max-height: 300px !important; }
+        canvas { max-height: 280px !important; }
     </style>
 </head>
 <body>
@@ -32,51 +33,56 @@
                 const [user, setUser] = useState({ auth: false, role: '', name: '' });
                 const [password, setPassword] = useState('');
                 const [activeDesk, setActiveDesk] = useState('DASHBOARD');
+                
+                // DATA STATE: This holds your live money numbers
+                const [revenueData, setRevenueData] = useState([1200, 1900, 800, 500, 2000, 0, 0]);
+                const [inputAmount, setInputAmount] = useState('');
+                
                 const chartRef = useRef(null);
 
                 const handleLogin = (val) => {
                     val.preventDefault();
-                    if(password === 'SUPER2025') setUser({ auth: true, role: 'ADMIN', name: 'System Director' });
-                    else if (password === 'MGR2025') setUser({ auth: true, role: 'MANAGER', name: 'Operations Manager' });
-                    else if (password === 'STAFF2025') setUser({ auth: true, role: 'CLERK', name: 'Front Desk Clerk' });
+                    if(password === 'SUPER2025') setUser({ auth: true, role: 'ADMIN', name: 'Director' });
+                    else if (password === 'MGR2025') setUser({ auth: true, role: 'MANAGER', name: 'Manager' });
                     else alert("INVALID KEY");
                 };
 
-                // Initialize Chart when Dashboard is active
+                const postSale = () => {
+                    if(!inputAmount) return;
+                    // Add the new amount to 'Friday' (index 4) for this demo
+                    const newData = [...revenueData];
+                    newData[4] = newData[4] + parseFloat(inputAmount);
+                    setRevenueData(newData);
+                    setInputAmount('');
+                    alert("Finance Record Updated!");
+                };
+
                 useEffect(() => {
                     if (user.auth && activeDesk === 'DASHBOARD') {
                         const ctx = document.getElementById('analyticsChart');
                         if (chartRef.current) chartRef.current.destroy();
-                        
                         chartRef.current = new Chart(ctx, {
                             type: 'bar',
                             data: {
-                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri (Live)', 'Sat', 'Sun'],
                                 datasets: [{
-                                    label: 'Revenue (GHS)',
-                                    data: [12000, 19000, 3000, 5000, 20000, 30000, 45000],
+                                    label: 'Current Revenue (GHS)',
+                                    data: revenueData,
                                     backgroundColor: '#fbbf24',
-                                    borderRadius: 5
+                                    borderRadius: 4
                                 }]
                             },
-                            options: {
-                                responsive: true,
-                                plugins: { legend: { labels: { color: '#94a3b8' } } },
-                                scales: {
-                                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
-                                    x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
-                                }
-                            }
+                            options: { responsive: true, scales: { y: { beginAtZero: true, ticks: {color:'#94a3b8'} }, x: {ticks:{color:'#94a3b8'}} } }
                         });
                     }
-                }, [user.auth, activeDesk]);
+                }, [user.auth, activeDesk, revenueData]);
 
                 if (!user.auth) {
                     return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
-                        e('form', { onSubmit: handleLogin, className: 'glass-card w-96 text-center' },
-                            e('h1', { className: 'text-2xl font-black italic text-white mb-8' }, 'DE-TRUSTED ERP'),
-                            e('input', { type: 'password', className: 'input-box text-center mb-6', placeholder: 'ACCESS KEY', value: password, onChange: (v) => setPassword(v.target.value) }),
-                            e('button', { type: 'submit', className: 'btn-gold' }, 'INITIALIZE')
+                        e('form', { onSubmit: handleLogin, className: 'glass-card w-80 text-center' },
+                            e('h1', { className: 'text-2xl font-black mb-8' }, 'DE-TRUSTED ERP'),
+                            e('input', { type: 'password', className: 'input-box text-center mb-6', placeholder: 'KEY', value: password, onChange: (v) => setPassword(v.target.value) }),
+                            e('button', { type: 'submit', className: 'btn-gold' }, 'ENTER')
                         )
                     );
                 }
@@ -84,41 +90,37 @@
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
                         e('div', { className: 'p-8 border-b border-slate-800' },
-                            e('h1', { className: 'text-2xl font-black italic text-white' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[9px] text-yellow-500 font-bold uppercase' }, user.name)
+                            e('h1', { className: 'text-xl font-black text-white' }, 'DE-TRUSTED'),
+                            e('p', { className: 'text-[9px] text-yellow-500 font-bold' }, user.name)
                         ),
                         e('nav', { className: 'mt-4' },
-                            [
-                                {id: 'DASHBOARD', n: 'Dashboard', i: '📊'},
-                                {id: 'FINANCE', n: 'Finance', i: '💰'},
-                                {id: 'WHSE', n: 'Warehouse', i: '📦'}
-                            ].map(d => e('div', {
-                                key: d.id,
-                                onClick: () => setActiveDesk(d.id),
-                                className: `nav-link ${activeDesk === d.id ? 'active' : ''}`
-                            }, d.i + ' ' + d.n))
+                            [{id:'DASHBOARD', n:'Dashboard', i:'📊'}, {id:'FINANCE', n:'Finance', i:'💰'}].map(d => 
+                                e('div', { key: d.id, onClick: () => setActiveDesk(d.id), className: `nav-link ${activeDesk === d.id ? 'active' : ''}` }, d.i + ' ' + d.n)
+                            )
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
-                        e('h2', { className: 'text-4xl font-black mb-6' }, activeDesk),
-                        activeDesk === 'DASHBOARD' && e('div', { className: 'grid grid-cols-1 gap-6' },
-                            e('div', { className: 'glass-card' },
-                                e('h3', { className: 'text-sm font-bold mb-6 text-slate-400 uppercase tracking-widest' }, 'Weekly Revenue Analytics'),
-                                e('canvas', { id: 'analyticsChart' })
-                            ),
-                            e('div', { className: 'grid grid-cols-2 gap-6' },
-                                e('div', { className: 'glass-card text-center' }, 
-                                    e('p', { className: 'text-[10px] text-slate-500 font-bold' }, 'AVG DAILY SALES'),
-                                    e('p', { className: 'text-2xl font-black text-emerald-400' }, 'GHS 18,400')
-                                ),
-                                e('div', { className: 'glass-card text-center' }, 
-                                    e('p', { className: 'text-[10px] text-slate-500 font-bold' }, 'SYSTEM LOAD'),
-                                    e('p', { className: 'text-2xl font-black text-blue-400' }, '0.04ms')
-                                )
+                        e('h2', { className: 'text-3xl font-black mb-6' }, activeDesk),
+                        
+                        activeDesk === 'DASHBOARD' && e('div', { className: 'glass-card' },
+                            e('h3', { className: 'text-xs font-bold mb-4 text-slate-400 uppercase' }, 'Real-Time Revenue Performance'),
+                            e('canvas', { id: 'analyticsChart' }),
+                            e('div', { className: 'mt-6 p-4 bg-slate-900 rounded border border-slate-800' },
+                                e('p', { className: 'text-xs text-slate-500' }, 'TOTAL WEEKLY REVENUE'),
+                                e('p', { className: 'text-2xl font-black text-yellow-500' }, `GHS ${revenueData.reduce((a,b)=>a+b, 0).toLocaleString()}`)
                             )
                         ),
-                        activeDesk !== 'DASHBOARD' && e('div', { className: 'glass-card h-64 flex items-center justify-center border-dashed border-slate-700' },
-                            e('p', { className: 'text-slate-500 font-bold' }, `Workspace for ${activeDesk} is ready for data entry.`)
+
+                        activeDesk === 'FINANCE' && e('div', { className: 'glass-card max-w-md' },
+                            e('h3', { className: 'text-lg font-bold mb-4' }, 'New Sale Entry'),
+                            e('label', { className: 'text-[10px] text-slate-400' }, 'AMOUNT TO POST (GHS)'),
+                            e('input', { 
+                                type: 'number', 
+                                className: 'input-box mb-6', 
+                                value: inputAmount,
+                                onChange: (v) => setInputAmount(v.target.value)
+                            }),
+                            e('button', { onClick: postSale, className: 'btn-gold' }, 'POST TO DASHBOARD')
                         )
                     )
                 );
