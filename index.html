@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Secure Data Hub</title>
+    <title>DE-TRUSTED ERP | Unified Operations Hub</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -82,11 +82,17 @@
                     fields: ["Agency Name (Dropdown)", "Reference No.", "Permit Serial #", "Issue Date", "Expiry Date", "Department Lead", "GPS Address", "Remarks"], 
                     desc: "Registry for active corporate certifications and site permits." 
                 },
-                "Renewal Transaction": { 
-                    title: "Permit Renewal Workflow", 
-                    table: "renewals", 
-                    fields: ["Agency Name (Dropdown)", "Reference No.", "Current Permit #", "Last Renewal Date", "Next Expiry Date", "Renewal Status", "Remarks"], 
-                    desc: "Tracking ongoing institutional compliance transactions." 
+                "Logistics Hub": { 
+                    title: "Logistics & Fleet Command", 
+                    table: "logistics_registry", 
+                    fields: ["Reference No.", "Vehicle/Vessel ID", "Driver/Agent Name", "Contact Phone", "Destination GPS", "Regulatory Clearing Agent", "Agency Name (Dropdown)", "Remarks"], 
+                    desc: "Operational tracking for international imports and local distribution." 
+                },
+                "Supplier Coordination": { 
+                    title: "Supplier Liaison Registry", 
+                    table: "supplier_master", 
+                    fields: ["Reference No.", "Supplier Company Name", "Primary Contact", "Rank/Designation", "Phone Number", "Location/Address", "GPS Address", "Remarks"], 
+                    desc: "Coordination hub for international and local material vendors." 
                 },
                 "Site Inspections": { 
                     title: "Regulatory Inspection Log", 
@@ -116,10 +122,10 @@
                     e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
                         e('div', null,
                             e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Administration Desk'),
-                            e('p', { className: 'text-blue-700 text-sm font-medium' }, 'ADM-COMP: Advanced Data Linkage')
+                            e('p', { className: 'text-blue-700 text-sm font-medium' }, 'Unified ADM-COMP & Logistics Console')
                         ),
                         e('div', { className: 'flex items-center gap-3' },
-                            e('span', { className: 'royal-badge' }, 'USER: ADMIN_01_SECURE'),
+                            e('span', { className: 'royal-badge' }, '2025_SECURE_AUTH'),
                             e('div', { className: 'w-3 h-3 bg-blue-600 rounded-full animate-pulse' })
                         )
                     ),
@@ -127,57 +133,57 @@
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
                             e('div', { className: 'admin-sub-card shadow-lg' },
-                                e('div', { className: 'branch-label' }, 'Executive Overview'),
+                                e('div', { className: 'branch-label' }, 'Strategic Core'),
                                 ["Department Purpose"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Core Registries'),
+                                e('div', { className: 'branch-label' }, 'Regulatory & Statutory'),
                                 ["Regulatory Master", "Statutory Setup", "Permit Register"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Transactional Forms'),
-                                ["Renewal Transaction", "Site Inspections", "Compliance Breaches"].map(SubMenuLink)
+                                e('div', { className: 'branch-label' }, 'Operations & Logistics'),
+                                ["Logistics Hub", "Supplier Coordination", "Site Inspections", "Compliance Breaches"].map(SubMenuLink)
                             )
                         ),
 
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card fade-in', key: activeSub },
                                 schema.isWelcome ? e('div', null,
-                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Strategic Overview'),
+                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Official Purpose'),
                                     e('p', { className: 'intro-text mb-8' }, 
                                         "The Administration Department of De-Trusted Paint Manufacturing Company serves as the central coordinating function responsible for ensuring organizational efficiency, regulatory compliance, corporate governance, internal controls, and operational continuity. In line with Ghanaian corporate practice, the department acts as:"
                                     ),
                                     e('div', { className: 'strat-card' }, 
                                         e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The institutional backbone of DE-TRUSTED PAINT'),
-                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Ensuring the highest standards of operational efficiency.')
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Harmonizing cross-departmental operations and logistics.')
                                     ),
                                     e('div', { className: 'strat-card' }, 
                                         e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The custodian of policies, records, and compliance'),
-                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Protecting institutional memory and legal standing.')
+                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Guardian of official policies and statutory mandates.')
                                     )
                                 ) : e('div', null,
                                     e('div', { className: 'flex justify-between items-start mb-10' },
                                         e('div', null,
                                             e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
-                                            e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `DATABASE TABLE: ${schema.table}`)
+                                            e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `ACTIVE TABLE: ${schema.table}`)
                                         ),
-                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Save Form Record')
+                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Commit Entry')
                                     ),
                                     e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' },
                                         schema.fields.map(label => e('div', { key: label },
                                             e('label', { className: 'field-label' }, label),
                                             label.includes("(Dropdown)") ? 
                                                 e('select', { className: 'select-linked' }, 
-                                                    e('option', null, '-- Select Ghanaian Agency --'),
+                                                    e('option', null, '-- Select Agency --'),
                                                     GH_AGENCIES.map(agency => e('option', { key: agency }, agency))
                                                 ) : 
                                                 e('input', { className: 'input-linked', placeholder: `Enter ${label}...` })
                                         ))
                                     ),
-                                    e('div', { className: 'prepared-by flex justify-between items-center' },
+                                    e('div', { className: 'prepared-by flex justify-between items-center mt-12' },
                                         e('div', null,
-                                            e('p', { className: 'text-[9px] font-bold text-slate-400 uppercase tracking-wider' }, 'Forms Prepared By (Auth Log)'),
-                                            e('p', { className: 'text-[13px] font-bold text-slate-700' }, 'Senior Admin Officer - Console 01')
+                                            e('p', { className: 'text-[9px] font-bold text-slate-400 uppercase tracking-wider' }, 'Form Prepared By'),
+                                            e('p', { className: 'text-[13px] font-bold text-slate-700' }, 'Executive Admin Officer')
                                         ),
                                         e('div', { className: 'text-right' },
-                                            e('p', { className: 'text-[9px] font-bold text-slate-400 uppercase tracking-wider' }, 'Timestamp'),
-                                            e('p', { className: 'text-[13px] font-bold text-slate-700' }, '2025-12-30 | 12:30 GMT')
+                                            e('p', { className: 'text-[9px] font-bold text-slate-400 uppercase tracking-wider' }, 'System Timestamp'),
+                                            e('p', { className: 'text-[13px] font-bold text-slate-700' }, '2025-12-30 | 13:00 GMT')
                                         )
                                     )
                                 )
