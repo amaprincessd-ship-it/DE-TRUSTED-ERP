@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Unified Admin Command</title>
+    <title>DE-TRUSTED ERP | International Coordination Console</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -11,34 +11,27 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; color: #0f172a; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; color: #0f172a; }
         h1, h2, h3, .cambria-light { font-family: 'Cambria', 'Georgia', serif; font-weight: 400 !important; }
         
         .sidebar-executive { background: #020617; min-height: 100vh; position: fixed; width: 260px; z-index: 50; }
         .nav-btn { width: 100%; text-align: left; padding: 14px 24px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #64748b; cursor: pointer; }
         .nav-btn.active { background: #0f172a; color: #3b82f6; border-left-color: #3b82f6; font-weight: 700; }
         
-        .sub-nav-btn { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 10px 20px; border-radius: 6px; transition: 0.2s; }
-        .sub-nav-btn.active { background: white; color: #2563eb; shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .sub-nav-btn { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 16px; border-radius: 6px; transition: 0.2s; border: 1px solid transparent; }
+        .sub-nav-btn.active { background: white; color: #2563eb; border-color: #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .sub-nav-btn.inactive { color: #64748b; }
-        .sub-nav-btn.inactive:hover { background: #e2e8f0; color: #1e293b; }
 
-        .data-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
-        .linked-heading { cursor: pointer; transition: 0.2s; border-radius: 8px; border: 1px solid #e2e8f0; background: white; }
-        .linked-heading:hover { border-color: #2563eb; transform: translateX(5px); }
-        .linked-heading.selected { background: #eff6ff; border-color: #2563eb; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1); }
+        .console-layer { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .partner-card { cursor: pointer; transition: 0.2s; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+        .partner-card:hover { border-color: #2563eb; background: #f8fafc; }
+        .partner-card.selected { border-color: #2563eb; background: #eff6ff; border-left: 4px solid #2563eb; }
 
-        .form-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: block; }
-        .pulled-data { background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 6px; font-size: 14px; color: #1e293b; min-height: 48px; }
+        .label-caps { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em; margin-bottom: 6px; display: block; }
+        .data-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #334155; }
         
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        @media print {
-            .sidebar-executive, .no-print { display: none !important; }
-            .ml-64 { margin-left: 0 !important; }
-            .data-card { border: none !important; box-shadow: none !important; width: 100% !important; }
-        }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -49,70 +42,43 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            // --- MASTER DATABASE (CONSOLIDATED) ---
-            const REGULATORY_MASTER = {
-                "GSA-CERT": { 
-                    heading: "Ghana Standards Authority Certification", 
-                    id: "GSA-2025-PNT-01",
-                    body: "GSA (Quality Division)",
-                    status: "Valid/Certified",
-                    expiry: "2026-12-30",
-                    compliance_type: "Product Quality & Safety Standards",
-                    analysis: "Full lab analysis of chemical binders and solvent levels confirmed. Authorized for export under ECOWAS protocols."
-                },
-                "EPA-PERMIT": { 
-                    heading: "EPA Environmental Permit", 
-                    id: "EPA-ASH-2025-V2",
-                    body: "Environmental Protection Agency",
-                    status: "Renewal Pending",
-                    expiry: "2026-02-15",
-                    compliance_type: "Industrial Waste & Emissions Control",
-                    analysis: "Ashalaja site audit successful. Recommendation: Upgrade solvent filtration system within 60 days."
-                },
-                "RGD-RETS": { 
-                    heading: "Registrar-General Annual Returns", 
-                    id: "RGD-CORP-449-25",
-                    body: "Registrar-General's Department",
-                    status: "Current",
-                    expiry: "2026-12-30",
-                    compliance_type: "Statutory Corporate Governance",
-                    analysis: "Annual returns filed. Good standing status verified for MoTI export incentives."
-                },
-                "ETLS-EXPORT": { 
-                    heading: "ECOWAS Trade Liberalisation Scheme", 
-                    id: "ETLS-GH-NIG-55",
-                    body: "Ministry of Trade / GRA Customs",
-                    status: "Authorized",
-                    expiry: "N/A",
-                    compliance_type: "Inter-Regional Trade (Duty-Free)",
-                    analysis: "Certificate of Origin verified for 5000L high-gloss shipment to Lagos, Nigeria via Aflao Border."
-                }
+            // --- MULTI-LAYER PARTNER DATABASE ---
+            const PARTNER_DB = {
+                "Suppliers": [
+                    { id: "SUP-01", name: "BASF Chemical Corp", origin: "Germany", item: "Titanium Dioxide", due_diligence: "Verified", contract: "Active (GH-Law compliant)", freight: "Maersk Line" },
+                    { id: "SUP-02", name: "DOW Industrial", origin: "USA", item: "Acrylic Resins", due_diligence: "Audit Pending", contract: "Annual Review", freight: "MSC Shipping" }
+                ],
+                "Distributors": [
+                    { id: "DIST-01", name: "West-Africa Paint Hub", origin: "Nigeria", item: "Lagos/Abuja Region", due_diligence: "Verified", contract: "Exclusive Rights", freight: "Cross-Border Road" },
+                    { id: "DIST-02", name: "Abidjan Decor Sarl", origin: "Cote d'Ivoire", item: "Francophone Market", due_diligence: "Verified", contract: "Commission Based", freight: "Coastal Sea Freight" }
+                ],
+                "Logistics": [
+                    { id: "LOG-01", name: "Bolloré Logistics", origin: "Global/Ghana", item: "Tema Clearances", due_diligence: "Verified", contract: "Service Level Agreement", freight: "Freight Forwarding" },
+                    { id: "LOG-02", name: "DHL Global Forwarding", origin: "Global", item: "Air Cargo/Samples", due_diligence: "Verified", contract: "Standard Terms", freight: "Multimodal" }
+                ]
             };
 
             function AdministrationDesk() {
-                const [activeSub, setActiveSub] = useState('Compliance Management');
-                const [selectedHeading, setSelectedHeading] = useState('GSA-CERT');
-                const activeData = REGULATORY_MASTER[selectedHeading];
+                const [activeSub, setActiveSub] = useState('Supplier Coordination');
+                const [selectedCategory, setSelectedCategory] = useState('Suppliers');
+                const [selectedPartnerID, setSelectedPartnerID] = useState('SUP-01');
+
+                // Auto-pull active partner data
+                const currentPartner = PARTNER_DB[selectedCategory].find(p => p.id === selectedPartnerID) || PARTNER_DB[selectedCategory][0];
 
                 return e('div', { className: 'fade-in max-w-7xl mx-auto' },
                     // HEADER
-                    e('div', { className: 'mb-12 border-b border-slate-300 pb-10 flex justify-between items-end' },
+                    e('div', { className: 'mb-8 border-b border-slate-300 pb-8 flex justify-between items-end' },
                         e('div', null,
-                            e('h1', { className: 'text-5xl cambria-light tracking-tight text-slate-900' }, 'Administration Desk'),
-                            e('p', { className: 'text-lg text-slate-500 mt-2 font-light' }, 'Statutory Controls & Executive Document Analysis')
+                            e('h1', { className: 'text-4xl cambria-light text-slate-900' }, 'International Coordination Console'),
+                            e('p', { className: 'text-md text-slate-500 mt-1' }, 'Official Liaison: Foreign Suppliers, Distributors & Shipping Lines')
                         ),
-                        e('div', { className: 'no-print text-right' },
-                            e('p', { className: 'text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]' }, 'System Status'),
-                            e('div', { className: 'flex items-center gap-2 mt-1' },
-                                e('div', { className: 'w-2 h-2 bg-emerald-500 rounded-full animate-pulse' }),
-                                e('span', { className: 'text-xs font-bold text-slate-700' }, 'LIVE: Regulatory Sync')
-                            )
-                        )
+                        e('button', { className: 'bg-blue-600 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg shadow-lg hover:bg-blue-700' }, 'New Partner Onboarding')
                     ),
 
-                    // SUB-HEADING NAVIGATION
-                    e('nav', { className: 'no-print flex gap-2 bg-slate-200 p-1.5 rounded-xl mb-12 shadow-inner' },
-                        ['Compliance Management', 'Asset Tracking', 'HSSE Command', 'Vendor Portal'].map(tab => 
+                    // SUB-HEADING LAYER
+                    e('nav', { className: 'flex gap-2 bg-slate-200 p-1 rounded-xl mb-8' },
+                        ['Supplier Coordination', 'Regulatory Hub', 'HSSE Command', 'Asset Center'].map(tab => 
                             e('button', {
                                 key: tab,
                                 onClick: () => setActiveSub(tab),
@@ -121,69 +87,74 @@
                         )
                     ),
 
-                    e('div', { className: 'grid grid-cols-12 gap-10' },
-                        // LEFT PANEL: HEADINGS
-                        e('div', { className: 'no-print col-span-4 space-y-4' },
-                            e('h3', { className: 'text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6' }, 'Select Regulatory Heading'),
-                            Object.keys(REGULATORY_MASTER).map(key => 
-                                e('div', {
-                                    key: key,
-                                    onClick: () => setSelectedHeading(key),
-                                    className: `linked-heading p-5 ${selectedHeading === key ? 'selected' : ''}`
-                                },
-                                    e('p', { className: 'text-[9px] font-black text-blue-600 uppercase mb-1' }, REGULATORY_MASTER[key].body),
-                                    e('h4', { className: 'text-sm font-bold text-slate-800' }, REGULATORY_MASTER[key].heading),
-                                    e('p', { className: 'text-[10px] text-slate-400 mt-1 font-mono' }, `ID: ${REGULATORY_MASTER[key].id}`)
+                    activeSub === 'Supplier Coordination' ? e('div', { className: 'grid grid-cols-12 gap-8 fade-in' },
+                        // LAYER 1: CATEGORY SELECTOR
+                        e('div', { className: 'col-span-3 space-y-6' },
+                            e('div', null,
+                                e('span', { className: 'label-caps' }, 'Liaison Category'),
+                                e('div', { className: 'flex flex-col gap-2' },
+                                    Object.keys(PARTNER_DB).map(cat => 
+                                        e('button', {
+                                            key: cat,
+                                            onClick: () => { setSelectedCategory(cat); setSelectedPartnerID(PARTNER_DB[cat][0].id); },
+                                            className: `text-left px-4 py-3 rounded-lg text-xs font-bold border transition-all ${selectedCategory === cat ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200'}`
+                                        }, cat)
+                                    )
+                                )
+                            ),
+                            // LAYER 2: PARTNER LIST (AUTO-POPULATES)
+                            e('div', null,
+                                e('span', { className: 'label-caps' }, `Active ${selectedCategory}`),
+                                PARTNER_DB[selectedCategory].map(partner => 
+                                    e('div', {
+                                        key: partner.id,
+                                        onClick: () => setSelectedPartnerID(partner.id),
+                                        className: `partner-card ${selectedPartnerID === partner.id ? 'selected' : ''}`
+                                    },
+                                        e('h4', { className: 'text-xs font-bold' }, partner.name),
+                                        e('p', { className: 'text-[10px] text-slate-400 font-medium' }, partner.origin)
+                                    )
                                 )
                             )
                         ),
 
-                        // RIGHT PANEL: DYNAMIC DATA PULL & ANALYSIS
-                        e('div', { className: 'col-span-8' },
-                            e('div', { className: 'data-card fade-in', key: selectedHeading },
-                                e('div', { className: 'flex justify-between items-start mb-10 border-b pb-8' },
+                        // LAYER 3: DETAILED ANALYSIS & LIAISON DATA
+                        e('div', { className: 'col-span-9' },
+                            e('div', { className: 'console-layer fade-in', key: selectedPartnerID },
+                                e('div', { className: 'flex justify-between items-start mb-8 border-b pb-6' },
                                     e('div', null,
-                                        e('h2', { className: 'text-3xl cambria-light text-slate-900' }, activeData.heading),
-                                        e('span', { className: 'text-[10px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold uppercase mt-3 inline-block' }, activeData.compliance_type)
+                                        e('h2', { className: 'text-2xl font-bold text-slate-800' }, currentPartner.name),
+                                        e('p', { className: 'text-xs text-blue-600 font-bold uppercase mt-1 tracking-wider' }, `Partner ID: ${currentPartner.id}`)
                                     ),
-                                    e('div', { className: 'no-print flex gap-3' },
-                                        e('button', { 
-                                            className: 'px-6 py-3 bg-slate-900 text-white text-[10px] font-black uppercase rounded-lg shadow-xl hover:bg-slate-800 transition-all',
-                                            onClick: () => window.print()
-                                        }, 'Send to Print'),
-                                        e('button', { 
-                                            className: 'px-6 py-3 bg-white border border-slate-300 text-slate-600 text-[10px] font-black uppercase rounded-lg shadow-sm hover:bg-slate-50',
-                                            onClick: () => alert('Downloading Analysis Data for ' + activeData.id)
-                                        }, 'Export Analysis')
+                                    e('div', { className: 'flex gap-2' },
+                                        e('button', { className: 'px-4 py-2 border border-slate-200 text-[10px] font-bold uppercase rounded' }, 'View Contract'),
+                                        e('button', { className: 'px-4 py-2 bg-slate-100 text-[10px] font-bold uppercase rounded hover:bg-slate-200' }, 'Print Liaison Summary')
                                     )
                                 ),
 
-                                // PULLED FIELDS
-                                e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
-                                    e('div', null, e('label', { className: 'form-label' }, 'Authority Body'), e('div', { className: 'pulled-data' }, activeData.body)),
-                                    e('div', null, e('label', { className: 'form-label' }, 'Filing Reference'), e('div', { className: 'pulled-data font-mono' }, activeData.id))
-                                ),
-                                e('div', { className: 'grid grid-cols-2 gap-8 mb-8' },
-                                    e('div', null, e('label', { className: 'form-label' }, 'Current Status'), e('div', { className: `pulled-data font-bold ${activeData.status.includes('Valid') ? 'text-emerald-600' : 'text-amber-600'}` }, activeData.status)),
-                                    e('div', null, e('label', { className: 'form-label' }, 'Expiry Date'), e('div', { className: 'pulled-data' }, activeData.expiry))
-                                ),
-                                e('div', { className: 'mb-8' },
-                                    e('label', { className: 'form-label' }, 'Executive Analysis & Brief'),
-                                    e('div', { className: 'pulled-data h-auto leading-relaxed py-5' }, activeData.analysis)
+                                e('div', { className: 'grid grid-cols-3 gap-6 mb-8' },
+                                    e('div', null, e('span', { className: 'label-caps' }, 'Primary Item/Service'), e('div', { className: 'data-box' }, currentPartner.item)),
+                                    e('div', null, e('span', { className: 'label-caps' }, 'Due Diligence Status'), e('div', { className: `data-box font-bold ${currentPartner.due_diligence === 'Verified' ? 'text-emerald-600' : 'text-amber-600'}` }, currentPartner.due_diligence)),
+                                    e('div', null, e('span', { className: 'label-caps' }, 'Freight Partner'), e('div', { className: 'data-box' }, currentPartner.freight))
                                 ),
 
-                                e('div', { className: 'no-print mt-12 pt-8 border-t flex items-center justify-between' },
-                                    e('div', { className: 'flex items-center gap-2' },
-                                        e('div', { className: 'w-4 h-4 bg-emerald-100 rounded flex items-center justify-center' }, 
-                                            e('svg', { className: 'w-3 h-3 text-emerald-600', fill: 'currentColor', viewBox: '0 0 20 20' }, e('path', { d: 'M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' }))
-                                        ),
-                                        e('span', { className: 'text-[10px] font-bold text-slate-400 uppercase' }, 'Encrypted Archive Sync Complete')
+                                e('div', { className: 'mb-8' },
+                                    e('span', { className: 'label-caps' }, 'Commercial & Legal Terms (Ghanaian Standard)'),
+                                    e('div', { className: 'data-box h-auto py-4 bg-slate-50 leading-relaxed' }, 
+                                        `Contractual status: ${currentPartner.contract}. All terms verified against Ghanaian commercial law and company insurance policy. Onboarding documentation stored in digital archive.`
+                                    )
+                                ),
+
+                                e('div', { className: 'p-4 bg-emerald-50 border border-emerald-100 rounded-lg flex items-center justify-between' },
+                                    e('div', { className: 'flex items-center gap-3' },
+                                        e('div', { className: 'w-2 h-2 bg-emerald-500 rounded-full' }),
+                                        e('p', { className: 'text-[10px] text-emerald-800 font-bold uppercase' }, 'Liaison Active & Compliant')
                                     ),
-                                    e('p', { className: 'text-[10px] text-slate-400 font-mono italic' }, 'Filing Timestamp: 2025-12-30T11:08:59Z')
+                                    e('span', { className: 'text-[9px] text-emerald-600 font-mono' }, 'Last Modified: 2025-12-30')
                                 )
                             )
                         )
-                    )
+                    ) : e('div', { className: 'py-20 text-center opacity-30' }, e('h1', { className: 'text-4xl' }, 'Module Loading...'))
                 );
             }
 
@@ -192,7 +163,7 @@
                 const desks = ['Executive', 'Administration', 'Finance', 'Production', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'HR', 'Reception'];
 
                 return e('div', { className: 'flex' },
-                    e('div', { className: 'sidebar-executive no-print' },
+                    e('div', { className: 'sidebar-executive' },
                         e('div', { className: 'p-10 mb-6' },
                             e('h1', { className: 'cambria-light text-white text-3xl' }, 'DE-TRUSTED'),
                             e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-3' }, 'Master Command')
@@ -205,7 +176,7 @@
                             }, name)
                         )
                     ),
-                    e('main', { className: 'flex-1 ml-[260px] min-h-screen p-24 bg-slate-100' },
+                    e('main', { className: 'flex-1 ml-[260px] min-h-screen p-16 bg-slate-100' },
                         currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'text-center py-40' }, e('h1', { className: 'text-6xl text-slate-300 cambria-light' }, currentDesk))
                     )
                 );
