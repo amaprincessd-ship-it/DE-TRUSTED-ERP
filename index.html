@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | MEDICAL & BURNOUT</title>
+    <title>DE-TRUSTED ERP | OCCUPATIONAL HEALTH</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -11,9 +11,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
         body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
         
+        /* ULTIMATE Z-INDEX LOCK (FIXED STACKING ISSUE) */
         #hard-security-lock {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #020617; z-index: 99999; display: flex;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #020617; z-index: 999999 !important; display: flex;
             align-items: center; justify-content: center;
         }
         
@@ -22,22 +23,17 @@
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 10px; }
-        .medical-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(239, 68, 68, 0.2); color: #f87171; font-weight: bold; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .burnout-alert { animation: pulse-orange 2s infinite; border: 1px solid #f97316; }
-        @keyframes pulse-orange {
-            0% { box-shadow: 0 0 0px rgba(249, 115, 22, 0); }
-            50% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.4); }
-            100% { box-shadow: 0 0 0px rgba(249, 115, 22, 0); }
-        }
+        .wellness-alert { background: #0ea5e9; color: white; padding: 15px; border-radius: 8px; border-left: 5px solid #0284c7; animation: bounce-slight 2s infinite; }
+        @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
     </style>
 </head>
 <body>
 
     <div id="hard-security-lock">
-        <div class="glass-card w-96 text-center border-yellow-500/50">
+        <div class="glass-card w-96 text-center border-yellow-500/50 shadow-2xl">
             <h1 class="text-3xl font-black mb-1 italic">DE-TRUSTED</h1>
             <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em]">SYSTEM ENCRYPTED</p>
-            <input type="password" id="gate-key" class="input-box text-center mb-6 text-2xl" placeholder="••••" autofocus>
+            <input type="password" id="gate-key" class="input-box text-center mb-6 text-2xl border-yellow-500/40" placeholder="••••" autofocus>
             <button onclick="unlock()" class="btn-gold w-full py-4 text-sm">ACCESS HUB</button>
         </div>
     </div>
@@ -56,77 +52,42 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('MEDICAL');
-                const [requests, setRequests] = useState([
-                    { id: 1, name: "Kofi Mensah", dept: "Sales", type: "Sick", status: "Pending", medicalNote: "Malaria Diagnosis - 3 days rest recommended.", alert: true },
-                    { id: 2, name: "Ama Serwaa", dept: "Marketing", type: "Annual", status: "Approved", medicalNote: "N/A", alert: false },
-                    { id: 3, name: "John Doe", dept: "Sales", type: "Sick", status: "Pending", medicalNote: "Severe Fatigue / Stress - BP 150/100.", alert: true }
+                const [view, setView] = useState('HEALTH');
+                const [healthLogs] = useState([
+                    { id: 1, name: "Kofi Mensah", diagnosis: "Stress / High BP", frequency: 3, lastDate: "2025-12-28", status: "Critical Alert" },
+                    { id: 2, name: "Ama Serwaa", diagnosis: "Malaria", frequency: 1, lastDate: "2025-11-15", status: "Stable" }
                 ]);
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
-                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic text-white' }, 'DE-TRUSTED')),
+                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
                         e('nav', { className: 'mt-6 text-[10px] font-bold uppercase' },
-                            e('div', { onClick:()=>setView('MEDICAL'), className:`p-4 cursor-pointer ${view==='MEDICAL'?'bg-slate-800 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🏥 Medical Intelligence'),
-                            e('div', { onClick:()=>setView('ANALYTICS'), className:`p-4 cursor-pointer ${view==='ANALYTICS'?'bg-slate-800 text-yellow-500 border-l-4 border-yellow-500':''}`}, '📈 Burnout Metrics')
+                            e('div', { onClick:()=>setView('HEALTH'), className:`p-4 cursor-pointer ${view==='HEALTH'?'bg-slate-800 text-yellow-500':''}`}, '🛡️ Occupational Health'),
+                            e('div', { onClick:()=>setView('REPORTS'), className:`p-4 cursor-pointer ${view==='REPORTS'?'bg-slate-800 text-yellow-500':''}`}, '📋 Detailed Reports')
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'MEDICAL' && e('div', null,
-                            e('div', {className:'flex justify-between items-center mb-8'},
-                                e('h2', {className:'text-3xl font-black italic uppercase'}, 'Medical Report Vault'),
-                                e('div', {className:'bg-red-500/20 text-red-500 px-4 py-2 rounded text-[10px] font-black border border-red-500/30'}, 'STRICT CONFIDENTIALITY ACTIVE')
-                            ),
-
-                            e('div', {className:'grid gap-4'},
-                                requests.filter(r => r.type === 'Sick').map(r => e('div', {key:r.id, className:`glass-card ${r.alert ? 'burnout-alert' : ''}`},
-                                    e('div', {className:'flex justify-between items-start mb-4'},
-                                        e('div', null, 
-                                            e('h3', {className:'text-lg font-bold text-white'}, r.name),
-                                            e('p', {className:'text-[10px] text-slate-500 font-bold'}, r.dept + ' DEPARTMENT')
-                                        ),
-                                        e('span', {className:'medical-tag'}, 'MEDICAL REPORT ATTACHED')
+                        view === 'HEALTH' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Occupational Health Monitor'),
+                            
+                            e('div', {className:'grid gap-6'},
+                                healthLogs.filter(h => h.frequency >= 3).map(h => e('div', {key:h.id, className:'wellness-alert flex justify-between items-center'},
+                                    e('div', null,
+                                        e('h4', {className:'font-black text-sm uppercase'}, '⚠️ Mandatory Wellness Intervention Required'),
+                                        e('p', {className:'text-xs mt-1'}, `${h.name} has reported ${h.diagnosis} ${h.frequency} times in the last quarter.`)
                                     ),
-                                    e('div', {className:'bg-slate-950 p-4 rounded border border-slate-800'},
-                                        e('p', {className:'text-[10px] text-yellow-500 font-bold mb-1 uppercase'}, 'Diagnostic Summary:'),
-                                        e('p', {className:'text-xs text-slate-300 italic'}, r.medicalNote)
-                                    ),
-                                    e('div', {className:'flex gap-2 mt-4 justify-end'},
-                                        e('button', {className:'bg-slate-700 px-4 py-2 rounded text-[9px] font-bold'}, 'VIEW FULL DOC'),
-                                        e('button', {className:'bg-emerald-600 px-4 py-2 rounded text-[9px] font-bold'}, 'AUTHORIZE SICK LEAVE')
-                                    )
-                                ))
-                            )
-                        ),
+                                    e('button', {className:'bg-white text-blue-600 px-4 py-2 rounded text-[10px] font-black', onClick:()=>alert("Wellness Break Authorized. HR/Manager notified.")}, 'AUTHORIZE 1-DAY BREAK')
+                                )),
 
-                        view === 'ANALYTICS' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Burnout & Fatigue Analysis'),
-                            e('div', {className:'grid grid-cols-2 gap-8'},
-                                e('div', {className:'glass-card border-orange-500/30'},
-                                    e('h4', {className:'text-xs font-bold text-orange-500 mb-4'}, 'DEPARTMENTS AT RISK'),
-                                    e('div', {className:'space-y-4'},
-                                        e('div', null, 
-                                            e('p', {className:'text-xs mb-1'}, 'Sales Department'),
-                                            e('div', {className:'w-full bg-slate-800 h-2 rounded'}, e('div', {className:'bg-orange-500 h-full', style:{width:'85%'}})),
-                                            e('p', {className:'text-[9px] text-slate-500 mt-1'}, '85% increase in Fatigue-related sick leave.')
-                                        )
-                                    )
-                                ),
                                 e('div', {className:'glass-card'},
-                                    e('h4', {className:'text-xs font-bold text-slate-500 mb-4 text-center'}, 'INDIVIDUAL HEALTH TRACKER'),
-                                    requests.filter(r => r.alert).map(r => e('div', {key:r.id, className:'p-2 border-b border-slate-800 flex justify-between text-[10px]'},
-                                        e('span', null, r.name),
-                                        e('span', {className:'text-red-500 font-bold'}, 'High Risk')
-                                    ))
-                                )
-                            )
-                        )
-                    )
-                );
-            }
-            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
-        };
-    </script>
-</body>
-</html>
+                                    e('h3', {className:'text-xs font-bold text-slate-500 mb-4 uppercase'}, 'Staff Medical Frequency Tracking'),
+                                    e('table', {className:'w-full text-xs text-left'},
+                                        e('thead', null, e('tr', {className:'text-slate-500 border-b border-slate-700'}, 
+                                            e('th',{className:'pb-4'},'STAFF'), e('th',null,'RECURRING DIAGNOSIS'), e('th',null,'3-MONTH FREQUENCY'), e('th',null,'STATUS')
+                                        )),
+                                        e('tbody', null, healthLogs.map(h => e('tr', {key:h.id, className:'border-b border-slate-800/50'},
+                                            e('td', {className:'py-4 font-bold uppercase'}, h.name),
+                                            e('td', {className:'italic'}, h.diagnosis),
+                                            e('td', {className:'font-mono font-bold text-yellow-500'}, h.frequency + ' Times'),
+                                            e('td', null, e('span', {className:`px-2 py
