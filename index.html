@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Unified Database Hub</title>
+    <title>DE-TRUSTED ERP | Full System Activation</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -25,13 +25,19 @@
         .sub-link:hover { background: #f8fafc; color: #2563eb; }
         .sub-link.active { background: #eff6ff; color: #2563eb; font-weight: 700; border-left-color: #2563eb; }
 
-        .workspace-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 3rem; min-height: 750px; }
-        .field-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: block; letter-spacing: 0.05em; }
-        .input-linked { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 14px; color: #1e293b; outline: none; border-left: 3px solid #cbd5e1; }
-        .input-linked:focus { border-left-color: #3b82f6; background: white; }
+        .workspace-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 2.5rem; min-height: 750px; }
+        
+        /* New Typography for Intro */
+        .intro-text { font-size: 12px; color: #312e81; line-height: 1.8; font-weight: 500; }
+        
+        .field-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 6px; display: block; letter-spacing: 0.05em; }
+        .input-linked { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; transition: 0.2s; }
+        .input-linked:focus { border-color: #3b82f6; background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
-        .db-status { font-size: 9px; font-weight: 700; color: #10b981; display: flex; align-items: center; gap: 6px; }
-        .strat-card { border-left: 4px solid #2563eb; background: #f8fafc; padding: 20px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
+        .db-badge { font-size: 8px; font-weight: 900; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: #475569; }
+        .strat-card { border-left: 3px solid #312e81; background: #f5f3ff; padding: 15px; margin-bottom: 12px; border-radius: 0 6px 6px 0; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -42,34 +48,36 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            // --- DATABASE SCHEMA DEFINITION ---
-            const DB_SCHEMA = {
-                "Department Purpose": { isWelcome: true, dbTable: "CORE_STRATEGY" },
-                
-                // Regulatory Table Mappings
-                "GRA (Revenue)": { title: "Taxation & Revenue Database", table: "REG_GRA_FIN", fields: ["VAT/NHIL/GETFund No", "TIN Reference", "WHT Certificate ID", "Period Start/End"], desc: "Official Ghana Revenue Authority tax compliance records." },
-                "SSNIT (Pension)": { title: "Social Security Registry", table: "REG_SSNIT_STAFF", fields: ["Employer Registration #", "Staff SSNIT ID", "Contribution Batch", "Clearance Date"], desc: "Staff pension fund management and statutory contributions." },
-                "FDA (Food & Drugs)": { title: "FDA Product Licensing", table: "REG_FDA_CERT", fields: ["Product Registration #", "Facility License ID", "Lab Reference Code", "Expiry Date"], desc: "FDA chemical safety and manufacturing quality certifications." },
-                "GSA (Standards)": { title: "Standards Authority Hub", table: "REG_GSA_LAB", fields: ["GSA Batch Cert", "Standard Code (GS)", "Testing Lab Ref", "Renewal Cycle"], desc: "Ghana Standards Authority product verification logs." },
-                "EPA (Environmental)": { title: "Environmental Audit Logs", table: "REG_EPA_PERMIT", fields: ["EPA Permit Serial", "Effluent Discharge ID", "Site Audit Ref", "Hazardous Log"], desc: "Environmental protection monitoring and industrial waste logs." },
-                "RGD (Registrar)": { title: "Company Legal Records", table: "REG_RGD_LEGAL", fields: ["Company Return Year", "Form 3 Serial", "Form 4 Ref", "Annual Filing Status"], desc: "Statutory legal records from Registrar General's Dept." },
-                "Local Assembly": { title: "Municipal License Registry", table: "REG_MA_PERMITS", fields: ["BOP License Number", "Property Rate ID", "Assembly District", "Permit Expiry"], desc: "Local government operating licenses and district permits." },
+            const FULL_REGISTRY = {
+                "Department Purpose": { 
+                    isWelcome: true, 
+                    title: "PURPOSE AND STRATEGIC ROLE", 
+                    table: "CORE_MANDATE" 
+                },
+                // REGULATORY
+                "GRA (Revenue)": { title: "GRA Compliance Desk", table: "DB_GRA_TAX", fields: ["VAT/NHIL Registered No.", "Tax Clearance Cert Ref", "WHT Deduction ID", "Monthly Filing Period"], desc: "Revenue management and statutory tax obligations." },
+                "SSNIT (Pension)": { title: "SSNIT Admin Portal", table: "DB_SSNIT_PENS", fields: ["Employer Registration #", "Last Contribution Date", "Staff SSNIT Registry ID", "Compliance Cert Serial"], desc: "Staff social security and pension contribution tracking." },
+                "FDA (Food & Drugs)": { title: "FDA Licensing Control", table: "DB_FDA_REGS", fields: ["Product Batch Registration", "Facility License Number", "Renewal Audit Code", "Standard Compliance ID"], desc: "Manufacturing quality and drug/chemical authority licensing." },
+                "GSA (Standards)": { title: "GSA Quality Registry", table: "DB_GSA_STD", fields: ["GS Standard Reference", "Batch Certificate Code", "Lab Test Report ID", "Validation Expiry"], desc: "Product standardization and quality verification." },
+                "EPA (Environmental)": { title: "EPA Environment Monitor", table: "DB_EPA_PERM", fields: ["Environmental Permit ID", "Site Effluent Log Ref", "Waste Disposal Serial", "Air Quality Audit ID"], desc: "Industrial environmental impact and permit management." },
+                "RGD (Registrar)": { title: "Registrar-General Legal", table: "DB_RGD_CORP", fields: ["Annual Return Year", "TIN Linked Reference", "Form 3/4 Serial ID", "Directorate Update Ref"], desc: "Corporate legal status and statutory filings." },
+                "Local Assembly": { title: "Municipal Operations Hub", table: "DB_LOCAL_GOV", fields: ["BOP License Number", "Property Rate Reference", "District Permit ID", "Assembly Fee Status"], desc: "Municipal operating permits and property rates." },
 
-                // Logistics Table Mappings
-                "Import (International)": { title: "International Import Logs", table: "LOG_INTL_SHIP", fields: ["Vessel/Flight ID", "Bill of Lading #", "ICUMS Clearing Ref", "Port Authority ID"], desc: "Tracking global raw material procurement and customs clearance." },
-                "Forex & Finance Support": { title: "Foreign Currency Admin", table: "LOG_FIN_FOREX", fields: ["LC/TT Reference #", "BoG Form M Code", "Swift Confirmation", "Forex Margin %"], desc: "Managing Bank of Ghana requirements and international payments." },
-                "Inbound (Raw Materials)": { title: "Raw Material Intake", table: "LOG_SITE_INBOUND", fields: ["Waybill Number", "Material Category", "Gross Weight (MT)", "Receiving Officer"], desc: "Ashalaja site material entry and weighbridge records." },
-                "Local Distribution": { title: "Domestic Supply Chain", table: "LOG_LOCAL_DIST", fields: ["Customer Order ID", "Truck License #", "Regional Waybill", "Sales Hub Ref"], desc: "Tracking paint distribution within Ghanaian regions." },
-                "Shipment Tracking": { title: "Fleet Management Hub", table: "LOG_FLEET_LIVE", fields: ["Asset ID", "GPS Tracker Ref", "Driver License ID", "Cargo Status"], desc: "Live operational movement of the transport fleet." },
+                // LOGISTICS
+                "Import (International)": { title: "Global Import Console", table: "DB_LOG_INTL", fields: ["Vessel/Air Waybill", "Consignee Ref ID", "ICUMS Entry Code", "Duty Payment Serial"], desc: "International procurement and customs clearance tracking." },
+                "Forex & Finance Support": { title: "Forex Admin Support", table: "DB_LOG_FOREX", fields: ["Letter of Credit (LC) Ref", "BoG Form M Reference", "Swift Transfer Code", "Administrative Cost Log"], desc: "Forex documentation and Bank of Ghana compliance." },
+                "Inbound (Raw Materials)": { title: "Site Intake Monitor", table: "DB_LOG_INBD", fields: ["Waybill Serial #", "Material Type Code", "Net Weight (MT)", "Gate Pass ID"], desc: "Ashalaja site raw material reception and weighing." },
+                "Local Distribution": { title: "Local Distribution Desk", table: "DB_LOG_LOCL", fields: ["Customer Invoice Link", "Truck Plate Number", "Regional Waybill ID", "Delivery Confirmation"], desc: "Domestic market supply chain and truck logistics." },
+                "Shipment Tracking": { title: "Fleet Asset Tracker", table: "DB_LOG_FLT", fields: ["Asset ID Number", "Live GPS Device ID", "Driver License Ref", "Transit Security Code"], desc: "Real-time movement tracking of company fleet." },
 
-                // Operations Table Mappings
-                "Supplier Coordination": { title: "Vendor & Partner Records", table: "OPS_SUPP_VEND", fields: ["Vendor ID", "Compliance Tier", "Service Level ID", "Master Contract"], desc: "Administrative coordination with external suppliers." },
-                "HSSE Command": { title: "Safety & Health Records", table: "OPS_HSSE_SAFETY", fields: ["Incident Report #", "PPE Stock Code", "Fire Drill Ref", "Safety Officer ID"], desc: "Industrial safety protocols and environmental health logs." }
+                // OPERATIONS
+                "Supplier Coordination": { title: "Supplier Liaison Hub", table: "DB_OPS_SUPP", fields: ["Vendor Master ID", "Contract Reference", "Due Diligence Level", "Payment Terms ID"], desc: "Coordination with international and local suppliers." },
+                "HSSE Command": { title: "HSSE Safety Control", table: "DB_OPS_HSSE", fields: ["Incident Report Serial", "PPE Inventory Code", "Safety Drill Reference", "Hazard Level ID"], desc: "Industrial health, safety, and environment protocols." }
             };
 
             function AdministrationDesk() {
                 const [activeSub, setActiveSub] = useState('Department Purpose');
-                const schema = DB_SCHEMA[activeSub];
+                const schema = FULL_REGISTRY[activeSub];
 
                 const SubMenuLink = (name) => e('div', {
                     key: name,
@@ -80,27 +88,24 @@
                 return e('div', { className: 'fade-in' },
                     e('div', { className: 'mb-8 border-b pb-6 flex justify-between items-end' },
                         e('div', null,
-                            e('h1', { className: 'text-4xl cambria text-slate-900' }, 'Administration Desk'),
-                            e('p', { className: 'text-slate-500' }, 'Operational Infrastructure & Central Data Interface')
+                            e('h1', { className: 'text-3xl cambria text-slate-900' }, 'Administration Desk'),
+                            e('p', { className: 'text-slate-500 text-sm' }, 'Ashalaja Complex Executive Interface')
                         ),
-                        e('div', { className: 'db-status' }, 
-                            e('div', { className: 'w-2 h-2 bg-emerald-500 rounded-full animate-pulse' }),
-                            'DB_CONNECTED: DT_PROD_SVR_01'
+                        e('div', { className: 'flex items-center gap-2' },
+                            e('span', { className: 'text-[9px] font-bold text-emerald-600' }, 'SYSTEM ACTIVE'),
+                            e('div', { className: 'w-2 h-2 bg-emerald-500 rounded-full animate-pulse' })
                         )
                     ),
 
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
                             e('div', { className: 'admin-sub-card' },
-                                e('div', { className: 'branch-label' }, 'Executive Strategy'),
+                                e('div', { className: 'branch-label' }, 'Executive Overview'),
                                 ["Department Purpose"].map(SubMenuLink),
-
                                 e('div', { className: 'branch-label' }, 'Regulatory Hub'),
                                 ["GRA (Revenue)", "SSNIT (Pension)", "FDA (Food & Drugs)", "GSA (Standards)", "EPA (Environmental)", "RGD (Registrar)", "Local Assembly"].map(SubMenuLink),
-                                
                                 e('div', { className: 'branch-label' }, 'Logistics & Trade'),
                                 ["Import (International)", "Forex & Finance Support", "Inbound (Raw Materials)", "Local Distribution", "Shipment Tracking"].map(SubMenuLink),
-                                
                                 e('div', { className: 'branch-label' }, 'Operations & Safety'),
                                 ["Supplier Coordination", "HSSE Command"].map(SubMenuLink)
                             )
@@ -109,46 +114,44 @@
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card fade-in', key: activeSub },
                                 schema.isWelcome ? e('div', null,
-                                    e('h2', { className: 'text-xs font-black text-blue-600 uppercase tracking-widest mb-2' }, 'Official Introduction'),
-                                    e('h1', { className: 'text-2xl cambria text-slate-900 mb-8' }, 'PURPOSE AND STRATEGIC ROLE OF THE ADMINISTRATION DEPARTMENT'),
-                                    e('p', { className: 'text-lg text-slate-600 mb-10 leading-relaxed' }, 
-                                        "The Administration Department serves as the central coordinating function responsible for ensuring organizational efficiency, regulatory compliance, corporate governance, internal controls, and operational continuity."
+                                    e('h2', { className: 'text-[10px] font-black text-indigo-800 uppercase tracking-widest mb-4' }, schema.title),
+                                    e('p', { className: 'intro-text mb-8' }, 
+                                        "The Administration Department of De-Trusted Paint Manufacturing Company serves as the central coordinating function responsible for ensuring organizational efficiency, regulatory compliance, corporate governance, internal controls, and operational continuity. In line with Ghanaian corporate practice, the department acts as:"
                                     ),
                                     e('div', { className: 'strat-card' }, 
-                                        e('h4', { className: 'font-bold text-slate-900' }, 'The Institutional Backbone'),
-                                        e('p', { className: 'text-sm text-slate-500' }, 'Ensuring foundational efficiency for DE-TRUSTED PAINT.')
+                                        e('h4', { className: 'font-bold text-indigo-950 text-sm' }, 'The institutional backbone of DE-TRUSTED PAINT'),
+                                        e('p', { className: 'text-[11px] text-indigo-700 mt-1 opacity-80' }, 'Driving foundational excellence.')
                                     ),
                                     e('div', { className: 'strat-card' }, 
-                                        e('h4', { className: 'font-bold text-slate-900' }, 'The Custodian of Compliance'),
-                                        e('p', { className: 'text-sm text-slate-500' }, 'Guardian of policies, statutory records, and institutional integrity.')
+                                        e('h4', { className: 'font-bold text-indigo-950 text-sm' }, 'The custodian of policies, records, and compliance'),
+                                        e('p', { className: 'text-[11px] text-indigo-700 mt-1 opacity-80' }, 'Upholding statutory integrity and data security.')
                                     ),
                                     e('div', { className: 'strat-card' }, 
-                                        e('h4', { className: 'font-bold text-slate-900' }, 'The Strategic Interface'),
-                                        e('p', { className: 'text-sm text-slate-500' }, 'Bridging the gap between management, regulators, and external stakeholders.')
+                                        e('h4', { className: 'font-bold text-indigo-950 text-sm' }, 'The interface between management, staff, regulators, and external stakeholders'),
+                                        e('p', { className: 'text-[11px] text-indigo-700 mt-1 opacity-80' }, 'Strategic bridge for industrial harmony.')
                                     )
                                 ) : e('div', null,
-                                    e('div', { className: 'flex justify-between items-start mb-10 border-b pb-8' },
+                                    e('div', { className: 'flex justify-between items-start mb-10' },
                                         e('div', null,
-                                            e('h2', { className: 'text-3xl font-bold text-slate-800' }, schema.title),
-                                            e('p', { className: 'text-blue-600 text-[10px] font-black uppercase mt-1 tracking-widest' }, `DATABASE TABLE: ${schema.table}`)
+                                            e('h2', { className: 'text-2xl font-bold text-slate-800' }, schema.title),
+                                            e('div', { className: 'flex gap-2 mt-2' }, 
+                                                e('span', { className: 'db-badge' }, `DB_TABLE: ${schema.table}`),
+                                                e('span', { className: 'db-badge' }, 'READY_TO_WRITE')
+                                            )
                                         ),
-                                        e('div', { className: 'flex gap-3' },
-                                            e('button', { className: 'bg-slate-900 text-white text-[10px] font-bold uppercase px-6 py-3 rounded-lg hover:shadow-xl transition-all' }, 'Save Record'),
-                                            e('button', { className: 'border border-slate-300 text-slate-600 text-[10px] font-bold uppercase px-6 py-3 rounded-lg' }, 'Export .CSV')
+                                        e('div', { className: 'flex gap-2' },
+                                            e('button', { className: 'bg-slate-900 text-white text-[9px] font-bold uppercase px-6 py-2.5 rounded-md' }, 'Submit Form'),
+                                            e('button', { className: 'border border-slate-200 text-slate-500 text-[9px] font-bold uppercase px-6 py-2.5 rounded-md' }, 'History')
                                         )
                                     ),
-                                    e('div', { className: 'mb-10 p-5 bg-slate-50 border-l-4 border-slate-800 rounded-r-lg' },
-                                        e('p', { className: 'text-sm text-slate-600 italic' }, schema.desc)
+                                    e('div', { className: 'mb-8 p-4 bg-slate-50 border-l-2 border-slate-300 rounded-r-md' },
+                                        e('p', { className: 'text-[13px] text-slate-600' }, schema.desc)
                                     ),
-                                    e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' },
+                                    e('div', { className: 'grid grid-cols-2 gap-x-8 gap-y-6' },
                                         schema.fields.map(label => e('div', { key: label },
                                             e('label', { className: 'field-label' }, label),
-                                            e('input', { className: 'input-linked', placeholder: `Enter ${label}...` })
+                                            e('input', { className: 'input-linked', placeholder: `Data Input: ${label}` })
                                         ))
-                                    ),
-                                    e('div', { className: 'mt-24 p-6 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between' },
-                                        e('p', { className: 'text-[11px] font-semibold text-blue-700' }, "Data validation required before final commit to Ashalaja Cluster Server."),
-                                        e('span', { className: 'text-[10px] text-blue-400 font-mono' }, `REF: DBX-${schema.table}-2025`)
                                     )
                                 )
                             )
@@ -165,7 +168,7 @@
                     e('div', { className: 'sidebar-executive' },
                         e('div', { className: 'p-8 mb-6' },
                             e('h1', { className: 'cambria text-white text-3xl' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.2em] mt-2' }, 'ERP Master')
+                            e('p', { className: 'text-[10px] text-blue-500 font-bold uppercase tracking-[0.2em] mt-2' }, 'Admin Hub')
                         ),
                         desks.map(name => 
                             e('button', {
