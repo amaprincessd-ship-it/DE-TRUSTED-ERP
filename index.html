@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | GLOBAL COMPLIANCE</title>
+    <title>DE-TRUSTED ERP | APPROVAL ENGINE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -15,21 +15,20 @@
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
-        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; transition: 0.2s; }
-        .btn-gold:hover { background: #fcd34d; }
-        .tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-        .tag-holiday { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-        .tag-event { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 10px; }
+        .status-pill { font-size: 9px; padding: 2px 8px; border-radius: 20px; font-weight: 800; text-transform: uppercase; }
+        .status-pending { background: #94a3b8; color: #020617; }
+        .status-approved { background: #10b981; color: white; }
     </style>
 </head>
 <body>
 
     <div id="security-gate">
-        <div class="glass-card w-80 text-center shadow-2xl">
-            <h1 class="text-2xl font-black mb-2 italic text-white">DE-TRUSTED ERP</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-6 tracking-widest">GATEWAY SECURED</p>
-            <input type="password" id="gate-pass" class="input-box text-center mb-4" placeholder="ENTER MASTER KEY">
-            <button onclick="unlockSystem()" class="btn-gold w-full">Initialize Terminal</button>
+        <div class="glass-card w-80 text-center">
+            <h1 class="text-2xl font-black mb-2 italic">DE-TRUSTED ERP</h1>
+            <p class="text-[10px] text-yellow-500 font-bold mb-6">SECURE ACCESS</p>
+            <input type="password" id="gate-pass" class="input-box text-center mb-4" placeholder="MASTER KEY">
+            <button onclick="unlockSystem()" class="btn-gold w-full">Access Terminal</button>
         </div>
     </div>
 
@@ -47,29 +46,103 @@
             const { useState, useMemo } = React;
 
             function App() {
-                const [view, setView] = useState('LEAVE');
-                const [holidays, setHolidays] = useState([
-                    { date: "2025-01-01", name: "New Year's Day", type: "National" },
-                    { date: "2025-03-06", name: "Independence Day", type: "National" },
-                    { date: "2025-05-01", name: "May Day", type: "National" }
+                const [view, setView] = useState('DASHBOARD');
+                const [employees, setEmployees] = useState([
+                    { id: 1, name: "Kofi Mensah", quota: 21, used: 0, phone: "233240000000" },
+                    { id: 2, name: "Ama Serwaa", quota: 21, used: 5, phone: "233240000001" }
                 ]);
+                const [applications, setApplications] = useState([]);
+                const [form, setForm] = useState({ empId: '', type: 'Annual Leave', start: '', end: '' });
 
-                const [newHoliday, setNewHoliday] = useState({ date: '', name: '', type: 'Company' });
-                const [employees] = useState([{ id: 1, name: "Kofi Mensah", quota: 21, used: 0 }]);
-                const [leaves, setLeaves] = useState([]);
-                const [form, setForm] = useState({ empId: '', start: '', end: '', type: 'Annual' });
+                // GHANA RESUMPTION LOGIC (Finds the next working day after end date)
+                const getResumptionDate = (endDate) => {
+                    if(!endDate) return "...";
+                    let d = new Date(endDate);
+                    d.setDate(d.getDate() + 1);
+                    // Skip weekends
+                    while(d.getDay() === 0 || d.getDay() === 6) { d.setDate(d.getDate() + 1); }
+                    return d.toISOString().split('T')[0];
+                };
 
-                // DYNAMIC CALCULATION LOGIC
-                const calcDays = (start, end) => {
-                    if(!start || !end) return 0;
-                    let count = 0; let cur = new Date(start); let last = new Date(end);
-                    const holidayDates = holidays.map(h => h.date);
+                const handleApply = () => {
+                    const emp = employees.find(x => x.id == form.empId);
+                    const newApp = {
+                        ...form,
+                        id: Date.now(),
+                        empName: emp.name,
+                        resumption: getResumptionDate(form.end),
+                        status: 'Pending HR Approval',
+                        isFinal: false
+                    };
+                    setApplications([newApp, ...applications]);
+                    alert("Application Submitted! Approval trend started.");
+                };
 
-                    while(cur <= last) {
-                        const day = cur.getDay();
-                        const iso = cur.toISOString().split('T')[0];
-                        const isWeekend = (day === 0 || day === 6);
-                        const isHoliday = holidayDates.includes(iso);
+                const finalizeApproval = (appId) => {
+                    const updated = applications.map(app => {
+                        if(app.id === appId) {
+                            const emp = employees.find(x => x.name === app.empName);
+                            // Trigger Alert (Mock)
+                            alert(`ALERT SENT TO HR & ${app.empName}: Leave from ${app.start} to ${app.end} Approved. Resume: ${app.resumption}`);
+                            return { ...app, status: 'Approved', isFinal: true };
+                        }
+                        return app;
+                    });
+                    setApplications(updated);
+                };
 
-                        if(!isWeekend && !isHoliday) count++;
-                        cur.setDate(cur.getDate() +
+                return e('div', { className: 'flex' },
+                    e('aside', { className: 'sidebar' },
+                        e('div', { className: 'p-8 font-black italic border-b border-slate-800' }, 'DE-TRUSTED'),
+                        e('nav', { className: 'mt-6 text-[10px] font-bold uppercase' },
+                            e('div', { onClick:()=>setView('DASHBOARD'), className:`p-4 cursor-pointer ${view==='DASHBOARD'?'text-yellow-500 bg-slate-800':''}`}, '📊 Approval Dashboard'),
+                            e('div', { onClick:()=>setView('APPLY'), className:`p-4 cursor-pointer ${view==='APPLY'?'text-yellow-500 bg-slate-800':''}`}, '📝 New Leave Request')
+                        )
+                    ),
+                    e('main', { className: 'main-content flex-1' },
+                        
+                        view === 'APPLY' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8'}, 'Internal Leave Portal'),
+                            e('div', {className:'glass-card max-w-xl space-y-4'},
+                                e('select', {className:'input-box', onChange:v=>setForm({...form, empId:v.target.value})},
+                                    e('option',null,'-- Who is applying? --'),
+                                    employees.map(emp => e('option',{key:emp.id, value:emp.id}, emp.name))
+                                ),
+                                e('select', {className:'input-box', onChange:v=>setForm({...form, type:v.target.value})},
+                                    e('option',null,'Annual Leave'), e('option',null,'Sick Leave'), e('option',null,'Maternity'), e('option',null,'Paternity')
+                                ),
+                                e('div', {className:'grid grid-cols-2 gap-4'},
+                                    e('div', null, e('label',{className:'text-[10px] text-slate-500'},'START DATE'), e('input',{type:'date', className:'input-box', onChange:v=>setForm({...form, start:v.target.value})})),
+                                    e('div', null, e('label',{className:'text-[10px] text-slate-500'},'END DATE'), e('input',{type:'date', className:'input-box', onChange:v=>setForm({...form, end:v.target.value})}))
+                                ),
+                                e('button', {className:'btn-gold w-full py-4', onClick:handleApply}, 'Submit for Approval')
+                            )
+                        ),
+
+                        view === 'DASHBOARD' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8'}, 'Approval Trend & Resumption Status'),
+                            e('div', {className:'glass-card'},
+                                e('table', {className:'w-full text-xs text-left'},
+                                    e('thead', null, e('tr', {className:'text-slate-500 border-b border-slate-700'}, 
+                                        e('th',{className:'pb-4'},'STAFF'), e('th',null,'TYPE'), e('th',null,'DURATION'), e('th',null,'RESUMPTION DATE'), e('th',null,'STATUS'), e('th',null,'ACTION')
+                                    )),
+                                    e('tbody', null, applications.map(app => e('tr', {key:app.id, className:'border-b border-slate-800/50'},
+                                        e('td', {className:'py-4 font-bold'}, app.empName),
+                                        e('td', null, app.type),
+                                        e('td', null, `${app.start} to ${app.end}`),
+                                        e('td', {className:'text-yellow-500 font-mono'}, app.resumption),
+                                        e('td', null, e('span', {className:`status-pill ${app.isFinal?'status-approved':'status-pending'}`}, app.status)),
+                                        e('td', null, !app.isFinal && e('button', {onClick:()=>finalizeApproval(app.id), className:'bg-emerald-600 px-3 py-1 rounded text-[9px] font-bold'}, 'APPROVE (HR)'))
+                                    )))
+                                ),
+                                applications.length === 0 && e('p', {className:'text-center p-10 text-slate-500 italic'}, 'No active leave applications in the trend.')
+                            )
+                        )
+                    )
+                );
+            }
+            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+        };
+    </script>
+</body>
+</html>
