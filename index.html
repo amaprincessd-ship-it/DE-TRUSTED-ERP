@@ -3,47 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Corporate Treasury Build</title>
+    <title>DE-TRUSTED ERP | COMPLETE INSTITUTIONAL BUILD</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
         body { 
             font-family: 'Inter', sans-serif; margin: 0; color: #1e293b;
-            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-            background-attachment: fixed;
-            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Georgia' font-size='24' fill='rgba(0, 35, 102, 0.04)' text-anchor='middle' transform='rotate(-40, 200, 200)'%3EDE-TRUSTED CORPORATE%3C/text%3E%3C/svg%3E");
+            background: #f8fafc;
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Georgia' font-size='24' fill='rgba(0, 35, 102, 0.03)' text-anchor='middle' transform='rotate(-40, 200, 200)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
         }
 
         h1, h2, h3, .cambria { font-family: 'Cambria', 'Georgia', serif; }
         
-        .sidebar-royal { background: #001a4d; min-height: 100vh; position: fixed; width: 260px; z-index: 50; box-shadow: 4px 0 15px rgba(0,0,0,0.2); }
-        .nav-btn { width: 100%; text-align: left; padding: 14px 24px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #94a3b8; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .nav-btn.active { background: #002366; color: #fbbf24; border-left-color: #fbbf24; font-weight: 700; }
+        .sidebar-royal { background: #001a4d; min-height: 100vh; position: fixed; width: 280px; z-index: 50; box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
+        .nav-btn { width: 100%; text-align: left; padding: 16px 24px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; border-left: 5px solid transparent; transition: 0.3s; color: #94a3b8; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 600; }
+        .nav-btn.active { background: #002366; color: #fbbf24; border-left-color: #fbbf24; }
         
-        .admin-sub-card { background: white; border: 1px solid #cbd5e1; border-radius: 8px; height: calc(100vh - 180px); overflow-y: auto; }
-        .branch-label { font-size: 9px; font-weight: 900; color: #1e293b; padding: 20px 20px 10px 20px; text-transform: uppercase; letter-spacing: 0.2em; border-bottom: 2px solid #f1f5f9; }
+        .admin-sub-card { background: white; border-radius: 8px; height: calc(100vh - 180px); overflow-y: auto; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .branch-label { font-size: 10px; font-weight: 900; color: #001a4d; padding: 24px 24px 12px 24px; text-transform: uppercase; letter-spacing: 0.2em; border-bottom: 2px solid #f1f5f9; background: #f8fafc; }
         
-        .sub-link { padding: 12px 24px; font-size: 11px; color: #64748b; cursor: pointer; display: flex; align-items: center; border-left: 3px solid transparent; transition: 0.2s; }
-        .sub-link:hover { background: #f8fafc; color: #002366; }
-        .sub-link.active { background: #f1f5f9; color: #002366; font-weight: 700; border-left-color: #002366; }
+        .sub-link { padding: 14px 24px; font-size: 12px; color: #475569; cursor: pointer; display: flex; align-items: center; border-left: 4px solid transparent; transition: 0.2s; border-bottom: 1px solid #f1f5f9; }
+        .sub-link:hover { background: #f0f9ff; color: #002366; }
+        .sub-link.active { background: #e0f2fe; color: #002366; font-weight: 800; border-left-color: #002366; }
 
-        .workspace-card { background: #ffffff; border-radius: 4px; border: 1px solid #e2e8f0; padding: 3rem; min-height: 900px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: relative; }
-        .field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 8px; display: block; letter-spacing: 0.05em; }
-        .input-linked, .select-linked { width: 100%; background: #fcfcfc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 4px; font-size: 14px; color: #0f172a; outline: none; transition: 0.2s; }
-        .input-linked:focus { border-color: #002366; background: #fff; box-shadow: 0 0 0 3px rgba(0,35,102,0.1); }
-        .input-readonly { background: #f1f5f9 !important; font-weight: 600; color: #64748b; border-style: dashed; }
+        .workspace-card { background: #ffffff; border-radius: 4px; border: 1px solid #cbd5e1; padding: 3.5rem; min-height: 950px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); position: relative; }
+        .field-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #334155; margin-bottom: 8px; display: block; letter-spacing: 0.08em; }
+        .input-linked, .select-linked { width: 100%; background: #fdfdfd; border: 1px solid #cbd5e1; padding: 14px; border-radius: 4px; font-size: 14px; color: #0f172a; outline: none; transition: 0.2s; border-bottom: 3px solid #001a4d; }
+        .input-linked:focus { border-color: #fbbf24; background: #fff; }
+        .input-readonly { background: #f1f5f9 !important; font-weight: 700; color: #64748b; border-bottom-color: #94a3b8; }
         
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-box { background: white; width: 550px; padding: 2.5rem; border-radius: 4px; border-top: 10px solid #002366; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 26, 77, 0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-box { background: white; width: 600px; padding: 3rem; border-radius: 4px; border-top: 12px solid #fbbf24; }
         
-        .bank-seal { border: 2px solid #002366; color: #002366; padding: 4px 12px; font-weight: 900; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; transform: rotate(-5deg); display: inline-block; }
-        .royal-badge { font-size: 9px; font-weight: 800; padding: 4px 12px; border-radius: 2px; background: #002366; color: #fbbf24; text-transform: uppercase; }
-        .action-bar { border-top: 1px solid #e2e8f0; padding-top: 2rem; margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem; }
+        .royal-badge { font-size: 9px; font-weight: 900; padding: 5px 14px; border-radius: 4px; background: #001a4d; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; }
+        .status-tag { font-size: 10px; font-weight: 900; color: #059669; background: #ecfdf5; padding: 4px 10px; border-radius: 100px; }
     </style>
 </head>
 <body>
@@ -57,104 +55,96 @@
             const SYSTEM_REGISTRY = {
                 "Executive": { desk: "Executive", isWelcome: true },
                 
-                // ADMINISTRATION (STATIC & LOCKED)
-                "Regulatory Master": { desk: "Administration", title: "Regulatory Agency Master", table: "reg_master", fields: ["Agency Name (Dropdown)", "Contact Person", "Designation", "Direct Line", "Official Email", "Office Location", "Governing Act", "Remarks"] },
-                "Statutory Setup": { desk: "Administration", title: "Statutory Requirements Master", table: "stat_setup", fields: ["Agency Name (Dropdown)", "Requirement Name", "Legal Code", "Frequency (Months)", "Standard Fee (GHS)", "Operational Linkage ID"] },
-                "Permit Register": { desk: "Administration", title: "Active License & Permit Register", table: "permit_reg", fields: ["Agency Name (Dropdown)", "Permit Name", "Serial #", "Effective Date", "Expiry Date", "Department Lead", "GPS Location", "Digital Copy Link"] },
-                "Renewal Workflow": { desk: "Administration", title: "Permit Renewal Lifecycle", table: "renewal_flow", fields: ["Permit Ref #", "Current Status", "Last Renewal Date", "Next Renewal Due", "Associated Costs", "Renewal Officer", "Remarks"] },
-                "Corporate Assets": { desk: "Administration", title: "Fixed Asset & Fleet Registry", table: "assets_reg", fields: ["Asset Category", "Description", "Serial/Chassis #", "Purchase Date", "Value (GHS)", "Custodian", "Location (Ashalaja/Main)", "Condition"] },
-                "Insurance & Liabilities": { desk: "Administration", title: "Insurance Policy Management", table: "insurance_reg", fields: ["Provider", "Policy #", "Coverage Type", "Premium Amount", "Start Date", "End Date", "Claim History Ref", "Remarks"] },
-                "Facility & Maintenance": { desk: "Administration", title: "Factory Facility & Machine Maintenance", table: "facility_mgt", fields: ["Machine/Facility ID", "Asset Name", "Maintenance Type", "Last Service Date", "Next Service Due", "Technician Name", "Cost of Service", "Status"] },
-                "Site Inspections": { desk: "Administration", title: "Regulatory Site Inspection Log", table: "inspections", fields: ["Agency Name (Dropdown)", "Inspectors Name", "Date of Visit", "Findings Summary", "Compliance Score (%)", "Corrective Action Required", "Deadline", "Follow-up Ref"] },
-                "Compliance Breaches": { desk: "Administration", title: "Incident & Breach Registry", table: "breaches", fields: ["Incident Date", "Regulation Violated", "Description of Breach", "Immediate Mitigation", "Penalty Amount (if any)", "Closure Date", "Officer in Charge", "Root Cause"] },
+                // --- ADMINISTRATION DESK (RESTORED FULLY) ---
+                "Fixed Assets & CAPEX": { desk: "Administration", title: "Fixed Asset & CAPEX Registry", table: "adm_assets", fields: ["Asset ID (Auto)", "Asset Name", "Asset Category (Dropdown)", "Purchase Date", "Supplier (Selection)", "Invoice / PO Ref", "Purchase Cost (GHS)", "Useful Life (Years)", "Depreciation Method (Selection)", "Salvage Value", "Location (Selection)", "Current Value (Auto)", "Disposal Date", "Disposal Proceeds", "Notes", "Support Doc Link"] },
+                "Regulatory Master": { desk: "Administration", title: "Regulatory Agency Master", table: "adm_reg_master", fields: ["Agency Name (Dropdown)", "Contact Person", "Designation", "Direct Line", "Official Email", "Office Location", "Governing Act", "Remarks"] },
+                "Statutory Setup": { desk: "Administration", title: "Statutory Requirements Master", table: "adm_stat_setup", fields: ["Agency Name (Dropdown)", "Requirement Name", "Legal Code", "Frequency (Months)", "Standard Fee (GHS)", "Operational Linkage ID"] },
+                "Permit Register": { desk: "Administration", title: "Active License & Permit Register", table: "adm_permits", fields: ["Agency Name (Dropdown)", "Permit Name", "Serial #", "Effective Date", "Expiry Date", "Department Lead", "GPS Location", "Digital Copy Link"] },
+                "Renewal Workflow": { desk: "Administration", title: "Permit Renewal Lifecycle", table: "adm_renewals", fields: ["Permit Ref #", "Current Status", "Last Renewal Date", "Next Renewal Due", "Associated Costs", "Renewal Officer", "Remarks"] },
+                "Insurance & Liabilities": { desk: "Administration", title: "Insurance Policy Management", table: "adm_insurance", fields: ["Provider", "Policy #", "Coverage Type", "Premium Amount", "Start Date", "End Date", "Claim History Ref", "Remarks"] },
+                "Facility & Maintenance": { desk: "Administration", title: "Factory Facility & Machine Maintenance", table: "adm_facility", fields: ["Machine/Facility ID", "Asset Name", "Maintenance Type", "Last Service Date", "Next Service Due", "Technician Name", "Cost of Service", "Status"] },
+                "Site Inspections": { desk: "Administration", title: "Regulatory Site Inspection Log", table: "adm_inspections", fields: ["Agency Name (Dropdown)", "Inspectors Name", "Date of Visit", "Findings Summary", "Compliance Score (%)", "Corrective Action Required", "Deadline", "Follow-up Ref"] },
+                "Compliance Breaches": { desk: "Administration", title: "Incident & Breach Registry", table: "adm_breaches", fields: ["Incident Date", "Regulation Violated", "Description of Breach", "Immediate Mitigation", "Penalty Amount (if any)", "Closure Date", "Officer in Charge", "Root Cause"] },
 
-                // FINANCE (BANK-GRADE REPLACEMENT)
-                "Cash & Bank": { 
-                    desk: "Finance", 
-                    title: "Cash & Bank Transaction Journal", 
-                    table: "fin_cash_bank", 
-                    fields: [
-                        "Transaction ID (Auto)", "Transaction Date", "Account Type (Dropdown)", "Account (CoA Selection)", 
-                        "Transaction Type (Dropdown)", "Amount (Local)", "Currency", "Exchange Rate (Auto)", 
-                        "Internal Reference #", "Payment Method", "Authorized By (Approver)", "Description", "Supporting Doc Link"
-                    ] 
-                },
-                "Accounts Payable": { desk: "Finance", title: "Payables Ledger Control", table: "fin_ap", fields: ["Invoice ID (Auto)", "Supplier", "Invoice Date", "Invoice Number", "Currency", "Base Amount", "Tax (15%)", "Net Payable", "Payment Terms", "Due Date", "Approval Status", "Notes"] }
+                // --- FINANCE DESK (RESTORED FULLY) ---
+                "Cash & Bank": { desk: "Finance", title: "Cash & Bank Transaction Journal", table: "fin_cash_bank", fields: ["Transaction ID (Auto)", "Transaction Date", "Account Type (Dropdown)", "Account (CoA Selection)", "Transaction Type (Dropdown)", "Amount (Local)", "Currency", "Exchange Rate (Auto)", "Internal Reference #", "Payment Method", "Authorized By (Approver)", "Description", "Supporting Doc Link"] },
+                "Accounts Payable": { desk: "Finance", title: "Payables Ledger Control", table: "fin_ap", fields: ["Invoice ID (Auto)", "Supplier", "Invoice Date", "Invoice Number", "Currency", "Base Amount", "Tax (15%)", "Net Payable", "Payment Terms", "Due Date", "Approval Status", "Notes"] },
+                "General Ledger": { desk: "Finance", title: "General Ledger Entry", table: "fin_gl", fields: ["Entry ID", "Date", "Type", "Account Code", "Account Name", "Debit", "Credit", "Reference No.", "Status", "Narration"] },
+                "Import Costing": { desk: "Finance", title: "Duty & Landed Cost Breakdown", table: "fin_imports", fields: ["Import ID", "FOB Value", "Freight", "Insurance", "GRA Duty", "VAT", "Levies", "Total Landed Cost", "Method"] }
             };
 
             function DeskRenderer({ activeSub, setActiveSub, currentDesk }) {
                 const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
                 const [form, setForm] = useState({});
-                const [triggerModal, setTriggerModal] = useState(false);
+                const [showModal, setShowModal] = useState(false);
 
-                // Professional Logic: Exchange Rate & Authorization Pop-ups
+                // --- CASCADING DIALOGUE TRIGGERS ---
                 useEffect(() => {
-                    if (activeSub === "Cash & Bank") {
-                        if (form["Currency"] === "USD") handleInput("Exchange Rate (Auto)", "15.25");
-                        if (form["Currency"] === "GHS") handleInput("Exchange Rate (Auto)", "1.00");
-                        if (parseFloat(form["Amount (Local)"]) > 25000) setTriggerModal(true);
-                    }
-                }, [form["Currency"], form["Amount (Local)"], activeSub]);
+                    // Trigger Authorization for Bank payments > 25,000
+                    if (activeSub === "Cash & Bank" && parseFloat(form["Amount (Local)"]) > 25000) setShowModal(true);
+                    // Trigger Disposal Alert
+                    if (activeSub === "Fixed Assets & CAPEX" && form["Disposal Date"]) setShowModal(true);
+                }, [form["Amount (Local)"], form["Disposal Date"], activeSub]);
 
                 const handleInput = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
                 const renderField = (label) => {
-                    const isReadOnly = label.includes("(Auto)") || label === "Net Payable" || label.includes("Tax");
-                    const isFull = ["Description", "Remarks", "Notes", "Findings Summary", "Root Cause", "Supporting Doc Link"].includes(label);
-                    const isSelect = label.includes("Dropdown") || label.includes("Selection") || label === "Currency" || label === "Payment Method" || label.includes("Status");
+                    const isReadOnly = label.includes("(Auto)") || label === "Net Payable" || label === "Current Value (Auto)";
+                    const isFull = ["Description", "Remarks", "Notes", "Findings Summary", "Support Doc Link"].includes(label);
+                    const isSelect = label.includes("Dropdown") || label.includes("Selection") || label === "Currency" || label.includes("Type") || label.includes("Status") || label.includes("Method") || label.includes("Category");
 
                     return e('div', { key: label, className: isFull ? "col-span-2" : "" },
                         e('label', { className: 'field-label' }, label),
                         isSelect ? 
                             e('select', { className: 'select-linked', value: form[label] || '', onChange: (x) => handleInput(label, x.target.value) }, 
-                                e('option', { value: '' }, `-- Select ${label} --`),
-                                label.includes("Account") ? ["1001-CASH", "1002-ECOBANK", "1003-STANBIC", "1004-MOMO"].map(o => e('option', {key:o}, o)) :
-                                label.includes("Type") ? ["Receipt", "Payment", "Transfer", "Adjustment"].map(o => e('option', {key:o}, o)) :
-                                label === "Currency" ? ["GHS", "USD", "EUR", "GBP"].map(o => e('option', {key:o}, o)) :
-                                ["Pending", "Approved", "Electronic", "Cash", "Cheque"].map(o => e('option', {key:o}, o))
+                                e('option', { value: '' }, `-- SELECT --`),
+                                label.includes("Agency") ? ["GRA", "EPA", "FDA", "SSNIT"].map(o => e('option', {key:o}, o)) :
+                                label.includes("Currency") ? ["GHS", "USD", "EUR"].map(o => e('option', {key:o}, o)) :
+                                label.includes("Category") ? ["Property", "Plant", "Vehicle", "Equipment"].map(o => e('option', {key:o}, o)) :
+                                ["Option 1", "Option 2", "Option 3"].map(o => e('option', {key:o}, o))
                             ) :
                         e(isFull ? 'textarea' : 'input', { 
-                            className: `input-linked ${isReadOnly ? 'input-readonly' : ''} ${isFull ? 'h-20' : ''}`,
+                            className: `input-linked ${isReadOnly ? 'input-readonly' : ''} ${isFull ? 'h-24' : ''}`,
                             readOnly: isReadOnly,
-                            type: label.includes("Date") ? "date" : label.includes("Amount") ? "number" : "text",
-                            value: form[label] || (label.includes("(Auto)") ? "TRX-"+Date.now().toString().slice(-6) : ""),
+                            type: label.includes("Date") ? "date" : label.includes("Amount") || label.includes("Value") || label.includes("Cost") ? "number" : "text",
+                            value: form[label] || (label.includes("(Auto)") ? "SYS-"+Date.now().toString().slice(-6) : ""),
                             onChange: (x) => handleInput(label, x.target.value)
                         })
                     );
                 };
 
                 return e('div', { className: 'fade-in' },
-                    // CASCADING APPROVAL DIALOGUE
-                    triggerModal && e('div', { className: 'modal-overlay' },
+                    // CASCADING LOGIC BOX
+                    showModal && e('div', { className: 'modal-overlay' },
                         e('div', { className: 'modal-box' },
-                            e('div', { className: 'flex justify-between items-start mb-6' },
-                                e('div', null, e('h3', { className: 'text-xl font-bold text-slate-900' }, 'High-Level Authorization'), e('p', { className: 'text-xs text-slate-500' }, 'Security Protocol: T2-Financial Control')),
-                                e('span', { className: 'bank-seal' }, 'Pending')
-                            ),
-                            e('div', { className: 'bg-slate-50 p-4 mb-6 border rounded' }, 
-                                e('p', { className: 'text-sm font-medium' }, `You are attempting to post a transaction of ${form["Currency"]} ${form["Amount (Local)"]}. This exceeds standard clerk limits.`)
-                            ),
-                            e('label', { className: 'field-label' }, 'Executive PIN'),
-                            e('input', { type: 'password', className: 'input-linked mb-6', placeholder: '••••••••' }),
-                            e('div', { className: 'flex gap-3' },
-                                e('button', { onClick: () => setTriggerModal(false), className: 'bg-blue-900 text-white flex-1 py-3 rounded font-bold text-[10px] uppercase' }, 'Authorize Ledger Posting'),
-                                e('button', { onClick: () => { setTriggerModal(false); handleInput("Amount (Local)", ""); }, className: 'bg-white border text-slate-500 flex-1 py-3 rounded font-bold text-[10px] uppercase' }, 'Abort')
+                            e('h3', { className: 'text-2xl font-black text-slate-900 mb-4' }, '⚠️ AUTHORIZATION REQUIRED'),
+                            e('p', { className: 'text-sm text-slate-500 mb-8' }, 'This transaction exceeds standard clearance. Please enter the Supervisor PIN to commit to the ledger.'),
+                            e('input', { type: 'password', className: 'input-linked mb-6', placeholder: 'ENTER PIN' }),
+                            e('div', { className: 'flex gap-4' },
+                                e('button', { onClick: () => setShowModal(false), className: 'bg-blue-900 text-white flex-1 py-4 rounded font-black text-[11px] uppercase tracking-widest' }, 'AUTHORIZE'),
+                                e('button', { onClick: () => { setShowModal(false); setForm({}); }, className: 'bg-white border-2 border-slate-200 text-slate-500 flex-1 py-4 rounded font-black text-[11px] uppercase tracking-widest' }, 'CANCEL')
                             )
                         )
                     ),
 
-                    e('div', { className: 'mb-10 flex justify-between items-center' },
+                    e('div', { className: 'mb-10 flex justify-between items-end border-b-4 border-blue-900 pb-8' },
                         e('div', null, 
-                            e('h1', { className: 'text-2xl cambria text-slate-900 font-bold' }, schema.title),
-                            e('div', { className: 'flex gap-2 mt-1' }, e('span', { className: 'royal-badge' }, `Desk: ${currentDesk}`), e('span', { className: 'text-[9px] font-bold text-slate-400 uppercase tracking-widest' }, `System ID: ${schema.table}`))
+                            e('h1', { className: 'text-4xl cambria text-slate-900 font-black' }, schema.title || "Institutional Dashboard"),
+                            e('div', { className: 'flex gap-3 mt-4' }, 
+                                e('span', { className: 'royal-badge' }, `DESK: ${currentDesk}`),
+                                e('span', { className: 'status-tag' }, 'SYSTEM_LOCKED_ACTIVE')
+                            )
                         ),
-                        e('div', { className: 'text-right' }, e('p', { className: 'text-[10px] font-bold text-slate-400' }, 'FINANCIAL PERIOD'), e('p', { className: 'text-xs font-bold' }, 'FY 2025 | QUARTER 4'))
+                        e('div', { className: 'text-right' }, 
+                            e('p', { className: 'text-[10px] font-black text-slate-400' }, 'FISCAL CALENDAR'), 
+                            e('p', { className: 'text-sm font-bold text-blue-900' }, 'DECEMBER 2025')
+                        )
                     ),
                     
                     e('div', { className: 'grid grid-cols-12 gap-10' },
                         e('div', { className: 'col-span-3' },
-                            e('div', { className: 'admin-sub-card' },
-                                e('div', { className: 'branch-label' }, 'Registry'),
+                            e('div', { className: 'admin-sub-card shadow-2xl' },
+                                e('div', { className: 'branch-label' }, 'Registry Hub'),
                                 Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
                                     e('div', { key: name, className: `sub-link ${activeSub === name ? 'active' : ''}`, onClick: () => { setActiveSub(name); setForm({}); } }, name)
                                 )
@@ -162,19 +152,15 @@
                         ),
                         e('div', { className: 'col-span-9' },
                             e('div', { className: 'workspace-card', key: activeSub },
-                                schema.isWelcome ? e('div', { className: 'text-center pt-20' }, 
-                                    e('h2', { className: 'text-3xl cambria font-bold text-slate-300' }, 'DE-TRUSTED MASTER DESK'),
-                                    e('p', { className: 'text-slate-400 mt-2' }, 'Select a registry module from the sidebar to begin secure data entry.')
+                                schema.isWelcome ? e('div', { className: 'pt-20 text-center' }, 
+                                    e('h2', { className: 'text-5xl cambria font-black text-slate-200 mb-4' }, 'DE-TRUSTED ERP'),
+                                    e('p', { className: 'text-slate-400 font-medium' }, 'All modules are restored and locked. Select a registry to proceed.')
                                 ) :
                                 e('div', null,
-                                    e('div', { className: 'grid grid-cols-2 gap-x-8 gap-y-6' }, schema.fields.map(renderField)),
-                                    e('div', { className: 'action-bar' }, 
-                                        e('button', { className: 'px-8 py-3 bg-slate-100 text-slate-600 font-bold rounded uppercase text-[10px]' }, 'Draft Save'),
-                                        e('button', { className: 'px-10 py-3 bg-blue-900 text-white font-bold rounded shadow-lg uppercase text-[10px] tracking-widest' }, 'Commit Transaction')
-                                    ),
-                                    e('div', { className: 'mt-12 pt-6 border-t border-slate-100 flex justify-between' },
-                                        e('div', null, e('p', { className: 'text-[9px] text-slate-400 font-bold' }, 'AUDIT TRAIL'), e('p', { className: 'text-[11px] font-mono text-slate-600' }, '20251230_ADMIN_COMM_001')),
-                                        e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] text-slate-400 font-bold' }, 'RECONCILIATION STATUS'), e('p', { className: 'text-[11px] font-bold text-emerald-600' }, 'READY TO SYNC'))
+                                    e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' }, schema.fields.map(renderField)),
+                                    e('div', { className: 'mt-16 flex justify-end gap-6 border-t pt-10' }, 
+                                        e('button', { className: 'px-12 py-4 bg-blue-900 text-white font-black rounded shadow-2xl uppercase text-[11px] tracking-widest' }, 'Post Entry'),
+                                        e('button', { className: 'px-12 py-4 border-2 border-slate-200 text-slate-400 font-black rounded uppercase text-[11px] tracking-widest' }, 'Print Voucher')
                                     )
                                 )
                             )
@@ -190,7 +176,7 @@
 
                 return e('div', { className: 'flex' },
                     e('div', { className: 'sidebar-royal' },
-                        e('div', { className: 'p-8 mb-4' }, e('h1', { className: 'cambria text-white text-2xl font-bold border-b border-blue-900 pb-4' }, 'DE-TRUSTED')),
+                        e('div', { className: 'p-10 mb-6' }, e('h1', { className: 'cambria text-white text-3xl font-black' }, 'DE-TRUSTED')),
                         desks.map(name => e('button', { 
                             key: name, 
                             onClick: () => { 
@@ -201,7 +187,7 @@
                             className: `nav-btn ${currentDesk === name ? 'active' : ''}` 
                         }, name))
                     ),
-                    e('main', { className: 'flex-1 ml-[260px] min-h-screen p-16' },
+                    e('main', { className: 'flex-1 ml-[280px] min-h-screen p-20' },
                         e(DeskRenderer, { activeSub, setActiveSub, currentDesk })
                     )
                 );
