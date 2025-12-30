@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | PERFORMANCE & PENALTY</title>
+    <title>DE-TRUSTED ERP | GHANA LEAVE COMPLIANCE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -15,9 +15,7 @@
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; }
-        .cam-box { width: 200px; height: 150px; background: #000; border: 2px solid #334155; border-radius: 8px; overflow: hidden; }
-        .mono { font-family: 'Roboto Mono', monospace; }
-        .penalty-text { color: #f87171; font-weight: bold; font-size: 11px; }
+        .leave-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -25,138 +23,43 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useRef } = React;
+            const { useState, useMemo } = React;
 
-            const fmt = (num) => new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2 }).format(num);
+            // GHANA PUBLIC HOLIDAYS 2025 (Sample list for logic)
+            const GH_HOLIDAYS = ["2025-01-01", "2025-01-07", "2025-03-06", "2025-04-18", "2025-04-21", "2025-05-01", "2025-05-25", "2025-08-04", "2025-09-21", "2025-12-05", "2025-12-25", "2025-12-26"];
 
             function App() {
                 const [isAuth, setIsAuth] = useState(false);
                 const [passInput, setPassInput] = useState('');
-                const [view, setView] = useState('PAYROLL');
-                
-                // Camera State
-                const videoRef = useRef(null);
-                const [photo, setPhoto] = useState(null);
+                const [view, setView] = useState('LEAVE');
 
-                // Staff Database
+                // DATA STORE
                 const [employees, setEmployees] = useState([
-                    { id: 1, fName: 'Kofi', lName: 'Antwi', basic: 5000, dept: 'Sales' }
+                    { id: 1, name: "Kofi Mensah", annualQuota: 21, used: 0 }
                 ]);
+                const [leaveApplications, setLeaveApplications] = useState([]);
 
-                // Payroll Controls
-                const [selectedEmp, setSelectedEmp] = useState(null);
-                const [attendance, setAttendance] = useState(22);
-                const [isPaidLeave, setIsPaidLeave] = useState(false);
-                const [kpi, setKpi] = useState(100);
+                // FORM STATE
+                const [form, setForm] = useState({
+                    empId: '', type: 'Annual', start: '', end: '', reason: '', isHalfDay: false
+                });
 
-                // --- CALCULATION ENGINE ---
-                const base = selectedEmp ? selectedEmp.basic : 0;
-                
-                // 1. Attendance Deduction
-                const daysMissed = 22 - attendance;
-                const dailyRate = base / 22;
-                const attendanceDeduction = (!isPaidLeave && daysMissed > 0) ? (daysMissed * dailyRate) : 0;
-
-                // 2. KPI Penalty Logic
-                let kpiPenaltyPercent = 0;
-                if (kpi < 60) {
-                    const drop = 60 - kpi;
-                    const steps = Math.ceil(drop / 10);
-                    kpiPenaltyPercent = steps * 0.02; // 2% per 10% drop
-                }
-                const kpiDeduction = base * kpiPenaltyPercent;
-
-                const finalNet = base - attendanceDeduction - kpiDeduction;
-
-                const startCamera = async () => {
-                    try {
-                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                        videoRef.current.srcObject = stream;
-                    } catch (err) { alert("Camera access denied or not found."); }
+                // BUSINESS LOGIC: Calculate working days only
+                const calculateWorkingDays = (start, end, isHalf) => {
+                    if (isHalf) return 0.5;
+                    if (!start || !end) return 0;
+                    let count = 0;
+                    let cur = new Date(start);
+                    let last = new Date(end);
+                    while (cur <= last) {
+                        const day = cur.getDay();
+                        const dateStr = cur.toISOString().split('T')[0];
+                        const isWeekend = (day === 0 || day === 6);
+                        const isHoliday = GH_HOLIDAYS.includes(dateStr);
+                        if (!isWeekend && !isHoliday) count++;
+                        cur.setDate(cur.getDate() + 1);
+                    }
+                    return count;
                 };
 
-                const capture = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 320; canvas.height = 240;
-                    canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
-                    setPhoto(canvas.toDataURL('image/png'));
-                };
-
-                if (!isAuth) {
-                    return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
-                        e('form', { onSubmit: (v)=>{v.preventDefault(); if(passInput==='SUPER2025') setIsAuth(true); else alert("FAIL");}, className: 'glass-card w-80 text-center' },
-                            e('h1', { className: 'text-xl font-bold mb-4' }, 'DE-TRUSTED SECURE LOGIN'),
-                            e('input', { type: 'password', className: 'input-box text-center mb-4', placeholder: 'KEY', value: passInput, onChange:v=>setPassInput(v.target.value) }),
-                            e('button', { className: 'btn-gold w-full' }, 'UNLOCK')
-                        )
-                    );
-                }
-
-                return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar' },
-                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
-                        e('nav', { className: 'mt-6' },
-                            e('div', { onClick:()=>setView('PAYROLL'), className: `p-4 cursor-pointer text-xs font-bold ${view==='PAYROLL'?'bg-slate-800 text-yellow-500':'text-slate-500'}`}, '💸 SMART PAYROLL'),
-                            e('div', { onClick:()=>setView('PHOTO'), className: `p-4 cursor-pointer text-xs font-bold ${view==='PHOTO'?'bg-slate-800 text-yellow-500':'text-slate-500'}`}, '📸 PHOTO CAPTURE')
-                        )
-                    ),
-                    e('main', { className: 'main-content flex-1' },
-                        view === 'PHOTO' && e('div', null,
-                            e('h2', {className:'text-2xl font-bold mb-6'}, 'Biometric Capture'),
-                            e('div', {className:'glass-card flex flex-col items-center gap-4 w-fit'},
-                                e('div', {className:'cam-box'}, 
-                                    photo ? e('img', {src: photo}) : e('video', {ref: videoRef, autoPlay: true})
-                                ),
-                                e('div', {className:'flex gap-2'},
-                                    e('button', {onClick: startCamera, className:'bg-slate-700 px-4 py-2 rounded text-xs'}, 'Open Camera'),
-                                    e('button', {onClick: capture, className:'bg-emerald-600 px-4 py-2 rounded text-xs font-bold'}, 'Snap Photo'),
-                                    e('button', {onClick: ()=>setPhoto(null), className:'bg-red-900 px-4 py-2 rounded text-xs'}, 'Reset')
-                                )
-                            )
-                        ),
-
-                        view === 'PAYROLL' && e('div', null,
-                            e('h2', {className:'text-2xl font-bold mb-6'}, 'Automated Performance Payroll'),
-                            e('div', {className:'grid grid-cols-2 gap-8'},
-                                e('div', {className:'glass-card space-y-4'},
-                                    e('div', null, 
-                                        e('label', {className:'text-[10px] text-slate-500'}, 'SELECT STAFF'),
-                                        e('select', {className:'input-box', onChange:v=>setSelectedEmp(employees.find(x=>x.id==v.target.value))},
-                                            e('option', null, '-- Select --'),
-                                            employees.map(emp => e('option', {key:emp.id, value:emp.id}, `${emp.fName} ${emp.lName}`))
-                                        )
-                                    ),
-                                    e('div', null, 
-                                        e('label', {className:'text-[10px] text-slate-500'}, 'ATTENDANCE (Current Month)'),
-                                        e('input', {type:'number', className:'input-box', value:attendance, onChange:v=>setAttendance(v.target.value)})
-                                    ),
-                                    e('div', {className:'flex items-center gap-2'}, 
-                                        e('input', {type:'checkbox', checked:isPaidLeave, onChange:v=>setIsPaidLeave(v.target.checked)}),
-                                        e('label', {className:'text-xs'}, 'Is remaining absence "Paid Leave"?')
-                                    ),
-                                    e('div', null, 
-                                        e('label', {className:'text-[10px] text-slate-500'}, 'KPI SCORE (0 - 100%)'),
-                                        e('input', {type:'number', className:'input-box', value:kpi, onChange:v=>setKpi(v.target.value)})
-                                    )
-                                ),
-                                e('div', {className:'glass-card bg-slate-900/50'},
-                                    e('h3', {className:'text-xs font-bold text-slate-500 mb-6 uppercase'}, 'Deduction Analysis'),
-                                    e('div', {className:'space-y-4 mono text-sm'},
-                                        e('div', {className:'flex justify-between'}, e('span', null, 'Base Salary'), e('span', null, fmt(base))),
-                                        attendanceDeduction > 0 && e('div', {className:'flex justify-between penalty-text'}, e('span', null, `Unpaid Absence (${daysMissed} Days)`), e('span', null, `-${fmt(attendanceDeduction)}`)),
-                                        kpi < 60 && e('div', {className:'flex justify-between penalty-text'}, e('span', null, `KPI Underperf. Penalty (${(kpiPenaltyPercent*100).toFixed(0)}%)`), e('span', null, `-${fmt(kpiDeduction)}`)),
-                                        e('div', {className:'pt-6 border-t border-yellow-500 flex justify-between font-bold text-emerald-500 text-xl'}, 
-                                            e('span', null, 'NET PAY'), e('span', null, fmt(finalNet))
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                );
-            }
-            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
-        };
-    </script>
-</body>
-</html>
+                const currentDays = useMemo(() => calculateWorkingDays(form.start, form.end, form.isHalfDay), [form.start, form.end, form.
