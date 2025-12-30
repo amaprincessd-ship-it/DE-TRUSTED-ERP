@@ -17,7 +17,6 @@
             background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='32' font-weight='400' font-family='serif' fill='%23e2e8f0' text-anchor='middle' opacity='0.4' transform='rotate(-30 200 200)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
         }
 
-        /* CAMBRIA / LIGHT STYLE HEADINGS (ADDITIVE) */
         h1, h2, h3, .cambria-light { 
             font-family: 'Cambria', 'Georgia', serif; 
             font-weight: 400 !important; 
@@ -40,6 +39,17 @@
             width: 100%;
             border-radius: 4px;
             background: #fff;
+            color: #334155;
+            outline-color: #2563eb;
+        }
+        label { 
+            font-size: 10px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            color: #64748b; 
+            letter-spacing: 0.05em; 
+            margin-bottom: 4px; 
+            display: block; 
         }
     </style>
 </head>
@@ -61,23 +71,28 @@
         const Dashboard = () => {
             const [currentDesk, setCurrentDesk] = useState('Executive');
             
-            // Cascading Logic States (Additive)
+            // Additive Logic States
             const [adminAction, setAdminAction] = useState("");
             const [finType, setFinType] = useState("");
+            const [prodCat, setProdCat] = useState("");
+            const [logAction, setLogAction] = useState("");
+            const [salesType, setSalesType] = useState("");
+            const [stockAction, setStockAction] = useState("");
+            const [hrAction, setHrAction] = useState("");
 
-            // --- MODULES (PRESERVED & ENHANCED) ---
+            // --- MODULES ---
             
             const ExecutiveDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl cambria-light mb-8">Executive Cockpit</h1>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                         <div className="bg-white p-6 shadow border-t-4 border-blue-600">
-                            <p className="text-[10px] font-semibold text-slate-400 uppercase">Monthly Revenue</p>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase">Revenue Projection</p>
                             <p className="text-2xl cambria-light text-blue-600">GHS 842,500</p>
                         </div>
                         <div className="bg-white p-6 shadow border-t-4 border-green-600">
-                            <p className="text-[10px] font-semibold text-slate-400 uppercase">Yield</p>
-                            <p className="text-2xl cambria-light text-green-600">97.8%</p>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase">Operational Health</p>
+                            <p className="text-2xl cambria-light text-green-600">Stable</p>
                         </div>
                     </div>
                 </div>
@@ -86,35 +101,23 @@
             const AdminDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl cambria-light mb-8">Administration Desk</h1>
-                    <div className="locked-card p-8 mb-6">
+                    <div className="locked-card p-8">
                         <div className="grid grid-cols-2 gap-6">
                             <div>
-                                <label className="text-[10px] uppercase text-slate-400 block mb-2">Primary Admin Action</label>
+                                <label>Administrative Task</label>
                                 <select onChange={(e) => setAdminAction(e.target.value)} value={adminAction}>
-                                    <option value="">Select Action...</option>
-                                    <option value="regulatory">GSA / EPA Regulatory Update</option>
+                                    <option value="">Choose...</option>
+                                    <option value="regulatory">Regulatory Compliance (GSA/EPA)</option>
                                     <option value="minutes">Board Minutes Entry</option>
-                                    <option value="maintenance">Facility Maintenance Log</option>
                                 </select>
                             </div>
-
                             {adminAction === 'regulatory' && (
                                 <div className="fade-in">
-                                    <label className="text-[10px] uppercase text-slate-400 block mb-2">Agency Selection</label>
-                                    <select>
-                                        <option>Ghana Standards Authority</option>
-                                        <option>EPA Ghana</option>
-                                        <option>Fire Service</option>
-                                    </select>
+                                    <label>Agency</label>
+                                    <select><option>Ghana Standards Authority</option><option>EPA Ghana</option></select>
                                 </div>
                             )}
                         </div>
-                        {adminAction === 'regulatory' && (
-                            <div className="mt-6 grid grid-cols-2 gap-4 fade-in">
-                                <div><label className="text-[10px] uppercase">Renewal Date</label><input type="date" /></div>
-                                <div><label className="text-[10px] uppercase">Permit Ref #</label><input type="text" /></div>
-                            </div>
-                        )}
                     </div>
                 </div>
             );
@@ -123,105 +126,33 @@
                 <div className="fade-in">
                     <h1 className="text-4xl cambria-light mb-8">Finance Portal</h1>
                     <div className="locked-card p-8 border-emerald-600">
-                        <div className="grid grid-cols-2 gap-6 mb-6">
+                        <div className="grid grid-cols-2 gap-6">
                             <div>
-                                <label className="text-[10px] uppercase text-slate-400 block mb-2">Transaction Type</label>
+                                <label>Entry Type</label>
                                 <select onChange={(e) => setFinType(e.target.value)} value={finType}>
-                                    <option value="">Select Type...</option>
+                                    <option value="">Choose...</option>
                                     <option value="rev">Revenue Inflow</option>
                                     <option value="exp">Operational Expense</option>
                                 </select>
                             </div>
                             {finType && (
                                 <div className="fade-in">
-                                    <label className="text-[10px] uppercase text-slate-400 block mb-2">Ledger Sub-Account</label>
-                                    <select>
-                                        {finType === 'rev' ? <><option>Direct Sales</option><option>VAT Invoiced</option></> : <><option>Raw Materials</option><option>Utilities</option></>}
-                                    </select>
+                                    <label>Account</label>
+                                    <select>{finType === 'rev' ? <option>Direct Sales</option> : <option>Utility/Rent</option>}</select>
                                 </div>
                             )}
                         </div>
-                        <button className="w-full bg-emerald-600 text-white py-3 text-[10px] uppercase tracking-widest">Authorize Entry</button>
                     </div>
                 </div>
             );
 
-            // Remaining Desks Kept Static and Tight as Requested
             const ProductionDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl cambria-light mb-8">Production Line</h1>
-                    <div className="locked-card p-8"><p className="text-sm italic">Standard Formula Lock Active - Ashalaja Site</p></div>
-                </div>
-            );
-
-            const LogisticsDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Logistics Fleet</h1>
-                    <div className="locked-card p-8 border-blue-400"><p className="text-sm">Truck Movement Log: Tema Port Inbound</p></div>
-                </div>
-            );
-
-            const SalesDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Sales CRM</h1>
-                    <div className="locked-card p-8 border-pink-500"><p className="text-sm">Waybill Generator Ready</p></div>
-                </div>
-            );
-
-            const WarehouseDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Warehouse Stock</h1>
-                    <div className="locked-card p-8 border-amber-500"><p className="text-sm">Raw Material Inventory: 100%</p></div>
-                </div>
-            );
-
-            const HRDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">HR & Payroll</h1>
-                    <div className="locked-card p-8 border-purple-500"><p className="text-sm">GRA/SSNIT Compliance Validated</p></div>
-                </div>
-            );
-
-            const ProcurementDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Procurement Desk</h1>
-                    <div className="locked-card p-8 border-orange-500"><p className="text-sm">Supplier Audit: Pending Authorization</p></div>
-                </div>
-            );
-
-            const ReceptionDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-8">Reception Portal</h1>
-                    <div className="locked-card p-8 border-pink-300"><p className="text-sm">Visitor Management System Active</p></div>
-                </div>
-            );
-
-            return (
-                <div className="flex h-screen overflow-hidden">
-                    {/* SIDEBAR (Preserved Branding) */}
-                    <div className="w-72 sidebar-glass flex flex-col justify-between p-6 z-10 shadow-2xl overflow-y-auto custom-scroll">
-                        <div>
-                            <div className="mb-8">
-                                <h1 className="cambria-light text-white text-xl tracking-widest">DE-TRUSTED <span className="text-blue-500 italic">PAINT</span></h1>
-                                <p className="text-[8px] text-slate-500 font-semibold tracking-widest uppercase mt-1">Ashalaja Site Master</p>
-                            </div>
-                            <SidebarItem name="Executive" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Administration" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Finance" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Production" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Logistics" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Procurement" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Sales" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
-                            <SidebarItem name="Reception" active={currentDesk} onClick={setCurrentDesk} />
-                        </div>
-                    </div>
-
-                    {/* MAIN CONTENT AREA */}
-                    <main className="flex-1 overflow-y-auto p-16 relative">
-                        {currentDesk === 'Executive' && <ExecutiveDesk />}
-                        {currentDesk === 'Administration' && <AdminDesk />}
-                        {currentDesk === 'Finance' && <FinanceDesk />}
-                        {currentDesk === 'Production' && <ProductionDesk />}
-                        {
+                    <div className="locked-card p-8 border-blue-900">
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label>Paint Category</label>
+                                <select onChange={(e) => setProdCat(e.target.value)} value={prodCat}>
+                                    <option value="">Choose...</option>
+                                    <option      
