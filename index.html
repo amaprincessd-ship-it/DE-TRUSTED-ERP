@@ -14,22 +14,39 @@
             --text-color: #f8fafc;
             --accent-color: #fbbf24;
             --font-main: 'Ubuntu', sans-serif;
+            --bg-image: none;
         }
-        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); transition: all 0.3s ease; margin: 0; }
+        body { 
+            background-color: var(--bg-color); 
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color); 
+            font-family: var(--font-main); 
+            transition: all 0.3s ease; 
+            margin: 0; 
+        }
+        /* WALLPAPER BLUR OVERLAY */
+        body::before {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); /* Darkens the image for text clarity */
+            backdrop-filter: blur(8px); /* Smooth professional blur */
+            z-index: -1;
+        }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 260px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
-        .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
+        .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; position: relative; z-index: 10; }
         
-        /* UNBREAKABLE SECURITY OVERLAY */
         #security-barrier {
             position: fixed !important; top: 0 !important; left: 0 !important;
             width: 100vw !important; height: 100vh !important;
             background: #020617 !important; z-index: 2147483647 !important;
             display: flex; align-items: center; justify-content: center;
         }
-        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 25px; }
-        .input-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px; border-radius: 6px; width: 100%; outline: none; }
+        .glass-card { background: rgba(255,255,255,0.07); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 25px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); }
+        .input-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px; border-radius: 6px; width: 100%; outline: none; }
         .btn-accent { background: var(--accent-color); color: #000; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; font-size: 11px; }
-        .theme-swatch { width: 100%; height: 40px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 10px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -37,10 +54,10 @@
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center">
             <div id="gate-logo-area" class="mb-4 flex justify-center"></div>
-            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">CORE SYSTEM</h1>
+            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">SYSTEM LOGIN</h1>
             <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Private Command</p>
             <input type="password" id="master-key-input" class="input-box text-center mb-6 text-2xl" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent">Unlock Terminal</button>
+            <button onclick="checkAccess()" class="btn-accent">Initialize ERP</button>
         </div>
     </div>
 
@@ -60,10 +77,11 @@
             const { useState, useEffect } = React;
 
             function App() {
-                const [view, setView] = useState('THEME');
+                const [view, setView] = useState('VISUALS');
                 const [theme, setTheme] = useState({
                     name: getSaved('erp_name', 'DE-TRUSTED'),
                     logo: getSaved('erp_logo', ''),
+                    wallpaper: getSaved('erp_wall', ''),
                     bg: getSaved('erp_bg', '#020617'),
                     side: getSaved('erp_side', '#0f172a'),
                     text: getSaved('erp_text', '#f8fafc'),
@@ -76,59 +94,8 @@
                     root.style.setProperty('--side-color', theme.side);
                     root.style.setProperty('--text-color', theme.text);
                     root.style.setProperty('--font-main', theme.font);
+                    root.style.setProperty('--bg-image', theme.wallpaper ? `url('${theme.wallpaper}')` : 'none');
                     
                     document.getElementById('gate-brand-text').innerText = theme.name;
                     if(theme.logo) {
-                        document.getElementById('gate-logo-area').innerHTML = `<img src="${theme.logo}" class="max-h-16">`;
-                    }
-                }, [theme]);
-
-                const update = (key, val) => {
-                    setTheme(prev => ({...prev, [key]: val}));
-                    localStorage.setItem(`erp_${key}`, val);
-                };
-
-                const applyPreset = (bg, side, text, font) => {
-                    update('bg', bg); update('side', side); update('text', text); update('font', font);
-                };
-
-                return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar flex flex-col' },
-                        e('div', { className: 'p-8 border-b border-white/5 text-center' }, 
-                            theme.logo && e('img', { src: theme.logo, className: 'max-h-10 mx-auto mb-2' }),
-                            e('h1', { className: 'text-lg font-black italic' }, theme.name)
-                        ),
-                        e('nav', { className: 'mt-6 text-[10px] font-bold uppercase flex-1' },
-                            e('div', { onClick:()=>setView('DASH'), className:`p-4 cursor-pointer ${view==='DASH'?'bg-white/5 text-yellow-500':''}`}, '📊 Dashboard'),
-                            e('div', { onClick:()=>setView('THEME'), className:`p-4 cursor-pointer ${view==='THEME'?'bg-white/5 text-yellow-500':''}`}, '🎨 Visual Control')
-                        ),
-                        e('div', { className: 'p-4' }, 
-                            e('button', { onClick: ()=>alert("System Diagnostics: Performance 100%"), className: 'text-[9px] font-bold opacity-30 hover:opacity-100 flex items-center gap-2' }, '⚙️ DIAGNOSTICS')
-                        )
-                    ),
-
-                    e('main', { className: 'main-content flex-1' },
-                        view === 'THEME' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Identity & Theme Engine'),
-                            
-                            e('div', {className:'grid grid-cols-3 gap-8'},
-                                // COLUMN 1: BRANDING
-                                e('div', {className:'glass-card space-y-4'},
-                                    e('h3', {className:'text-[10px] font-bold text-yellow-500 uppercase'}, 'Corporate Branding'),
-                                    e('div', null, e('label',{className:'text-[9px] block mb-1 opacity-50'},'COMPANY NAME'), e('input',{className:'input-box', value:theme.name, onChange:(v)=>update('name', v.target.value)})),
-                                    e('div', null, e('label',{className:'text-[9px] block mb-1 opacity-50'},'LOGO URL'), e('input',{className:'input-box', value:theme.logo, placeholder:'https://...', onChange:(v)=>update('logo', v.target.value)}))
-                                ),
-                                // COLUMN 2: CUSTOM COLORS
-                                e('div', {className:'glass-card space-y-4'},
-                                    e('h3', {className:'text-[10px] font-bold text-yellow-500 uppercase'}, 'Manual Palette'),
-                                    e('div', {className:'grid grid-cols-2 gap-2'},
-                                        e('div', null, e('label',{className:'text-[9px] block opacity-50'},'MAIN BG'), e('input',{type:'color', className:'w-full h-8 mt-1 bg-transparent border-0 cursor-pointer', value:theme.bg, onChange:(v)=>update('bg', v.target.value)})),
-                                        e('div', null, e('label',{className:'text-[9px] block opacity-50'},'SIDEBAR'), e('input',{type:'color', className:'w-full h-8 mt-1 bg-transparent border-0 cursor-pointer', value:theme.side, onChange:(v)=>update('side', v.target.value)})),
-                                        e('div', {className:'col-span-2'}, e('label',{className:'text-[9px] block opacity-50'},'GLOBAL TEXT'), e('input',{type:'color', className:'w-full h-8 mt-1 bg-transparent border-0 cursor-pointer', value:theme.text, onChange:(v)=>update('text', v.target.value)}))
-                                    )
-                                ),
-                                // COLUMN 3: PRESETS
-                                e('div', {className:'glass-card space-y-2'},
-                                    e('h3', {className:'text-[10px] font-bold text-yellow-500 uppercase mb-2'}, 'Theme Gallery'),
-                                    e('div', {onClick:()=>applyPreset('#020617', '#0f172a', '#f8fafc', 'Ubuntu, sans-serif'), className:'theme-swatch bg-[#0f172a] text-white border-white/20'}, 'MIDNIGHT'),
-                                    e('div', {onClick:()=>applyPreset('#064e3b', '#065f46',
+                        document.getElementById('gate-logo-area').innerHTML = `<img src="${
