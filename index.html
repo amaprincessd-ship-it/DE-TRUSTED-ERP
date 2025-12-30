@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | PROCUREMENT DESK</title>
+    <title>DE-TRUSTED ERP | WAREHOUSE DESK</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,23 +12,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        :root { --navy: #001f3f; --gold: #fbbf24; --emerald: #065f46; }
+        :root { --navy: #001f3f; --gold: #fbbf24; --orange: #c2410c; }
         body { font-family: 'Ubuntu', sans-serif; background: #f1f5f9; margin: 0; }
 
         .sidebar { background: var(--navy); height: 100vh; width: 260px; position: fixed; border-right: 4px solid var(--gold); }
         .workspace { margin-left: 260px; padding: 40px; }
         
         .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .header-procure { background: var(--emerald); color: white; padding: 25px; border-radius: 8px 8px 0 0; }
+        .header-warehouse { background: var(--orange); color: white; padding: 25px; border-radius: 8px 8px 0 0; }
         
         .field-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .p-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
+        .w-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
         
-        .line-item-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .line-item-table th { background: #f8fafc; text-align: left; padding: 12px; font-size: 10px; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #e2e8f0; }
-        .line-item-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
-        
-        .summary-box { background: #064e3b; color: white; padding: 20px; border-radius: 6px; text-align: right; }
+        .stock-badge { background: #ffedd5; color: #9a3412; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 800; }
+        .match-success { color: #15803d; font-weight: 800; font-size: 11px; }
+
+        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; padding: 15px; border-bottom: 1px solid #f1f5f9; align-items: center; }
+        .item-row-header { background: #f8fafc; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; padding: 10px 15px; }
     </style>
 </head>
 <body>
@@ -37,10 +37,105 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useEffect } = React;
+            const { useState } = React;
 
-            // Figure-to-Words for Procurement
-            const toWords = (n) => {
-                const num = parseFloat(n) || 0;
-                if (num === 0) return "Zero Ghana Cedis Only";
-                const ones = ['', '
+            function App() {
+                const [poReference, setPoReference] = useState('');
+                const [isMatched, setIsMatched] = useState(false);
+
+                // Simulated PO Linkage
+                const handleMatch = () => {
+                    if(poReference === 'PO-2025-0012') setIsMatched(true);
+                    else alert('PO Reference not found in Procurement Desk.');
+                };
+
+                return e('div', { className: 'flex' },
+                    e('aside', { className: 'sidebar p-6' },
+                        e('h1', { className: 'text-white text-xl font-black mb-10' }, 'DE-TRUSTED ERP'),
+                        ['Inventory Dashboard', 'Goods Received (GRN)', 'Stock Issue (IIN)', 'Stock Take', 'Bin Locations', 'Scrap/Damages'].map(i => 
+                            e('div', { key: i, className: 'text-orange-200 text-xs font-bold py-3 border-b border-white/10 cursor-pointer hover:text-white' }, i.toUpperCase())
+                        )
+                    ),
+
+                    e('main', { className: 'workspace flex-1' },
+                        e('div', { className: 'card' },
+                            e('div', { className: 'header-warehouse flex justify-between items-center' },
+                                e('div', null,
+                                    e('h2', { className: 'text-2xl font-black' }, 'Goods Received Note (GRN)'),
+                                    e('p', { className: 'text-xs opacity-80' }, 'Warehouse > Stock Inward Registry')
+                                ),
+                                e('div', { className: 'text-right' },
+                                    e('p', { className: 'text-[10px] font-black' }, 'GRN NUMBER'),
+                                    e('span', { className: 'text-xl font-mono font-bold' }, 'GRN-99201-X')
+                                )
+                            ),
+
+                            e('div', { className: 'p-8' },
+                                e('div', { className: 'grid grid-cols-3 gap-6 mb-8 border-b pb-8' },
+                                    e('div', null,
+                                        e('label', { className: 'field-label' }, 'Parent PO Reference'),
+                                        e('div', { className: 'flex gap-2' },
+                                            e('input', { 
+                                                className: 'w-input mb-0', 
+                                                placeholder: 'PO-2025-XXXX',
+                                                onChange: (x) => setPoReference(x.target.value)
+                                            }),
+                                            e('button', { 
+                                                className: 'bg-orange-700 text-white px-4 rounded font-bold text-[10px]',
+                                                onClick: handleMatch
+                                            }, 'MATCH')
+                                        )
+                                    ),
+                                    e('div', null,
+                                        e('label', { className: 'field-label' }, 'Waybill / Delivery Note #'),
+                                        e('input', { className: 'w-input', placeholder: 'Enter Vendor Doc #' })
+                                    ),
+                                    e('div', null,
+                                        e('label', { className: 'field-label' }, 'Receiving Officer'),
+                                        e('input', { className: 'w-input bg-slate-50', value: 'EMP-7712 | S. Kojo', readOnly: true })
+                                    )
+                                ),
+
+                                isMatched ? e('div', null,
+                                    e('div', { className: 'flex justify-between items-center mb-4' },
+                                        e('h3', { className: 'text-xs font-black text-orange-900' }, 'ITEMS EXPECTED FROM PO-2025-0012'),
+                                        e('span', { className: 'match-success' }, '✓ THREE-WAY MATCH INITIATED')
+                                    ),
+                                    e('div', { className: 'item-row-header grid grid-cols-4' },
+                                        e('div', null, 'Description'), e('div', null, 'Ordered'), e('div', null, 'Received'), e('div', null, 'Status')
+                                    ),
+                                    [
+                                        {desc: 'Raw Material Type-A', ord: 500, unit: 'kg'},
+                                        {desc: 'Industrial Lubricant', ord: 20, unit: 'Liters'}
+                                    ].map((item, idx) => e('div', { key: idx, className: 'item-row' },
+                                        e('div', { className: 'text-sm font-bold' }, item.desc),
+                                        e('div', { className: 'text-xs' }, `${item.ord} ${item.unit}`),
+                                        e('input', { className: 'w-input mb-0 py-1', type: 'number', defaultValue: item.ord }),
+                                        e('div', null, e('span', { className: 'stock-badge' }, 'INSPECTED'))
+                                    ))
+                                ) : e('div', { className: 'py-10 text-center text-slate-400 font-bold italic' }, 
+                                    'Enter and Match a valid PO Reference to load expected items.')
+                            ),
+
+                            e('div', { className: 'p-8 bg-slate-50 border-t flex justify-between items-center' },
+                                e('p', { className: 'text-[10px] font-bold text-slate-400 max-w-sm' }, 
+                                    'AUTHORIZATION: Clicking "Acknowledge Receipt" will update Bin Balances and trigger a Liability notification for Finance.'),
+                                e('div', { className: 'flex gap-4' },
+                                    e('button', { className: 'px-8 py-3 bg-white border border-slate-300 font-bold text-xs rounded' }, 'FLAG DISCREPANCY'),
+                                    e('button', { 
+                                        className: 'px-10 py-3 bg-orange-700 text-white font-bold text-xs rounded',
+                                        disabled: !isMatched
+                                    }, 'ACKNOWLEDGE RECEIPT')
+                                )
+                            )
+                        )
+                    )
+                );
+            }
+
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(e(App));
+        };
+    </script>
+</body>
+</html>
