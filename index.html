@@ -3,126 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | GROWTH & ONBOARDING</title>
+    <title>DE-TRUSTED ERP | COMMAND CORE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
-        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
         
-        #security-engine {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #020617; z-index: 2147483647 !important;
+        /* THE ULTIMATE OVERRIDE - NO STACKING POSSIBLE */
+        #security-barrier {
+            position: fixed !important;
+            top: 0 !important; left: 0 !important;
+            width: 100vw !important; height: 100vh !important;
+            background: #020617 !important;
+            z-index: 999999999 !important; /* Absolute highest possible */
             display: flex; align-items: center; justify-content: center;
+            visibility: visible !important; opacity: 1 !important;
         }
-        
+
+        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
         .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; z-index: 50; }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
-        .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
-        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-size: 10px; }
-        .kpi-tag { background: #1e293b; border-left: 3px solid #fbbf24; padding: 10px; font-size: 11px; margin-bottom: 5px; }
-        .salary-lock { color: #10b981; font-weight: 900; font-family: 'Roboto Mono', monospace; }
+        .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 12px; border-radius: 6px; width: 100%; font-family: 'Roboto Mono', monospace; }
+        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 14px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; width: 100%; }
+        .offer-preview { background: white; color: #334155; padding: 40px; border-radius: 4px; font-family: serif; line-height: 1.6; }
     </style>
 </head>
 <body>
 
-    <div id="security-engine">
-        <div class="glass-card w-96 text-center border-yellow-500/50">
-            <h1 class="text-3xl font-black mb-1 italic uppercase">DE-TRUSTED</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em]">RECRUITMENT TERMINAL</p>
-            <input type="password" id="gate-pass" class="input-box text-center mb-6 text-xl" placeholder="••••" autofocus>
-            <button onclick="access()" class="btn-gold w-full py-4">UNLATCH SYSTEM</button>
+    <div id="security-barrier">
+        <div class="glass-card w-full max-w-sm text-center border-yellow-500/50 shadow-2xl">
+            <h1 class="text-4xl font-black mb-1 italic">DE-TRUSTED</h1>
+            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Executive Access Required</p>
+            <input type="password" id="master-key-input" class="input-box text-center mb-6 text-2xl border-yellow-500/30" placeholder="••••" autofocus>
+            <button onclick="checkAccess()" class="btn-gold">Unlock Terminal</button>
+            <p class="text-[9px] text-slate-500 mt-6">SECURITY VERSION 45.0.1 - HARD-LOCKED</p>
         </div>
     </div>
 
     <div id="root"></div>
 
     <script>
-        function access() {
-            if (document.getElementById('gate-pass').value === 'SUPER2025') {
-                document.getElementById('security-engine').remove();
-            } else { alert("ACCESS DENIED"); location.reload(); }
+        function checkAccess() {
+            const key = document.getElementById('master-key-input').value;
+            if (key === 'SUPER2025') {
+                document.getElementById('security-barrier').style.display = 'none';
+            } else {
+                alert("UNAUTHORIZED ACCESS DETECTED");
+                location.reload();
+            }
         }
+
+        // Allow 'Enter' key to submit
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && document.getElementById('security-barrier').style.display !== 'none') {
+                checkAccess();
+            }
+        });
 
         window.onload = function() {
             const e = React.createElement;
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('RECRUIT');
-                const [selectedRole, setSelectedRole] = useState(null);
-                
-                // DATA REPOSITORY
-                const jobLibrary = [
-                    { id: 1, title: "Sales Executive (Junior)", dept: "Sales", salary: "GHS 4,500 - 6,000", kpis: ["30 Outbound Calls/Day", "Monthly Target: GHS 50k", "90% CRM Compliance"], desc: "Support the senior sales team in lead generation and customer acquisition." },
-                    { id: 2, title: "Full-Stack Developer", dept: "IT/Ops", salary: "GHS 12,000 - 18,000", kpis: ["Zero Critical Bugs", "Sprint Completion: 95%", "99.9% Uptime Maintenance"], desc: "Maintain and upgrade the DE-TRUSTED ERP core systems." }
-                ];
-
-                const [applicants] = useState([
-                    { id: 101, name: "Kwadwo Antwi", role: "Sales Executive (Junior)", status: "Shortlisted" }
-                ]);
+                const [view, setView] = useState('OFFER_GEN');
+                const [activeApplicant, setActiveApplicant] = useState({
+                    name: "Kwadwo Antwi",
+                    role: "Sales Executive (Junior)",
+                    salary: "GHS 5,200",
+                    start: "2026-01-15"
+                });
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
                         e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
                         e('nav', { className: 'mt-6 text-[10px] font-bold uppercase' },
-                            e('div', { onClick:()=>setView('RECRUIT'), className:`p-4 cursor-pointer ${view==='RECRUIT'?'bg-slate-800 text-yellow-500':''}`}, '📢 Recruitment Portal'),
-                            e('div', { onClick:()=>setView('ONBOARD'), className:`p-4 cursor-pointer ${view==='ONBOARD'?'bg-slate-800 text-yellow-500':''}`}, '🎓 Graduation Hub')
+                            e('div', { onClick:()=>setView('OFFER_GEN'), className:`p-4 cursor-pointer ${view==='OFFER_GEN'?'bg-slate-800 text-yellow-500':''}`}, '📄 Offer Generator'),
+                            e('div', { onClick:()=>setView('HUB'), className:`p-4 cursor-pointer ${view==='HUB'?'bg-slate-800 text-yellow-500':''}`}, '⚙️ System Settings')
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'RECRUIT' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Strategic Recruitment'),
+                        view === 'OFFER_GEN' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Offer Letter Automation'),
                             
-                            e('div', {className:'grid grid-cols-2 gap-8'},
-                                // ROLE GENERATOR
+                            e('div', {className:'grid grid-cols-2 gap-10'},
+                                // Form
                                 e('div', {className:'glass-card'},
-                                    e('h3', {className:'text-xs font-bold text-slate-500 mb-6 uppercase'}, 'Role Definition & Salary Binding'),
+                                    e('h3', {className:'text-xs font-bold text-slate-500 mb-6 uppercase'}, 'Offer Parameters'),
                                     e('div', {className:'space-y-4'},
-                                        jobLibrary.map(role => e('div', {key:role.id, onClick:()=>setSelectedRole(role), className:`p-4 rounded cursor-pointer border ${selectedRole?.id===role.id?'border-yellow-500 bg-yellow-500/5':'border-slate-800 hover:bg-slate-800'}`},
-                                            e('p', {className:'font-bold text-sm'}, role.title),
-                                            e('p', {className:'text-[10px] text-slate-500'}, role.dept)
-                                        ))
+                                        e('div', null, e('label',{className:'text-[10px] uppercase font-bold text-slate-400'},'Full Name'), e('input',{className:'input-box mt-1', value:activeApplicant.name, onChange:(ev)=>setActiveApplicant({...activeApplicant, name:ev.target.value})})),
+                                        e('div', null, e('label',{className:'text-[10px] uppercase font-bold text-slate-400'},'Salary Amount'), e('input',{className:'input-box mt-1', value:activeApplicant.salary, onChange:(ev)=>setActiveApplicant({...activeApplicant, salary:ev.target.value})})),
+                                        e('div', null, e('label',{className:'text-[10px] uppercase font-bold text-slate-400'},'Start Date'), e('input',{type:'date', className:'input-box mt-1', value:activeApplicant.start, onChange:(ev)=>setActiveApplicant({...activeApplicant, start:ev.target.value})}))
                                     ),
-                                    e('button', {className:'w-full mt-6 bg-slate-800 p-3 rounded text-[9px] font-bold'}, '+ DEFINE CUSTOM ROLE')
+                                    e('button', {className:'btn-gold mt-8', onClick:()=>alert("Offer Dispatched to " + activeApplicant.name + " via WhatsApp and Email.")}, 'Send Offer Package')
                                 ),
 
-                                // JD & KPI DISPLAY
-                                selectedRole && e('div', {className:'glass-card border-l-4 border-yellow-500'},
-                                    e('div', {className:'flex justify-between items-center mb-6'},
-                                        e('h3', {className:'text-lg font-black uppercase text-yellow-500'}, selectedRole.title),
-                                        e('span', {className:'salary-lock'}, selectedRole.salary)
-                                    ),
-                                    e('p', {className:'text-[11px] text-slate-400 mb-4 italic'}, selectedRole.desc),
-                                    e('h4', {className:'text-[10px] font-black text-slate-500 uppercase mb-3'}, 'Targeted KPIs (Automatic Generation)'),
-                                    selectedRole.kpis.map((kpi, i) => e('div', {key:i, className:'kpi-tag'}, kpi)),
-                                    e('div', {className:'flex gap-2 mt-6'},
-                                        e('button', {className:'bg-emerald-600 px-4 py-2 rounded text-[10px] font-black'}, 'POST TO LINKEDIN'),
-                                        e('button', {className:'bg-slate-700 px-4 py-2 rounded text-[10px] font-black'}, 'EDIT ROLE TRAIL')
-                                    )
+                                // Live Preview
+                                e('div', {className:'offer-preview shadow-2xl text-slate-800'},
+                                    e('h1', {className:'text-2xl font-bold mb-4 border-b pb-2'}, 'LETTER OF APPOINTMENT'),
+                                    e('p', {className:'mb-4'}, `Dear ${activeApplicant.name},`),
+                                    e('p', {className:'mb-4'}, `Following your successful interview, we are pleased to offer you the position of ` + e('strong', null, activeApplicant.role) + `.`),
+                                    e('p', {className:'mb-4 font-bold'}, `Remuneration: ${activeApplicant.salary} per month.`),
+                                    e('p', {className:'mb-4'}, `Your commencement date is set for ${activeApplicant.start}. You will be expected to maintain the KPIs linked to this role as discussed in your trial trail.`),
+                                    e('p', {className:'mt-10'}, 'Sincerely,'),
+                                    e('p', {className:'font-bold'}, 'The CEO'),
+                                    e('p', {className:'italic'}, 'DE-TRUSTED ERP Systems')
                                 )
                             )
                         ),
 
-                        view === 'ONBOARD' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Candidate Graduation'),
-                            e('div', {className:'glass-card'},
-                                e('table', {className:'w-full text-xs text-left'},
-                                    e('thead', null, e('tr', {className:'text-slate-500 border-b border-slate-700 pb-2'}, 
-                                        e('th',{className:'pb-4'},'APPLICANT'), e('th',null,'ROLE'), e('th',null,'STATUS'), e('th',null,'ACTION')
-                                    )),
-                                    e('tbody', null, applicants.map(a => e('tr', {key:a.id, className:'border-b border-slate-800/50'},
-                                        e('td', {className:'py-4 font-bold uppercase'}, a.name),
-                                        e('td', null, a.role),
-                                        e('td', null, e('span', {className:'text-yellow-500 font-bold'}, a.status)),
-                                        e('td', null, e('button', {onClick:()=>alert(`${a.name} has been Graduated. Profile created with linked KPIs and Salary.`), className:'bg-emerald-600 px-3 py-1 rounded font-black text-[9px]'}, 'GRADUATE TO ERP'))
-                                    )))
-                                )
-                            )
-                        )
+                        view === 'HUB' && e('div', {className:'text-center p-20 italic opacity-40 text-2xl font-black'}, 'SYSTEM STABILITY: 100%')
                     )
                 );
             }
