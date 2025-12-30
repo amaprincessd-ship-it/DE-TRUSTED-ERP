@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | Unified Operations Hub</title>
+    <title>DE-TRUSTED ERP | Total Operations Suite</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -13,9 +13,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
         body { 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
-            color: #1e293b;
+            font-family: 'Inter', sans-serif; margin: 0; color: #1e293b;
             background: linear-gradient(135deg, #ffffff 0%, #fefce8 100%);
             background-attachment: fixed;
             background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Georgia' font-size='22' fill='rgba(184, 134, 11, 0.07)' text-anchor='middle' transform='rotate(-35, 150, 150)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
@@ -54,63 +52,74 @@
             const e = React.createElement;
             const useState = React.useState;
 
-            const GH_AGENCIES = [
-                "Ghana Revenue Authority (GRA)", "Environmental Protection Agency (EPA)",
-                "Food and Drugs Authority (FDA)", "Ghana Standards Authority (GSA)",
-                "Social Security & Nat. Insurance (SSNIT)", "Registrar-General’s Department (RGD)",
-                "Ghana Fire Service (GFS)", "Factories Inspectorate Department (FID)",
-                "Local Municipal Assembly (MA)"
-            ];
+            const GH_AGENCIES = ["GRA", "EPA", "FDA", "GSA", "SSNIT", "RGD", "GFS", "FID", "Municipal Assembly"];
 
-            const MASTER_SCHEMA = {
-                "Department Purpose": { isWelcome: true, title: "STRATEGIC OVERVIEW" },
-                "Regulatory Master": { 
-                    title: "Regulatory Bodies Registry", 
-                    table: "regulatory_bodies", 
-                    fields: ["Agency Name (Dropdown)", "Governing Act", "Contact Person Name", "Rank/Designation", "Phone Number", "Primary Email", "Location/Address", "GPS Address", "Remarks"], 
-                    desc: "Comprehensive directory for agency liaison management." 
+            const FULL_OPERATIONS_SCHEMA = {
+                "Department Purpose": { isWelcome: true, title: "EXECUTIVE OVERVIEW" },
+                
+                // PART A: RAW MATERIAL
+                "RM Receipt (GRN)": { 
+                    title: "Raw Material Goods Receipt (GRN)", table: "raw_material_grn", 
+                    fields: ["Reference No.", "Source Type (Dropdown)", "Supplier Name", "Invoice No.", "Raw Material", "Batch Number", "Quantity Received", "Unit Cost", "Expiry Date", "Warehouse Location", "Inspection Status", "GPS Address", "Remarks"], 
+                    desc: "Capture every raw material received (local or imported)." 
                 },
-                "Statutory Setup": { 
-                    title: "Statutory Requirements Master", 
-                    table: "statutory_requirements", 
-                    fields: ["Agency Name (Dropdown)", "Requirement Name", "Reference No.", "Legal Reference", "Renewal Cycle", "Remarks"], 
-                    desc: "Linking specific legal mandates to Ghanaian agencies." 
+                "RM Stock Adjustment": { 
+                    title: "Stock Adjustment Form", table: "stock_adjustments", 
+                    fields: ["Reference No.", "Raw Material", "Adjustment Type", "Quantity Adjusted (+/-)", "Reason", "Approved By", "Evidence Upload (Ref)", "Remarks"], 
+                    desc: "Record losses, damages, or inventory corrections." 
                 },
-                "Permit Register": { 
-                    title: "Live License & Permit Register", 
-                    table: "licenses_permits", 
-                    fields: ["Agency Name (Dropdown)", "Reference No.", "Permit Serial #", "Issue Date", "Expiry Date", "Department Lead", "GPS Address", "Remarks"], 
-                    desc: "Registry for active corporate certifications and site permits." 
+                "RM Production Issue": { 
+                    title: "Material Issue to Production", table: "production_issues", 
+                    fields: ["Reference No.", "Production Batch No.", "Raw Material", "Quantity Issued", "Unit", "Production Supervisor", "Remarks"], 
+                    desc: "Track materials issued to factory floor batches." 
                 },
-                "Logistics Hub": { 
-                    title: "Logistics & Fleet Command", 
-                    table: "logistics_registry", 
-                    fields: ["Reference No.", "Vehicle/Vessel ID", "Driver/Agent Name", "Contact Phone", "Destination GPS", "Regulatory Clearing Agent", "Agency Name (Dropdown)", "Remarks"], 
-                    desc: "Operational tracking for international imports and local distribution." 
+
+                // PART B: IMPORT MANAGEMENT
+                "Import Consignment": { 
+                    title: "Import Consignment Master", table: "import_consignment", 
+                    fields: ["Reference No.", "Supplier Name", "Country of Origin", "Import Type", "Proforma Invoice No.", "Import Permit Ref", "ETA Date", "Clearing Agent", "Incoterms", "Currency", "Status"], 
+                    desc: "End-to-end tracking of international material shipments." 
                 },
-                "Supplier Coordination": { 
-                    title: "Supplier Liaison Registry", 
-                    table: "supplier_master", 
-                    fields: ["Reference No.", "Supplier Company Name", "Primary Contact", "Rank/Designation", "Phone Number", "Location/Address", "GPS Address", "Remarks"], 
-                    desc: "Coordination hub for international and local material vendors." 
+                "Import Costing": { 
+                    title: "Duty & Landed Cost Breakdown", table: "import_costing", 
+                    fields: ["Import ID (Ref)", "FOB Value", "Freight Cost", "Insurance Cost", "Import Duty (GRA)", "VAT", "NHIL / GETFund", "Total Landed Cost", "Cost Allocation Method", "Remarks"], 
+                    desc: "GRA compliance and precise landed cost calculation." 
                 },
-                "Site Inspections": { 
-                    title: "Regulatory Inspection Log", 
-                    table: "inspections", 
-                    fields: ["Agency Name (Dropdown)", "Reference No.", "Inspection Type", "Inspectors Present", "Contact Phone", "GPS Address", "Compliance Finding", "Remarks"], 
-                    desc: "Audit trail for physical site regulatory visits." 
+                "Import Clearance": { 
+                    title: "Import Clearance & Receipt", table: "import_clearance", 
+                    fields: ["Import ID (Ref)", "Reference No.", "Clearing Date", "Customs Entry No.", "Quantity Cleared", "Warehouse Location", "GPS Address", "Remarks"], 
+                    desc: "Final confirmation of port arrival into warehouse." 
                 },
-                "Compliance Breaches": { 
-                    title: "Incident & Breach Registry", 
-                    table: "compliance_incidents", 
-                    fields: ["Agency Name (Dropdown)", "Reference No.", "Incident Date", "Root Cause Analysis", "Immediate Mitigation", "Remarks"], 
-                    desc: "Internal logs for handling legal or safety breaches." 
-                }
+
+                // PART C: LOCAL DISTRIBUTION
+                "Distributor Master": { 
+                    title: "Customer & Distributor Registry", table: "customer_master", 
+                    fields: ["Customer ID", "Customer Name", "Customer Type", "Contact Person", "Phone Number", "Rank/Designation", "Delivery Address", "GPS Address", "Region", "Credit Terms", "Remarks"], 
+                    desc: "Centralized database for all outbound distribution recipients." 
+                },
+                "Sales/Dist. Request": { 
+                    title: "Sales Order & Request", table: "sales_orders", 
+                    fields: ["Sales Order ID", "Customer Name (Dropdown)", "Order Date", "Delivery Date", "Product Name", "Quantity Ordered", "Unit Price", "Total Value", "Approved By", "Remarks"], 
+                    desc: "Authorization for finished paint distribution." 
+                },
+                "Dispatch Form": { 
+                    title: "Delivery Note & Dispatch Control", table: "dispatch_logs", 
+                    fields: ["Dispatch ID", "Sales Order Ref", "Vehicle No.", "Driver Name", "Quantity Dispatched", "Warehouse", "GPS Address", "POD Upload (Ref)", "Customer Acknowledgement", "Remarks"], 
+                    desc: "Physical movement control and outbound logistics." 
+                },
+                "Distribution Returns": { 
+                    title: "Local Returns Registry", table: "distribution_returns", 
+                    fields: ["Return ID", "Original Dispatch Ref", "Reason for Return", "Quantity Returned", "Condition", "Warehouse Re-entry", "Approved By", "Remarks"], 
+                    desc: "Handle damaged or rejected finished goods." 
+                },
+
+                // PART D: MANAGEMENT
+                "Logistics Dashboard": { isDashboard: true, title: "OPERATIONS DASHBOARD", desc: "Live KPIs for Inventory, Imports, and Distribution." }
             };
 
             function AdministrationDesk() {
                 const [activeSub, setActiveSub] = useState('Department Purpose');
-                const schema = MASTER_SCHEMA[activeSub];
+                const schema = FULL_OPERATIONS_SCHEMA[activeSub];
 
                 const SubMenuLink = (name) => e('div', {
                     key: name,
@@ -118,76 +127,68 @@
                     onClick: () => setActiveSub(name)
                 }, name);
 
+                const renderContent = () => {
+                    if (schema.isWelcome) {
+                        return e('div', null,
+                            e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Official Purpose'),
+                            e('p', { className: 'intro-text mb-8' }, "The Administration Department of De-Trusted Paint Manufacturing Company serves as the central coordinating function responsible for ensuring organizational efficiency..."),
+                            e('div', { className: 'strat-card' }, e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'Institutional Backbone')),
+                            e('div', { className: 'strat-card' }, e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'Custodian of Compliance'))
+                        );
+                    }
+                    if (schema.isDashboard) {
+                        return e('div', { className: 'grid grid-cols-3 gap-6' },
+                            ['Stock Levels', 'Import Pipeline', 'Regional Volume'].map(k => e('div', { key: k, className: 'p-8 border border-amber-200 rounded-xl bg-slate-50' }, 
+                                e('h5', { className: 'text-[10px] font-bold text-slate-400 uppercase mb-2' }, k),
+                                e('p', { className: 'text-2xl font-black text-blue-900' }, 'LIVE DATA')
+                            ))
+                        );
+                    }
+                    return e('div', null,
+                        e('div', { className: 'flex justify-between items-start mb-10' },
+                            e('div', null,
+                                e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
+                                e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `DATABASE: ${schema.table}`)
+                            ),
+                            e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Save Form Record')
+                        ),
+                        e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' },
+                            schema.fields.map(label => e('div', { key: label },
+                                e('label', { className: 'field-label' }, label),
+                                label.includes("(Dropdown)") ? 
+                                    e('select', { className: 'select-linked' }, 
+                                        e('option', null, '-- Select Option --'),
+                                        (label.includes("Agency") ? GH_AGENCIES : ["Local", "Import", "Distributor", "Retailer"]).map(opt => e('option', { key: opt }, opt))
+                                    ) : 
+                                    e('input', { className: 'input-linked', placeholder: `Enter ${label}...` })
+                            ))
+                        ),
+                        e('div', { className: 'prepared-by flex justify-between items-center mt-12' },
+                            e('div', null, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'PREPARED BY'), e('p', { className: 'text-[13px] font-bold' }, 'Logistics Officer')),
+                            e('div', { className: 'text-right' }, e('p', { className: 'text-[9px] font-bold text-slate-400' }, 'TIMESTAMP'), e('p', { className: 'text-[13px] font-bold' }, '2025-12-30 | 13:19 GMT'))
+                        )
+                    );
+                };
+
                 return e('div', { className: 'fade-in' },
                     e('div', { className: 'mb-8 border-b-2 border-amber-200 pb-6 flex justify-between items-end' },
-                        e('div', null,
-                            e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Administration Desk'),
-                            e('p', { className: 'text-blue-700 text-sm font-medium' }, 'Unified ADM-COMP & Logistics Console')
-                        ),
-                        e('div', { className: 'flex items-center gap-3' },
-                            e('span', { className: 'royal-badge' }, '2025_SECURE_AUTH'),
-                            e('div', { className: 'w-3 h-3 bg-blue-600 rounded-full animate-pulse' })
-                        )
+                        e('div', null, e('h1', { className: 'text-3xl cambria text-blue-900 font-bold' }, 'Administration Desk'), e('p', { className: 'text-blue-700 text-sm font-medium' }, 'Total Operations Suite'))
                     ),
-
                     e('div', { className: 'grid grid-cols-12 gap-8' },
                         e('div', { className: 'col-span-3' },
                             e('div', { className: 'admin-sub-card shadow-lg' },
-                                e('div', { className: 'branch-label' }, 'Strategic Core'),
-                                ["Department Purpose"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Regulatory & Statutory'),
-                                ["Regulatory Master", "Statutory Setup", "Permit Register"].map(SubMenuLink),
-                                e('div', { className: 'branch-label' }, 'Operations & Logistics'),
-                                ["Logistics Hub", "Supplier Coordination", "Site Inspections", "Compliance Breaches"].map(SubMenuLink)
+                                e('div', { className: 'branch-label' }, 'Executive'),
+                                ["Department Purpose", "Logistics Dashboard"].map(SubMenuLink),
+                                e('div', { className: 'branch-label' }, 'Raw Materials'),
+                                ["RM Receipt (GRN)", "RM Stock Adjustment", "RM Production Issue"].map(SubMenuLink),
+                                e('div', { className: 'branch-label' }, 'Import Management'),
+                                ["Import Consignment", "Import Costing", "Import Clearance"].map(SubMenuLink),
+                                e('div', { className: 'branch-label' }, 'Local Distribution'),
+                                ["Distributor Master", "Sales/Dist. Request", "Dispatch Form", "Distribution Returns"].map(SubMenuLink)
                             )
                         ),
-
                         e('div', { className: 'col-span-9' },
-                            e('div', { className: 'workspace-card fade-in', key: activeSub },
-                                schema.isWelcome ? e('div', null,
-                                    e('h2', { className: 'text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4' }, 'Official Purpose'),
-                                    e('p', { className: 'intro-text mb-8' }, 
-                                        "The Administration Department of De-Trusted Paint Manufacturing Company serves as the central coordinating function responsible for ensuring organizational efficiency, regulatory compliance, corporate governance, internal controls, and operational continuity. In line with Ghanaian corporate practice, the department acts as:"
-                                    ),
-                                    e('div', { className: 'strat-card' }, 
-                                        e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The institutional backbone of DE-TRUSTED PAINT'),
-                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Harmonizing cross-departmental operations and logistics.')
-                                    ),
-                                    e('div', { className: 'strat-card' }, 
-                                        e('h4', { className: 'font-bold text-blue-900 text-sm' }, 'The custodian of policies, records, and compliance'),
-                                        e('p', { className: 'text-[11px] text-slate-600 mt-1' }, 'Guardian of official policies and statutory mandates.')
-                                    )
-                                ) : e('div', null,
-                                    e('div', { className: 'flex justify-between items-start mb-10' },
-                                        e('div', null,
-                                            e('h2', { className: 'text-2xl font-bold text-blue-900' }, schema.title),
-                                            e('p', { className: 'text-[9px] font-black text-amber-600 uppercase mt-2' }, `ACTIVE TABLE: ${schema.table}`)
-                                        ),
-                                        e('button', { className: 'bg-blue-900 text-white text-[9px] font-bold uppercase px-8 py-3 rounded-md shadow-xl' }, 'Commit Entry')
-                                    ),
-                                    e('div', { className: 'grid grid-cols-2 gap-x-10 gap-y-8' },
-                                        schema.fields.map(label => e('div', { key: label },
-                                            e('label', { className: 'field-label' }, label),
-                                            label.includes("(Dropdown)") ? 
-                                                e('select', { className: 'select-linked' }, 
-                                                    e('option', null, '-- Select Agency --'),
-                                                    GH_AGENCIES.map(agency => e('option', { key: agency }, agency))
-                                                ) : 
-                                                e('input', { className: 'input-linked', placeholder: `Enter ${label}...` })
-                                        ))
-                                    ),
-                                    e('div', { className: 'prepared-by flex justify-between items-center mt-12' },
-                                        e('div', null,
-                                            e('p', { className: 'text-[9px] font-bold text-slate-400 uppercase tracking-wider' }, 'Form Prepared By'),
-                                            e('p', { className: 'text-[13px] font-bold text-slate-700' }, 'Executive Admin Officer')
-                                        ),
-                                        e('div', { className: 'text-right' },
-                                            e('p', { className: 'text-[9px] font-bold text-slate-400 uppercase tracking-wider' }, 'System Timestamp'),
-                                            e('p', { className: 'text-[13px] font-bold text-slate-700' }, '2025-12-30 | 13:00 GMT')
-                                        )
-                                    )
-                                )
-                            )
+                            e('div', { className: 'workspace-card fade-in', key: activeSub }, renderContent())
                         )
                     )
                 );
@@ -199,17 +200,8 @@
 
                 return e('div', { className: 'flex' },
                     e('div', { className: 'sidebar-royal' },
-                        e('div', { className: 'p-8 mb-6 border-b border-blue-800' },
-                            e('h1', { className: 'cambria text-white text-2xl font-bold tracking-tight' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[10px] text-amber-400 font-bold uppercase tracking-[0.2em] mt-2' }, 'Royal ERP Master')
-                        ),
-                        desks.map(name => 
-                            e('button', {
-                                key: name,
-                                onClick: () => setCurrentDesk(name),
-                                className: `nav-btn ${currentDesk === name ? 'active' : ''}`
-                            }, name)
-                        )
+                        e('div', { className: 'p-8 mb-6 border-b border-blue-800' }, e('h1', { className: 'cambria text-white text-2xl font-bold' }, 'DE-TRUSTED')),
+                        desks.map(name => e('button', { key: name, onClick: () => setCurrentDesk(name), className: `nav-btn ${currentDesk === name ? 'active' : ''}` }, name))
                     ),
                     e('main', { className: 'flex-1 ml-[260px] min-h-screen p-16' },
                         currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'py-40 text-center opacity-10' }, e('h1', { className: 'text-8xl font-black text-blue-900' }, currentDesk))
