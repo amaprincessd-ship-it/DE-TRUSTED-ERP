@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | AUTOMATED ID SYSTEM</title>
+    <title>DE-TRUSTED ERP | AI-HR & BIOMETRICS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -15,9 +15,9 @@
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; transition: 0.3s; }
-        .btn-gold:hover { background: #fcd34d; transform: translateY(-1px); }
-        .section-title { font-size: 10px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 5px; }
-        .id-card-preview { background: white; color: #020617; width: 300px; height: 450px; border-radius: 15px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .cam-preview { width: 160px; height: 120px; background: #000; border-radius: 8px; border: 2px solid #fbbf24; overflow: hidden; position: relative; }
+        .performance-badge { padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .mono { font-family: 'Roboto Mono', monospace; }
     </style>
 </head>
 <body>
@@ -25,49 +25,52 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState } = React;
+            const { useState, useRef } = React;
 
             function App() {
                 const [isAuth, setIsAuth] = useState(false);
                 const [passInput, setPassInput] = useState('');
                 const [view, setView] = useState('PAYROLL');
+                const videoRef = useRef(null);
 
                 // DATABASE
                 const [employees, setEmployees] = useState([]);
+                const [capturedImg, setCapturedImg] = useState(null);
                 const [newEmp, setNewEmp] = useState({
-                    fName: '', mName: '', lName: '', email: '', phone: '',
-                    edu: '', homeAddress: '', gps: '', idType: 'Ghana Card', idNum: '',
-                    nokName: '', nokRel: '', nokPhone: '', nokEmail: '', dept: '', pos: ''
+                    fName: '', mName: '', lName: '', phone: '', email: '', edu: '', 
+                    gps: '', idNum: '', dept: '', pos: '', basic: 0
                 });
 
-                // AUTH LOGIC
-                const handleLogin = (v) => { 
-                    v.preventDefault(); 
-                    if (passInput === 'SUPER2025') setIsAuth(true); 
-                    else alert("ACCESS DENIED"); 
+                // PERFORMANCE & ATTENDANCE
+                const [attendanceDays, setAttendanceDays] = useState(22); // Target 22 days
+                const [kpiScore, setKpiScore] = useState(100); // Percentage
+
+                // CAMERA FUNCTIONS
+                const startCam = async () => {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    videoRef.current.srcObject = stream;
                 };
 
-                // AUTO ID GENERATOR
-                const generateStaffID = () => {
-                    const year = new Date().getFullYear();
-                    const random = Math.floor(1000 + Math.random() * 9000);
-                    return `DT-${year}-${random}`;
+                const takeSnap = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 160; canvas.height = 120;
+                    canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
+                    setCapturedImg(canvas.toDataURL('image/png'));
                 };
 
                 const addEmployee = () => {
-                    if(!newEmp.fName || !newEmp.lName) return alert("Names are mandatory.");
-                    const staffId = generateStaffID();
-                    setEmployees([...employees, { ...newEmp, staffId, id: Date.now() }]);
-                    setNewEmp({ fName: '', mName: '', lName: '', email: '', phone: '', edu: '', homeAddress: '', gps: '', idType: 'Ghana Card', idNum: '', nokName: '', nokRel: '', nokPhone: '', nokEmail: '', dept: '', pos: '' });
-                    alert(`Success! Generated ID: ${staffId}`);
+                    const staffId = `DT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random()*9000)}`;
+                    const empObj = { ...newEmp, staffId, photo: capturedImg, id: Date.now(), attendance: 100, performance: 100 };
+                    setEmployees([...employees, empObj]);
+                    setCapturedImg(null);
+                    alert("Staff Registered with Biometric Photo!");
                 };
 
                 if (!isAuth) {
                     return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
-                        e('form', { onSubmit: handleLogin, className: 'glass-card w-80 text-center shadow-2xl border-slate-800' },
-                            e('h1', { className: 'text-2xl font-black mb-2 tracking-tighter' }, 'DE-TRUSTED ERP'),
-                            e('p', { className: 'text-[10px] text-yellow-500 font-bold mb-8' }, 'ENTER MASTER KEY TO INITIALIZE'),
-                            e('input', { type: 'password', className: 'input-box text-center mb-6', placeholder: '••••••••', value: passInput, onChange: v => setPassInput(v.target.value) }),
+                        e('form', { onSubmit: (v) => { v.preventDefault(); if(passInput==='SUPER2025') setIsAuth(true); else alert("KEY ERROR"); }, className: 'glass-card w-80 text-center' },
+                            e('h1', { className: 'text-2xl font-black mb-6' }, 'DE-TRUSTED ERP'),
+                            e('input', { type: 'password', className: 'input-box text-center mb-4', placeholder: 'MASTER KEY', value: passInput, onChange: v => setPassInput(v.target.value) }),
                             e('button', { type: 'submit', className: 'btn-gold w-full' }, 'UNFOLD SYSTEM')
                         )
                     );
@@ -75,86 +78,67 @@
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
-                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic text-white' }, 'DE-TRUSTED')),
+                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
                         e('nav', { className: 'mt-6' },
-                            e('div', { onClick: () => setView('PAYROLL'), className: `p-4 cursor-pointer text-xs font-bold ${view === 'PAYROLL' ? 'text-yellow-500 bg-slate-800' : 'text-slate-500'}` }, '💳 PAYROLL DESK'),
-                            e('div', { onClick: () => setView('ADD_EMP'), className: `p-4 cursor-pointer text-xs font-bold ${view === 'ADD_EMP' ? 'text-yellow-500 bg-slate-800' : 'text-slate-500'}` }, '➕ ONBOARDING'),
-                            e('div', { onClick: () => setView('DIR'), className: `p-4 cursor-pointer text-xs font-bold ${view === 'DIR' ? 'text-yellow-500 bg-slate-800' : 'text-slate-500'}` }, '👥 STAFF DIRECTORY')
+                            e('div', { onClick: () => setView('PAYROLL'), className: `p-4 cursor-pointer text-xs font-bold ${view === 'PAYROLL' ? 'text-yellow-500 bg-slate-800' : 'text-slate-500'}` }, '📉 PERFORMANCE PAYROLL'),
+                            e('div', { onClick: () => setView('ADD_EMP'), className: `p-4 cursor-pointer text-xs font-bold ${view === 'ADD_EMP' ? 'text-yellow-500 bg-slate-800' : 'text-slate-500'}` }, '📸 BIOMETRIC ONBOARDING')
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
                         
-                        // ONBOARDING VIEW
-                        view === 'ADD_EMP' && e('div', { className: 'max-w-5xl' },
-                            e('h2', { className: 'text-3xl font-black mb-8' }, 'Automatic Staff Registration'),
-                            e('div', { className: 'glass-card space-y-8' },
-                                e('div', null, 
-                                    e('h3', { className: 'section-title' }, 'Personal Information'),
-                                    e('div', { className: 'grid grid-cols-3 gap-4' },
-                                        e('input', {className:'input-box', placeholder:'First Name', value:newEmp.fName, onChange:v=>setNewEmp({...newEmp, fName:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'Middle Name', value:newEmp.mName, onChange:v=>setNewEmp({...newEmp, mName:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'Last Name', value:newEmp.lName, onChange:v=>setNewEmp({...newEmp, lName:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'Phone Number', value:newEmp.phone, onChange:v=>setNewEmp({...newEmp, phone:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'Email Address', value:newEmp.email, onChange:v=>setNewEmp({...newEmp, email:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'Educational Background', value:newEmp.edu, onChange:v=>setNewEmp({...newEmp, edu:v.target.value})})
+                        view === 'ADD_EMP' && e('div', { className: 'max-w-4xl' },
+                            e('h2', { className: 'text-3xl font-black mb-8' }, 'Biometric Staff Entry'),
+                            e('div', { className: 'glass-card space-y-6' },
+                                e('div', { className: 'flex gap-8 items-start' },
+                                    e('div', { className: 'space-y-2' },
+                                        e('div', { className: 'cam-preview' }, 
+                                            capturedImg ? e('img', {src: capturedImg}) : e('video', {ref: videoRef, autoPlay: true, className:'w-full h-full object-cover'})
+                                        ),
+                                        e('button', { onClick: startCam, className:'text-[10px] bg-slate-800 px-2 py-1 rounded w-full' }, 'Start Cam'),
+                                        e('button', { onClick: takeSnap, className:'text-[10px] bg-emerald-600 px-2 py-1 rounded w-full font-bold' }, 'Capture Photo')
+                                    ),
+                                    e('div', { className: 'flex-1 grid grid-cols-2 gap-4' },
+                                        e('input', {className:'input-box', placeholder:'First Name', onChange:v=>setNewEmp({...newEmp, fName:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Last Name', onChange:v=>setNewEmp({...newEmp, lName:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Email', onChange:v=>setNewEmp({...newEmp, email:v.target.value})}),
+                                        e('input', {className:'input-box', placeholder:'Dept', onChange:v=>setNewEmp({...newEmp, dept:v.target.value})}),
+                                        e('input', {type:'number', className:'input-box text-yellow-500', placeholder:'Basic Salary (GHS)', onChange:v=>setNewEmp({...newEmp, basic:parseFloat(v.target.value)||0})})
                                     )
                                 ),
-                                e('div', null, 
-                                    e('h3', { className: 'section-title' }, 'Identity & Location'),
-                                    e('div', { className: 'grid grid-cols-3 gap-4' },
-                                        e('select', {className:'input-box', value:newEmp.idType, onChange:v=>setNewEmp({...newEmp, idType:v.target.value})}, e('option',null,'Ghana Card'), e('option',null,'Passport'), e('option',null,'Voters ID')),
-                                        e('input', {className:'input-box', placeholder:'National ID Number', value:newEmp.idNum, onChange:v=>setNewEmp({...newEmp, idNum:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'Digital GPS Address', value:newEmp.gps, onChange:v=>setNewEmp({...newEmp, gps:v.target.value})}),
-                                        e('input', {className:'input-box col-span-2', placeholder:'Home Address', value:newEmp.homeAddress, onChange:v=>setNewEmp({...newEmp, homeAddress:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'Department', value:newEmp.dept, onChange:v=>setNewEmp({...newEmp, dept:v.target.value})})
-                                    )
-                                ),
-                                e('div', null, 
-                                    e('h3', { className: 'section-title' }, 'Next of Kin (Emergency)'),
-                                    e('div', { className: 'grid grid-cols-4 gap-4' },
-                                        e('input', {className:'input-box', placeholder:'NOK Full Name', value:newEmp.nokName, onChange:v=>setNewEmp({...newEmp, nokName:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'Relationship', value:newEmp.nokRel, onChange:v=>setNewEmp({...newEmp, nokRel:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'NOK Phone', value:newEmp.nokPhone, onChange:v=>setNewEmp({...newEmp, nokPhone:v.target.value})}),
-                                        e('input', {className:'input-box', placeholder:'NOK Email', value:newEmp.nokEmail, onChange:v=>setNewEmp({...newEmp, nokEmail:v.target.value})})
-                                    )
-                                ),
-                                e('button', { className: 'btn-gold w-full py-4 text-sm', onClick: addEmployee }, 'Generate Staff ID & Save Profile')
+                                e('button', { className: 'btn-gold w-full', onClick: addEmployee }, 'Finalize Registration')
                             )
                         ),
 
-                        // DIRECTORY VIEW
-                        view === 'DIR' && e('div', null,
-                            e('h2', { className: 'text-3xl font-black mb-8' }, 'Company Directory'),
-                            e('div', { className: 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' },
-                                employees.map(emp => e('div', { key: emp.id, className: 'glass-card border-l-4 border-yellow-500' },
-                                    e('div', { className: 'flex justify-between items-start mb-4' },
-                                        e('div', null, 
-                                            e('h4', {className:'text-lg font-bold'}, `${emp.fName} ${emp.lName}`),
-                                            e('p', {className:'text-xs text-yellow-500 font-mono'}, emp.staffId)
-                                        ),
-                                        e('div', {className:'w-12 h-12 bg-slate-800 rounded border border-slate-700 flex items-center justify-center text-[8px]'}, 'PHOTO')
-                                    ),
-                                    e('div', {className:'text-[11px] space-y-1 text-slate-400'},
-                                        e('p', null, e('b', {className:'text-slate-200'}, 'Dept: '), emp.dept),
-                                        e('p', null, e('b', {className:'text-slate-200'}, 'GPS: '), emp.gps),
-                                        e('p', null, e('b', {className:'text-slate-200'}, 'NOK: '), emp.nokName)
-                                    ),
-                                    e('button', { className:'mt-4 w-full bg-slate-800 text-[10px] py-2 rounded font-bold hover:bg-slate-700'}, 'GENERATE DIGITAL ID CARD')
-                                ))
-                            ),
-                            employees.length === 0 && e('p', {className:'text-slate-600 italic'}, 'No staff registered yet.')
-                        ),
-
-                        // PAYROLL VIEW
                         view === 'PAYROLL' && e('div', null,
-                            e('h2', { className: 'text-3xl font-black mb-8' }, 'Secure Payroll Processing'),
-                            e('div', { className: 'glass-card max-w-2xl' },
-                                e('label', {className:'text-[10px] text-slate-500 font-bold'}, 'SEARCH & SELECT STAFF'),
-                                e('select', { className:'input-box mb-6', onChange: v => alert('Selected ' + v.target.value) },
-                                    e('option', null, '-- Choose --'),
-                                    employees.map(emp => e('option', {key:emp.id}, `${emp.fName} ${emp.lName} [${emp.staffId}]`))
+                            e('h2', { className: 'text-3xl font-black mb-8' }, 'Performance-Linked Payroll'),
+                            e('div', { className: 'grid grid-cols-1 xl:grid-cols-2 gap-8' },
+                                e('div', { className: 'glass-card space-y-6' },
+                                    e('select', { className: 'input-box', onChange: v => alert("Linked to Performance Metrics") },
+                                        e('option', null, '-- Choose Employee --'),
+                                        employees.map(emp => e('option', {key:emp.id}, `${emp.fName} ${emp.lName}`))
+                                    ),
+                                    e('div', {className:'grid grid-cols-2 gap-4'},
+                                        e('div', null, 
+                                            e('label', {className:'text-[10px] text-slate-500'}, 'ATTENDANCE (Days out of 22)'),
+                                            e('input', {type:'number', className:'input-box', value:attendanceDays, onChange:v=>setAttendanceDays(v.target.value)})
+                                        ),
+                                        e('div', null, 
+                                            e('label', {className:'text-[10px] text-slate-500'}, 'KPI SCORE (%)'),
+                                            e('input', {type:'number', className:'input-box', value:kpiScore, onChange:v=>setKpiScore(v.target.value)})
+                                        )
+                                    )
                                 ),
-                                e('p', {className:'text-xs text-slate-500 italic'}, 'Staff data will auto-populate here once selected...')
+                                e('div', { className: 'glass-card bg-slate-900/40 border-yellow-500/20' },
+                                    e('h3', { className: 'text-xs font-bold text-slate-500 mb-6 uppercase' }, 'AI Payout Analysis'),
+                                    e('div', { className: 'space-y-4 mono text-sm' },
+                                        e('div', {className:'flex justify-between'}, e('span', null, 'Attendance Ratio'), e('span', null, `${((attendanceDays/22)*100).toFixed(1)}%`)),
+                                        e('div', {className:'flex justify-between'}, e('span', null, 'KPI Performance'), e('span', {className: kpiScore >= 80 ? 'text-emerald-500' : 'text-red-500'}, `${kpiScore}%`)),
+                                        e('div', {className:'pt-6 border-t border-slate-700 text-center'},
+                                            e('p', {className:'text-[10px] text-slate-500'}, 'RECOMMENDED PAYOUT ADJUSTMENT'),
+                                            e('h1', {className:'text-4xl font-black text-yellow-500'}, `${( (attendanceDays/22) * (kpiScore/100) * 100 ).toFixed(1)}%`)
+                                        )
+                                    )
+                                )
                             )
                         )
                     )
