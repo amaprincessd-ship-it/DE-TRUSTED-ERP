@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | AUDIT & TRACEABILITY ENGINE</title>
+    <title>DE-TRUSTED ERP | PV MASTER ENGINE</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -14,31 +14,25 @@
         
         body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #f1f5f9; color: #1e293b; overflow: hidden; }
 
-        /* HEADER */
         .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; height: 65px; }
-        .search-bar { background: #ffffff; color: #333; border: none; padding: 10px 25px; border-radius: 4px; width: 450px; font-weight: 700; border: 2px solid #002366; outline: none; font-size: 13px; }
-
-        /* SIDEBAR */
         .sidebar { background: #001f3f; height: calc(100vh - 65px); position: fixed; width: 260px; top: 65px; overflow-y: auto; padding-bottom: 100px; border-right: 1px solid rgba(255,255,255,0.1); }
-        .nav-btn { width: 100%; text-align: left; padding: 14px 25px; font-size: 11px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .nav-btn { width: 100%; text-align: left; padding: 14px 25px; font-size: 11px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-btn.active { background: #003366; color: #fbbf24; border-left: 6px solid #fbbf24; font-weight: 800; }
 
-        /* WORKSPACE */
         .workspace { margin-left: 260px; padding: 90px 40px 40px 40px; height: 100vh; overflow-y: auto; }
-        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 850px; }
+        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 1100px; }
         
-        /* AUDIT UI COMPONENTS */
-        .audit-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 30px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; }
-        .meta-box { font-size: 9px; }
-        .meta-label { font-weight: 900; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 2px; }
-        .meta-value { font-family: 'Roboto Mono', monospace; color: #0f172a; font-weight: 700; }
+        /* FORM COMPONENTS */
+        .section-header { font-size: 11px; font-weight: 900; color: #1e40af; background: #eff6ff; padding: 8px 15px; border-radius: 4px; margin: 25px 0 15px 0; text-transform: uppercase; letter-spacing: 0.05em; border-left: 4px solid #1e40af; }
+        .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px; }
+        .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #fff; margin-bottom: 15px; border-radius: 4px; }
+        .readonly-input { background: #f8fafc; color: #64748b; font-weight: bold; cursor: not-allowed; }
+        
+        .net-result-panel { background: #0f172a; color: #38bdf8; padding: 20px; border-radius: 4px; margin-top: 10px; border-left: 5px solid #fbbf24; }
+        .words-display { font-size: 11px; color: #94a3b8; font-style: italic; margin-top: 4px; font-family: 'Roboto Mono'; }
 
-        .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 12px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #fff; margin-bottom: 18px; border-radius: 4px; }
-        .words-panel { background: #f0fdf4; border: 1px dashed #16a34a; color: #166534; padding: 15px; font-size: 12px; font-weight: 700; margin-bottom: 20px; border-radius: 4px; }
-        
-        .btn-post { background: #001f3f; color: white; padding: 16px 45px; font-weight: 800; border-radius: 4px; text-transform: uppercase; cursor: pointer; border: none; }
-        .workflow-tag { background: #001f3f; color: white; padding: 4px 10px; border-radius: 3px; font-size: 9px; font-weight: 900; }
+        .workflow-step { flex: 1; text-align: center; font-size: 9px; font-weight: 900; color: #94a3b8; }
+        .workflow-step.active { color: #001f3f; border-bottom: 3px solid #fbbf24; }
     </style>
 </head>
 <body>
@@ -47,7 +41,7 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState } = React;
+            const { useState, useEffect } = React;
 
             const gscToWords = (n) => {
                 if (!n || n <= 0) return "Zero Ghana Cedis Only";
@@ -64,118 +58,119 @@
                 return res.trim() + " Ghana Cedis Only";
             };
 
-            const SYSTEM_REGISTRY = {
-                "Executive Dash": { desk: "Executive", title: "Strategic Performance", fields: ["Revenue", "Margin"] },
-                "Fixed Assets": { desk: "Administration", title: "Asset Registry", fields: ["Asset ID", "Name", "Cost (Numeric)"] },
-                "Payment Voucher": { desk: "Finance", title: "Payment Voucher Master", fields: ["Voucher ID (Auto)", "Payee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
-                "Petty Cash Voucher": { desk: "Finance", title: "Petty Cash Form", fields: ["Voucher ID (Auto)", "Employee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
-                "Expense Claim": { desk: "Finance", title: "Staff Expense Claim", fields: ["Claim ID (Auto)", "Employee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
-                "BOM Registry": { desk: "Production", title: "Bill of Materials", fields: ["Product Code", "Unit Cost"] }
-            };
-
             function App() {
-                const [currentDesk, setCurrentDesk] = useState('Finance');
-                const [activeSub, setActiveSub] = useState('Payment Voucher');
-                const [numVal, setNumVal] = useState(0);
-                const [status, setStatus] = useState('Draft');
-                
-                // AUDIT LOG STATE (SIMULATED AUTO-CAPTURE)
-                const [audit, setAudit] = useState({
-                    created_by: "USER_092",
-                    created_at: "2025-12-30 08:00:00",
-                    modified_by: "USER_092",
-                    modified_at: "2025-12-30 15:45:12",
-                    approved_by: "---",
-                    approved_at: "---",
-                    ip_address: "192.168.1.44"
-                });
+                const [gross, setGross] = useState(0);
+                const [vat, setVat] = useState(0);
+                const [wht, setWht] = useState(0);
+                const [other, setOther] = useState(0);
+                const [net, setNet] = useState(0);
 
-                const schema = SYSTEM_REGISTRY[activeSub];
-
-                const handleCommit = () => {
-                    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
-                    setAudit(prev => ({
-                        ...prev,
-                        approved_by: "CONTROLLER_FIN_01",
-                        approved_at: now,
-                        modified_at: now
-                    }));
-                    setStatus('Approved');
-                };
+                useEffect(() => {
+                    const calculatedNet = parseFloat(gross) + parseFloat(vat) - parseFloat(wht) - parseFloat(other);
+                    setNet(calculatedNet > 0 ? calculatedNet : 0);
+                }, [gross, vat, wht, other]);
 
                 return e('div', null,
                     e('div', { className: 'bank-header shadow-lg' },
-                        e('div', { className: 'flex items-center gap-6' },
-                            e('h1', { className: 'text-2xl font-black tracking-tighter' }, 'DE-TRUSTED ERP'),
-                            e('span', { className: 'bg-green-600 px-2 py-1 text-[10px] font-black rounded' }, 'AUDIT_LOG_ACTIVE')
-                        ),
-                        e('input', { className: 'search-bar', placeholder: 'SEARCH BY TRANSACTION OR IP...' }),
-                        e('div', { className: 'text-right' }, e('p', { className: 'text-[12px] font-black' }, '30-DEC-2025'))
+                        e('h1', { className: 'text-2xl font-black tracking-tighter' }, 'DE-TRUSTED ERP'),
+                        e('div', { className: 'bg-yellow-400 text-blue-950 px-3 py-1 text-[11px] font-black rounded' }, 'FINANCE_PV_MASTER_ACTIVE')
                     ),
 
                     e('div', { className: 'sidebar' },
                         ['Executive', 'Administration', 'Finance', 'HR', 'Logistics', 'Warehouse', 'Production', 'Procurement', 'Sales & Marketing', 'Reception'].map(d => 
-                            e('div', { 
-                                key: d, 
-                                onClick: () => { setCurrentDesk(d); setActiveSub(Object.keys(SYSTEM_REGISTRY).find(k => SYSTEM_REGISTRY[k].desk === d)); },
-                                className: `nav-btn ${currentDesk === d ? 'active' : ''}` 
-                            }, d)
+                            e('div', { key: d, className: `nav-btn ${d === 'Finance' ? 'active' : ''}` }, d)
                         )
                     ),
 
                     e('main', { className: 'workspace' },
-                        e('div', { className: 'flex gap-8' },
-                            e('div', { className: 'w-72' },
-                                e('div', { className: 'bg-white border border-slate-300 rounded overflow-hidden shadow-sm' },
-                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-black border-b' }, 'ACTIVE MODULES'),
-                                    Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
-                                        e('div', { key: name, onClick: () => setActiveSub(name), className: `p-4 text-[13px] cursor-pointer border-b ${activeSub === name ? 'bg-blue-100 font-bold' : ''}` }, name)
+                        e('div', { className: 'bank-card' },
+                            e('div', { className: 'flex justify-between items-start border-b pb-6' },
+                                e('div', null,
+                                    e('h2', { className: 'text-3xl font-black' }, 'Payment Voucher'),
+                                    e('p', { className: 'text-xs text-slate-500 font-bold' }, 'Module: Finance > Accounts Payable')
+                                ),
+                                e('div', { className: 'text-right' },
+                                    e('p', { className: 'text-[10px] font-black text-slate-400' }, 'VOUCHER ID'),
+                                    e('p', { className: 'text-xl font-mono font-bold' }, 'PV-2025-00441')
+                                )
+                            ),
+
+                            e('div', { className: 'flex gap-2 mt-4' },
+                                ['Preparer', 'Reviewer', 'Approver', 'Finance Controller'].map((s, i) => 
+                                    e('div', { key: s, className: `workflow-step ${i === 0 ? 'active' : ''}` }, s)
+                                )
+                            ),
+
+                            e('div', { className: 'section-header' }, '1. Payee & Transaction Information'),
+                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Payee Name'),
+                                    e('input', { className: 'bank-input', placeholder: 'Enter Legal Name...' }),
+                                    e('label', { className: 'field-label' }, 'Payee Type'),
+                                    e('select', { className: 'bank-input' }, ['Supplier', 'Contractor', 'Service Provider'].map(o => e('option', {key:o}, o)))
+                                ),
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Bank Name'),
+                                    e('input', { className: 'bank-input', placeholder: 'Enter Payee Bank...' }),
+                                    e('label', { className: 'field-label' }, 'Account Number'),
+                                    e('input', { className: 'bank-input', placeholder: 'Enter Bank Account No...' })
+                                )
+                            ),
+
+                            e('div', { className: 'section-header' }, '2. Payment & References'),
+                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Payment Mode'),
+                                    e('select', { className: 'bank-input' }, ['Bank Transfer', 'Cash', 'Cheque', 'Mobile Money'].map(o => e('option', {key:o}, o))),
+                                    e('label', { className: 'field-label' }, 'Invoice Number'),
+                                    e('input', { className: 'bank-input', placeholder: 'INV-XXX-XXXX' })
+                                ),
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Description'),
+                                    e('textarea', { className: 'bank-input h-[100px]', placeholder: 'Purpose of payment...' })
+                                )
+                            ),
+
+                            e('div', { className: 'section-header' }, '3. Financial Calculations (GSC Logic)'),
+                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Gross Amount (Numeric)'),
+                                    e('input', { className: 'bank-input', type: 'number', onChange: (x) => setGross(x.target.value) }),
+                                    e('div', { className: 'words-display mb-4' }, gscToWords(gross)),
+                                    
+                                    e('label', { className: 'field-label' }, 'VAT Addition (+)'),
+                                    e('input', { className: 'bank-input', type: 'number', onChange: (x) => setVat(x.target.value) })
+                                ),
+                                e('div', null,
+                                    e('label', { className: 'field-label' }, 'Withholding Tax Deduction (-)'),
+                                    e('input', { className: 'bank-input', type: 'number', onChange: (x) => setWht(x.target.value) }),
+                                    
+                                    e('label', { className: 'field-label' }, 'Other Deductions (-)'),
+                                    e('input', { className: 'bank-input', type: 'number', onChange: (x) => setOther(x.target.value) })
+                                )
+                            ),
+
+                            e('div', { className: 'net-result-panel' },
+                                e('div', { className: 'flex justify-between items-center' },
+                                    e('span', { className: 'text-[10px] font-black uppercase' }, 'Final Net Amount Paid'),
+                                    e('span', { className: 'text-2xl font-black' }, `GHS ${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`)
+                                ),
+                                e('div', { className: 'words-display text-white mt-2' }, gscToWords(net))
+                            ),
+
+                            e('div', { className: 'section-header' }, '4. Mandatory Attachments'),
+                            e('div', { className: 'grid grid-cols-3 gap-4' },
+                                ['Invoice', 'Contract', 'Payment Advice'].map(f => 
+                                    e('div', { key: f, className: 'border-2 border-dashed border-slate-200 p-4 text-center' },
+                                        e('p', { className: 'text-[9px] font-black text-slate-400' }, f.toUpperCase()),
+                                        e('button', { className: 'mt-2 text-[10px] text-blue-600 font-bold' }, 'UPLOAD FILE')
                                     )
                                 )
                             ),
-                            e('div', { className: 'flex-1' },
-                                e('div', { className: 'bank-card' },
-                                    e('div', { className: 'flex justify-between items-center mb-8 border-b pb-4' },
-                                        e('h2', { className: 'text-2xl font-black text-slate-800' }, schema.title),
-                                        e('div', { className: 'workflow-tag' }, `STATUS: ${status}`)
-                                    ),
 
-                                    e('div', { className: 'grid grid-cols-2 gap-x-12' },
-                                        schema.fields.map(label => e('div', { key: label },
-                                            e('label', { className: 'field-label' }, label),
-                                            label === "Amount In Words (Auto)" ? 
-                                                e('div', { className: 'words-panel' }, gscToWords(numVal)) :
-                                            label === "Status" ?
-                                                e('input', { className: 'bank-input font-bold', value: status, readOnly: true }) :
-                                            e('input', { 
-                                                className: 'bank-input', 
-                                                type: label.includes("Numeric") ? "number" : "text",
-                                                onChange: (x) => { if(label.includes("Numeric")) setNumVal(x.target.value); },
-                                                placeholder: `Enter ${label}...`
-                                            })
-                                        ))
-                                    ),
-
-                                    // AUDIT LOG SECTION
-                                    e('div', { className: 'mt-10 pt-6 border-t border-slate-200' },
-                                        e('h3', { className: 'text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4' }, 'Transaction Audit Trail (Traceability Engine)'),
-                                        e('div', { className: 'audit-meta-grid' },
-                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Created By'), e('span', { className: 'meta-value' }, audit.created_by)),
-                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Created At'), e('span', { className: 'meta-value' }, audit.created_at)),
-                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Modified By'), e('span', { className: 'meta-value' }, audit.modified_by)),
-                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Modified At'), e('span', { className: 'meta-value' }, audit.modified_at)),
-                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Approved By'), e('span', { className: 'meta-value' }, audit.approved_by)),
-                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Approved At'), e('span', { className: 'meta-value' }, audit.approved_at)),
-                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'IP Address'), e('span', { className: 'meta-value' }, audit.ip_address)),
-                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Audit Status'), e('span', { className: 'meta-value text-green-600' }, 'VERIFIED'))
-                                        )
-                                    ),
-
-                                    e('div', { className: 'mt-12 flex justify-end gap-4' },
-                                        e('button', { className: 'px-6 py-4 bg-slate-200 font-bold text-xs uppercase' }, 'View Raw JSON Log'),
-                                        e('button', { className: 'btn-post', onClick: handleCommit }, 'Commit & Authorize')
-                                    )
-                                )
+                            e('div', { className: 'mt-10 pt-6 border-t flex justify-end gap-4' },
+                                e('button', { className: 'px-8 py-4 bg-slate-100 font-bold text-xs' }, 'SAVE AS DRAFT'),
+                                e('button', { className: 'px-8 py-4 bg-[#001f3f] text-white font-bold text-xs rounded' }, 'SUBMIT FOR REVIEW')
                             )
                         )
                     )
