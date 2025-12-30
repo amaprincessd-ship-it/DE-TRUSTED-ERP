@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED PAINT ERP | Master Command</title>
+    <title>DE-TRUSTED PAINT ERP | Master Data Command</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -28,11 +28,30 @@
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* FORM STYLING */
+        input, select, textarea { 
+            background: #f1f5f9; 
+            border: 1px solid #e2e8f0; 
+            padding: 10px; 
+            font-size: 12px; 
+            font-weight: 600; 
+            width: 100%;
+            border-radius: 4px;
+            outline-color: #2563eb;
+        }
+        label { 
+            font-size: 9px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            color: #64748b; 
+            letter-spacing: 0.1em; 
+            margin-bottom: 4px; 
+            display: block; 
+        }
+
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
-        .stat-card { border-top: 4px solid #0f172a; background: white; padding: 1.5rem; border-radius: 0.25rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
     </style>
 </head>
 <body>
@@ -50,189 +69,131 @@
             </button>
         );
 
+        const FormSection = ({ title, children, onSubmit }) => (
+            <div className="bg-white p-8 shadow-2xl rounded border border-slate-200 fade-in">
+                <h2 className="text-xl font-black uppercase tracking-tighter mb-6 border-b-4 border-slate-900 inline-block">{title}</h2>
+                <form onSubmit={(e) => { e.preventDefault(); alert('Data Logged Successfully'); }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {children}
+                    </div>
+                    <button type="submit" className="mt-8 w-full bg-slate-900 text-white py-4 font-black uppercase text-xs tracking-widest hover:bg-blue-600 transition-all">Submit Entry to Central Server</button>
+                </form>
+            </div>
+        );
+
         const Dashboard = () => {
             const [currentDesk, setCurrentDesk] = useState('Executive');
 
-            // --- DEPARTMENTS ---
+            // --- EXECUTIVE DASHBOARD ---
             const ExecutiveDesk = () => (
                 <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Executive <span className="text-slate-500">Cockpit</span></h1>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Executive <span className="text-slate-500">Summary</span></h1>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div className="stat-card border-blue-600">
-                            <p className="text-[10px] font-black text-slate-400 uppercase">Current Month Revenue</p>
-                            <p className="text-2xl font-black text-blue-600 tracking-tighter">GHS 842,500.00</p>
+                        <div className="bg-white p-6 shadow-xl border-t-4 border-blue-600">
+                            <p className="text-[10px] font-black text-slate-400 uppercase">System Status</p>
+                            <p className="text-2xl font-black text-blue-600">LIVE</p>
                         </div>
-                        <div className="stat-card border-green-600">
-                            <p className="text-[10px] font-black text-slate-400 uppercase">Operational Yield</p>
-                            <p className="text-2xl font-black text-green-600 tracking-tighter">97.8%</p>
-                        </div>
-                        <div className="stat-card border-slate-900">
-                            <p className="text-[10px] font-black text-slate-400 uppercase">Staff On-Site</p>
-                            <p className="text-2xl font-black text-slate-800 tracking-tighter">24 Active</p>
+                        <div className="bg-white p-6 shadow-xl border-t-4 border-green-600">
+                            <p className="text-[10px] font-black text-slate-400 uppercase">Data Points</p>
+                            <p className="text-2xl font-black text-green-600 italic">SECURE</p>
                         </div>
                     </div>
+                    <p className="bg-slate-900 text-white p-4 text-[10px] font-black uppercase tracking-widest">Select a desk to begin data collection.</p>
                 </div>
             );
 
-            const AdministrationDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Administration <span className="text-indigo-600">& Facility</span></h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="locked-card p-6 border-indigo-600">
-                            <h3 className="font-black text-xs uppercase text-slate-400 mb-4">Regulatory Compliance</h3>
-                            <div className="space-y-3 text-xs font-bold">
-                                <div className="flex justify-between border-b pb-2"><span>GSA Certification</span><span className="text-green-600">ACTIVE</span></div>
-                                <div className="flex justify-between border-b pb-2"><span>EPA Permit</span><span className="text-orange-500">RENEWAL DUE</span></div>
-                                <div className="flex justify-between border-b pb-2"><span>Fire Service Cert</span><span className="text-green-600">ACTIVE</span></div>
-                            </div>
-                        </div>
-                        <div className="bg-white p-6 shadow-xl border-t-4 border-slate-900">
-                            <h3 className="font-black text-xs uppercase text-slate-400 mb-4">Memos & Scheduling</h3>
-                            <div className="space-y-2">
-                                <p className="text-[10px] font-bold bg-slate-100 p-2">DT/MEMO/25/004: New Safety Protocol</p>
-                                <p className="text-[10px] font-bold bg-slate-100 p-2">MEETING: Management Review (Jan 05)</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            // --- DEPARTMENTS WITH FORMS ---
+            
+            const FinanceForm = () => (
+                <FormSection title="Finance Entry (GRA Standard)">
+                    <div><label>Voucher Number</label><input type="text" placeholder="PV-2025-001" /></div>
+                    <div><label>Payment Mode</label><select><option>Bank Transfer</option><option>Mobile Money (Merchant)</option><option>Cheque</option><option>Cash</option></select></div>
+                    <div><label>Gross Amount (GHS)</label><input type="number" step="0.01" /></div>
+                    <div><label>Tax Component</label><select><option>Standard (VAT 15%, NHIL, GETFund)</option><option>WHT (3%)</option><option>Zero Rated</option></select></div>
+                    <div className="md:col-span-2"><label>Account Narration</label><textarea rows="2"></textarea></div>
+                </FormSection>
             );
 
-            const FinanceDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Finance <span className="text-emerald-600">GL</span></h1>
-                    <div className="locked-card p-8 border-emerald-600">
-                        <div className="grid grid-cols-2 gap-8 mb-6">
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Accounts Receivable</p>
-                                <p className="text-xl font-black">GHS 1,120,400.00</p>
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Tax Provision (VAT/GRA)</p>
-                                <p className="text-xl font-black text-red-600">GHS 118,200.00</p>
-                            </div>
-                        </div>
-                        <button className="w-full bg-emerald-600 text-white py-3 font-black text-xs uppercase tracking-widest">Generate P&L Statement</button>
-                    </div>
-                </div>
+            const ProductionForm = () => (
+                <FormSection title="Production Batch Log (GSA Standard)">
+                    <div><label>Batch ID</label><input type="text" placeholder="BP-25-EM-001" /></div>
+                    <div><label>Product Line</label><select><option>Premium Gloss</option><option>Weather Shield</option><option>Emulsion</option></select></div>
+                    <div><label>Raw Material Batch Ref</label><input type="text" /></div>
+                    <div><label>Actual Weight (KG)</label><input type="number" /></div>
+                    <div><label>Machine Op ID</label><input type="text" /></div>
+                    <div><label>Viscosity Check</label><select><option>Pass</option><option>Fail</option></select></div>
+                </FormSection>
             );
 
-            const ProductionDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Production <span className="text-blue-800">Command</span></h1>
-                    <div className="bg-white p-8 shadow-2xl border-l-8 border-blue-800">
-                        <h3 className="text-xs font-black uppercase mb-4 text-slate-400">Current Batch Activity</h3>
-                        <div className="p-4 bg-slate-50 border-2 border-dashed border-slate-200 text-center">
-                            <p className="text-sm font-black uppercase">Batch #882-Premium Emulsion</p>
-                            <p className="text-[10px] text-blue-600 font-bold">STATUS: MIXING PHASE (75%)</p>
-                        </div>
-                    </div>
-                </div>
+            const HRForm = () => (
+                <FormSection title="HR Personnel Enrolment">
+                    <div><label>Full Legal Name</label><input type="text" /></div>
+                    <div><label>Ghana Card PIN</label><input type="text" placeholder="GHA-XXXXXXXXX-X" /></div>
+                    <div><label>SSNIT Number</label><input type="text" /></div>
+                    <div><label>Bank Name & Branch</label><input type="text" /></div>
+                    <div><label>Basic Salary (GHS)</label><input type="number" /></div>
+                    <div><label>Department</label><select><option>Production</option><option>Logistics</option><option>Sales</option><option>Admin</option></select></div>
+                </FormSection>
             );
 
-            const LogisticsDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Logistics <span className="text-blue-500">Liaison</span></h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-white p-6 shadow border-t-4 border-blue-500 font-black uppercase text-[10px]">
-                            <p className="mb-2">Truck #001: Tema Port (Inbound)</p>
-                            <span className="text-blue-600">ETA: 14:00 GMT</span>
-                        </div>
-                        <div className="bg-white p-6 shadow border-t-4 border-slate-900 font-black uppercase text-[10px]">
-                            <p className="mb-2">Sales Delivery: Accra Central</p>
-                            <span className="text-green-600">DELIVERED</span>
-                        </div>
-                    </div>
-                </div>
+            const LogisticsForm = () => (
+                <FormSection title="Logistics & Trip Log">
+                    <div><label>Vehicle Reg No.</label><input type="text" placeholder="GR-1234-25" /></div>
+                    <div><label>Driver Name</label><input type="text" /></div>
+                    <div><label>Trip Start Location</label><input type="text" value="Ashalaja Factory" readOnly /></div>
+                    <div><label>Destination</label><input type="text" /></div>
+                    <div><label>Waybill Reference</label><input type="text" /></div>
+                    <div><label>Fuel Level At Start</label><select><option>Full</option><option>Half</option><option>Refill Needed</option></select></div>
+                </FormSection>
             );
 
-            const ProcurementDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Procurement <span className="text-orange-600">Gateway</span></h1>
-                    <div className="bg-white shadow overflow-hidden">
-                        <table className="w-full text-left text-[10px] font-bold">
-                            <thead className="bg-orange-600 text-white uppercase">
-                                <tr><th className="p-3">Vendor</th><th className="p-3">Item</th><th className="p-3">Cost (GHS)</th><th className="p-3">Status</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr className="border-b"><td className="p-3">Global Resins</td><td className="p-3">Alkyd 500L</td><td className="p-3">42,000.00</td><td className="p-3 text-emerald-600 italic uppercase">Authorized</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            const AdminForm = () => (
+                <FormSection title="Admin & Compliance Task">
+                    <div><label>Activity Type</label><select><option>Statutory License Renewal</option><option>Facility Maintenance</option><option>Meeting Minutes</option><option>Memo Distribution</option></select></div>
+                    <div><label>Agency Involved</label><select><option>GSA (Standard Authority)</option><option>EPA (Environment)</option><option>Ghana Fire Service</option><option>Municipal Authority</option></select></div>
+                    <div><label>Expiry Date (If License)</label><input type="date" /></div>
+                    <div><label>Cost of Maintenance</label><input type="number" /></div>
+                    <div className="md:col-span-2"><label>Memo/Minute Text Content</label><textarea rows="4"></textarea></div>
+                </FormSection>
             );
 
-            const SalesDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Sales <span className="text-pink-600">CRM</span></h1>
-                    <div className="locked-card p-6 border-pink-500">
-                        <label className="text-[10px] font-black uppercase text-slate-400">Order Verification</label>
-                        <input type="text" value="DT-SALE-99201" className="w-full p-3 bg-slate-50 border mt-2 font-mono text-xs" readOnly />
-                        <button className="w-full mt-4 bg-pink-600 text-white py-3 font-black text-xs uppercase">Print Waybill</button>
-                    </div>
-                </div>
+            const SalesForm = () => (
+                <FormSection title="Sales Order Entry">
+                    <div><label>Customer Name/ID</label><input type="text" /></div>
+                    <div><label>Contact Phone</label><input type="text" /></div>
+                    <div><label>Paint Type Ordered</label><select><option>Gloss</option><option>Emulsion</option><option>Undercoat</option></select></div>
+                    <div><label>Quantity (Units)</label><input type="number" /></div>
+                    <div><label>Tinting Code (RAL)</label><input type="text" /></div>
+                    <div><label>Total Price (GHS)</label><input type="number" /></div>
+                </FormSection>
             );
 
-            const WarehouseDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Warehouse <span className="text-amber-600">Stock</span></h1>
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="bg-white p-4 shadow text-center border-b-4 border-amber-600">
-                            <p className="text-[9px] font-black uppercase">Titanium Dioxide</p>
-                            <p className="text-lg font-black">5,000 KG</p>
-                        </div>
-                        <div className="bg-white p-4 shadow text-center border-b-4 border-amber-600">
-                            <p className="text-[9px] font-black uppercase">PVA Resin</p>
-                            <p className="text-lg font-black">12,400 L</p>
-                        </div>
-                        <div className="bg-white p-4 shadow text-center border-b-4 border-amber-600">
-                            <p className="text-[9px] font-black uppercase">Finished Tins</p>
-                            <p className="text-lg font-black">1,250 Units</p>
-                        </div>
-                    </div>
-                </div>
+            const ProcurementForm = () => (
+                <FormSection title="Procurement Requisition">
+                    <div><label>Item Description</label><input type="text" /></div>
+                    <div><label>Supplier Name</label><input type="text" /></div>
+                    <div><label>Quantity Requested</label><input type="text" /></div>
+                    <div><label>Estimated Cost</label><input type="number" /></div>
+                    <div><label>Urgency Level</label><select><option>Critical (Stop-Work)</option><option>Routine</option><option>Project-Based</option></select></div>
+                </FormSection>
             );
 
-            const HRDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">HR & <span className="text-purple-600">Payroll</span></h1>
-                    <div className="bg-white shadow border border-slate-200">
-                        <table className="w-full text-left text-[10px] font-bold">
-                            <thead className="bg-slate-900 text-white uppercase">
-                                <tr><th className="p-4">Employee</th><th className="p-4">SSNIT</th><th className="p-4">Tax Status</th></tr>
-                            </thead>
-                            <tbody className="text-slate-700">
-                                <tr className="border-b"><td className="p-4 uppercase">Emmanuel Tetteh</td><td className="p-4 font-mono">55410...</td><td className="p-4 text-emerald-600 uppercase italic">GRA Validated</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            const WarehouseForm = () => (
+                <FormSection title="Warehouse Inventory In/Out">
+                    <div><label>Movement Type</label><select><option>Stock In (Inbound)</option><option>Stock Out (Production Issue)</option><option>Finished Goods Entry</option></select></div>
+                    <div><label>SKU / Item Name</label><input type="text" /></div>
+                    <div><label>Quantity Moved</label><input type="number" /></div>
+                    <div><label>Location (Aisle/Bin)</label><input type="text" /></div>
+                </FormSection>
             );
 
-            const ReceptionDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Reception <span className="text-pink-400">Portal</span></h1>
-                    <div className="bg-white p-10 shadow-xl border-dashed border-2 border-slate-200">
-                        <p className="text-xs font-black uppercase text-slate-400 mb-4">Ashalaja Site Visitor Log</p>
-                        <div className="space-y-2 italic text-xs font-bold text-slate-500">
-                            <p>No active visitors currently on-site.</p>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const CredentialDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-8">Staff <span className="text-blue-600">Security</span></h1>
-                    <div className="bg-slate-900 p-8 text-white rounded shadow-2xl">
-                        <h2 className="text-xs font-black uppercase text-blue-400 mb-6">Permission Master Keys</h2>
-                        <div className="space-y-4">
-                            <div className="flex justify-between border-b border-slate-700 pb-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest">Master Key (MD)</span>
-                                <span className="font-mono text-xs">DT-MSR-00X-2025</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            const ReceptionForm = () => (
+                <FormSection title="Visitor/Reception Log">
+                    <div><label>Visitor Name</label><input type="text" /></div>
+                    <div><label>Purpose of Visit</label><select><option>Client Meeting</option><option>Supplier Delivery</option><option>Interview</option><option>Audit/Inspection</option></select></div>
+                    <div><label>Contact Person On-Site</label><input type="text" /></div>
+                    <div><label>Time In</label><input type="time" /></div>
+                </FormSection>
             );
 
             return (
@@ -242,7 +203,7 @@
                         <div>
                             <div className="mb-10">
                                 <h1 className="brand-title text-white text-xl">DE-TRUSTED <span className="text-blue-500 font-normal italic uppercase">Paint</span></h1>
-                                <p className="text-[8px] text-slate-500 font-black tracking-widest uppercase mt-1">Ashalaja Site Mirror</p>
+                                <p className="text-[8px] text-slate-500 font-black tracking-widest uppercase mt-1">Ashalaja Site Master</p>
                             </div>
                             <SidebarItem name="Executive" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Administration" active={currentDesk} onClick={setCurrentDesk} />
@@ -254,27 +215,24 @@
                             <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
                             <SidebarItem name="Reception" active={currentDesk} onClick={setCurrentDesk} />
-                            <div className="my-4 border-t border-slate-700"></div>
-                            <SidebarItem name="Credentials" active={currentDesk} onClick={setCurrentDesk} />
                         </div>
                         <div className="bg-slate-800/50 p-3 rounded mt-4 border border-slate-700">
-                            <p className="text-white text-[9px] font-mono uppercase tracking-tighter italic">NODE: ASHALAJA_STABLE_V1</p>
+                            <p className="text-white text-[9px] font-mono">NODE: ASHALAJA_V2_DATA</p>
                         </div>
                     </div>
 
                     {/* MAIN CONTENT AREA */}
-                    <main className="flex-1 overflow-y-auto p-16 relative">
+                    <main className="flex-1 overflow-y-auto p-16 relative bg-slate-100">
                         {currentDesk === 'Executive' && <ExecutiveDesk />}
-                        {currentDesk === 'Administration' && <AdministrationDesk />}
-                        {currentDesk === 'Finance' && <FinanceDesk />}
-                        {currentDesk === 'Logistics' && <LogisticsDesk />}
-                        {currentDesk === 'Procurement' && <ProcurementDesk />}
-                        {currentDesk === 'Production' && <ProductionDesk />}
-                        {currentDesk === 'Sales' && <SalesDesk />}
-                        {currentDesk === 'Warehouse' && <WarehouseDesk />}
-                        {currentDesk === 'HR' && <HRDesk />}
-                        {currentDesk === 'Reception' && <ReceptionDesk />}
-                        {currentDesk === 'Credentials' && <CredentialDesk />}
+                        {currentDesk === 'Administration' && <AdminForm />}
+                        {currentDesk === 'Finance' && <FinanceForm />}
+                        {currentDesk === 'Logistics' && <LogisticsForm />}
+                        {currentDesk === 'Procurement' && <ProcurementForm />}
+                        {currentDesk === 'Production' && <ProductionForm />}
+                        {currentDesk === 'Sales' && <SalesForm />}
+                        {currentDesk === 'Warehouse' && <WarehouseForm />}
+                        {currentDesk === 'HR' && <HRForm />}
+                        {currentDesk === 'Reception' && <ReceptionForm />}
                     </main>
                 </div>
             );
