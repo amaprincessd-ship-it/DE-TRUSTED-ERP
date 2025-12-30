@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED PAINT ERP | Professional Command</title>
+    <title>DE-TRUSTED PAINT ERP | Administration & Compliance</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -12,7 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 
     <style>
-        /* OFFICIAL CORPORATE FONTS */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap');
         
         body { 
@@ -22,7 +21,6 @@
             overflow: hidden;
         }
 
-        /* CAMBRIA STYLE HEADINGS (Official & Light) */
         h1, h2, h3, .cambria-font { 
             font-family: 'Cambria', 'Georgia', serif; 
             font-weight: 400; 
@@ -47,10 +45,8 @@
             background: #ffffff; 
             color: #2563eb; 
             border-left: 3px solid #2563eb; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
-        /* FORM REFINEMENT */
         label { 
             font-size: 11px; 
             color: #64748b; 
@@ -69,9 +65,13 @@
             background: #fff;
         }
 
-        input:focus, select:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
-
-        .form-card { background: white; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .form-card { background: white; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .alert-badge { font-size: 10px; padding: 2px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; }
+        .bg-urgent { background: #fee2e2; color: #b91c1c; }
+        .bg-stable { background: #dcfce7; color: #15803d; }
     </style>
 </head>
 <body>
@@ -81,132 +81,123 @@
         const { useState } = React;
 
         const Dashboard = () => {
-            const [currentDesk, setCurrentDesk] = useState('Executive');
+            const [currentDesk, setCurrentDesk] = useState('Administration');
             
-            // Cascading Logic States
-            const [finType, setFinType] = useState("");
-            const [prodCat, setProdCat] = useState("");
-            const [hrAction, setHrAction] = useState("");
+            // Administration Specific States
+            const [adminAction, setAdminAction] = useState("");
+            const [licenseType, setLicenseType] = useState("");
 
             const SidebarItem = ({ name }) => (
-                <button 
-                    onClick={() => setCurrentDesk(name)}
-                    className={`nav-button ${currentDesk === name ? 'active' : ''}`}
-                >
+                <button onClick={() => setCurrentDesk(name)} className={`nav-button ${currentDesk === name ? 'active' : ''}`}>
                     {name} Desk
                 </button>
             );
 
-            // --- DEPARTMENTS ---
-
-            const ExecutiveDesk = () => (
+            // --- ADMINISTRATION MODULE ---
+            const AdministrationDesk = () => (
                 <div className="fade-in">
-                    <h1 className="text-3xl mb-6">Corporate Executive Overview</h1>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="form-card"><p className="text-xs text-slate-400">Net Position</p><p className="text-2xl font-light">GHS 1,420,000</p></div>
-                        <div className="form-card"><p className="text-xs text-slate-400">Site Compliance</p><p className="text-2xl font-light text-green-600">Certified</p></div>
+                    <h1 className="text-3xl mb-2">Administration & Compliance</h1>
+                    <p className="text-sm text-slate-500 mb-8 italic">Statutory Records & Facility Management</p>
+                    
+                    {/* Compliance Dashboard */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div className="bg-white p-4 border rounded shadow-sm">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-[10px] uppercase text-slate-400">GSA License</span>
+                                <span className="alert-badge bg-stable">Valid</span>
+                            </div>
+                            <p className="text-sm cambria-font">Expires: Oct 2026</p>
+                        </div>
+                        <div className="bg-white p-4 border rounded shadow-sm">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-[10px] uppercase text-slate-400">EPA Permit</span>
+                                <span className="alert-badge bg-urgent">Renewal Due</span>
+                            </div>
+                            <p className="text-sm cambria-font">Deadline: Feb 2026</p>
+                        </div>
+                        <div className="bg-white p-4 border rounded shadow-sm">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-[10px] uppercase text-slate-400">Fire Cert.</span>
+                                <span className="alert-badge bg-stable">Valid</span>
+                            </div>
+                            <p className="text-sm cambria-font">Inspection: Passed</p>
+                        </div>
                     </div>
-                </div>
-            );
 
-            const FinanceDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-3xl mb-6">Financial Ledger Entry</h1>
                     <div className="form-card">
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label>Transaction Type</label>
-                                <select onChange={(e) => setFinType(e.target.value)} value={finType}>
-                                    <option value="">Select Category...</option>
-                                    <option value="revenue">Revenue / Sales Inflow</option>
-                                    <option value="expense">Operational Expense (OPEX)</option>
-                                    <option value="statutory">Statutory / Tax Payment</option>
+                                <label>Administrative Action</label>
+                                <select onChange={(e) => setAdminAction(e.target.value)} value={adminAction}>
+                                    <option value="">Select Action...</option>
+                                    <option value="regulatory">License & Regulatory Update</option>
+                                    <option value="facility">Facility Maintenance Log</option>
+                                    <option value="minutes">Board / Management Minutes</option>
                                 </select>
                             </div>
-                            
-                            {finType && (
+
+                            {adminAction === 'regulatory' && (
                                 <div className="fade-in">
-                                    <label>Specific Ledger Sub-Account</label>
-                                    <select>
-                                        {finType === "revenue" && <><option>Direct Paint Sales</option><option>Distribution Commission</option></>}
-                                        {finType === "expense" && <><option>Raw Material Procurement</option><option>Electricity / Utility</option><option>Maintenance</option></>}
-                                        {finType === "statutory" && <><option>GRA VAT Return</option><option>SSNIT Contribution</option><option>GSA Annual Fee</option></>}
+                                    <label>License Category</label>
+                                    <select onChange={(e) => setLicenseType(e.target.value)}>
+                                        <option value="">Choose Agency...</option>
+                                        <option value="gsa">Ghana Standards Authority (GSA)</option>
+                                        <option value="epa">Environmental Protection Agency (EPA)</option>
+                                        <option value="gnfs">Ghana National Fire Service</option>
+                                        <option value="district">Municipal/District Operating Permit</option>
                                     </select>
                                 </div>
                             )}
-                            
-                            <div><label>Currency</label><select><option>GHS (Ghana Cedi)</option><option>USD (Reference Only)</option></select></div>
-                            <div><label>Total Amount</label><input type="number" placeholder="0.00" /></div>
                         </div>
-                        <button className="mt-8 bg-slate-800 text-white px-6 py-2 rounded text-sm hover:bg-blue-700 transition-colors">Post to Ledger</button>
-                    </div>
-                </div>
-            );
 
-            const ProductionDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-3xl mb-6">Production Quality & Batching</h1>
-                    <div className="form-card">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <label>Product Category</label>
-                                <select onChange={(e) => setProdCat(e.target.value)} value={prodCat}>
-                                    <option value="">Select Category...</option>
-                                    <option value="water">Water Based (Emulsions)</option>
-                                    <option value="oil">Oil Based (Gloss/Enamel)</option>
-                                </select>
-                            </div>
-
-                            {prodCat && (
-                                <div className="fade-in">
-                                    <label>Verified Formula Standard</label>
-                                    <select>
-                                        {prodCat === "water" && <><option>Standard Emulsion GSA-01</option><option>Premium Weather-Shield GSA-04</option></>}
-                                        {prodCat === "oil" && <><option>High-Gloss Enamel GSA-09</option><option>Undercoat Primer GSA-12</option></>}
-                                    </select>
+                        {adminAction === 'regulatory' && licenseType && (
+                            <div className="mt-8 pt-8 border-t fade-in">
+                                <h3 className="text-lg mb-4">Renewal Data Entry</h3>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div><label>Last Renewal Date</label><input type="date" /></div>
+                                    <div><label>New Expiry Date</label><input type="date" /></div>
+                                    <div><label>Filing Reference</label><input type="text" placeholder="REF-2025-0000" /></div>
+                                    <div><label>Processing Fee (GHS)</label><input type="number" /></div>
                                 </div>
-                            )}
-                            
-                            <div><label>Batch Size (Litres)</label><input type="number" /></div>
-                            <div><label>QA Supervisor ID</label><input type="text" /></div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const HRDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-3xl mb-6">Human Resource Management</h1>
-                    <div className="form-card">
-                        <div className="grid grid-cols-1 gap-6 mb-6">
-                            <div>
-                                <label>Primary HR Action</label>
-                                <select onChange={(e) => setHrAction(e.target.value)} value={hrAction}>
-                                    <option value="">Choose action...</option>
-                                    <option value="payroll">Monthly Payroll Processing</option>
-                                    <option value="new">Staff Onboarding</option>
-                                    <option value="leave">Leave & Absence Management</option>
-                                </select>
                             </div>
-                        </div>
+                        )}
 
-                        {hrAction === 'payroll' && (
-                            <div className="fade-in grid grid-cols-2 gap-4 p-4 bg-slate-50 border rounded">
-                                <div><label>Pay Cycle</label><input type="month" /></div>
-                                <div><label>Include Overtime?</label><select><option>Yes</option><option>No</option></select></div>
+                        {adminAction === 'minutes' && (
+                            <div className="mt-8 pt-8 border-t fade-in">
+                                <h3 className="text-lg mb-4">Meeting Record</h3>
+                                <div className="grid grid-cols-1 gap-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div><label>Meeting Date</label><input type="date" /></div>
+                                        <div><label>Chairman / Lead</label><input type="text" /></div>
+                                    </div>
+                                    <div><label>Executive Summary of Minutes</label><textarea rows="5" placeholder="Brief notes on key decisions..."></textarea></div>
+                                </div>
                             </div>
+                        )}
+
+                        {adminAction && (
+                            <button className="mt-8 bg-slate-800 text-white px-8 py-2 rounded text-sm hover:bg-blue-700 transition-colors uppercase tracking-widest text-[10px]">
+                                Archive Record
+                            </button>
                         )}
                     </div>
                 </div>
             );
 
+            // --- PLACEHOLDER FOR OTHER DESKS ---
+            const OtherDesk = ({ name }) => (
+                <div className="fade-in text-center py-20">
+                    <h1 className="text-3xl mb-4 italic text-slate-300">{name} Module</h1>
+                    <p className="text-sm text-slate-400">Select an action in the sidebar to return to Administration.</p>
+                </div>
+            );
+
             return (
                 <div className="flex h-screen overflow-hidden">
-                    {/* SIDEBAR */}
                     <nav className="w-64 sidebar-light flex flex-col justify-between py-8">
                         <div>
                             <div className="px-8 mb-10">
-                                <h1 className="text-lg tracking-tight text-slate-800">DE-TRUSTED</h1>
+                                <h1 className="text-lg tracking-tight text-slate-800 cambria-font">DE-TRUSTED</h1>
                                 <p className="text-[10px] text-slate-400 uppercase tracking-widest">Enterprise Resource</p>
                             </div>
                             <div className="space-y-1">
@@ -223,26 +214,13 @@
                             </div>
                         </div>
                         <div className="px-8 text-[10px] text-slate-400">
-                            v2.1.0-STABLE <br/> Ashalaja Site Hub
+                            v2.1.2-STABLE <br/> Ashalaja Site Hub
                         </div>
                     </nav>
 
-                    {/* MAIN */}
                     <main className="flex-1 overflow-y-auto p-12 bg-white">
                         <div className="max-w-4xl mx-auto">
-                            {currentDesk === 'Executive' && <ExecutiveDesk />}
-                            {currentDesk === 'Finance' && <FinanceDesk />}
-                            {currentDesk === 'Production' && <ProductionDesk />}
-                            {currentDesk === 'HR' && <HRDesk />}
-                            {['Administration', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'Reception'].includes(currentDesk) && (
-                                <div className="fade-in">
-                                    <h1 className="text-3xl mb-6">{currentDesk} Module</h1>
-                                    <div className="form-card">
-                                        <p className="text-sm text-slate-500 italic">This module is active. Please select an action from the dropdowns below to populate fields.</p>
-                                        <div className="mt-4"><label>Action Selection</label><select><option>Initialize New Record</option><option>View Historical Data</option></select></div>
-                                    </div>
-                                </div>
-                            )}
+                            {currentDesk === 'Administration' ? <AdministrationDesk /> : <OtherDesk name={currentDesk} />}
                         </div>
                     </main>
                 </div>
