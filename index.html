@@ -3,158 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | GHANA LEAVE COMPLIANCE</title>
+    <title>DE-TRUSTED ERP | SECURE HUB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
-        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
+        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; overflow-x: hidden; }
+        
+        /* HARD SECURITY OVERLAY */
+        #security-gate {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #020617; z-index: 9999; display: flex;
+            align-items: center; justify-content: center;
+        }
+        
         .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; z-index: 50; }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; }
-        .leave-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .cam-box { width: 200px; height: 150px; background: #000; border: 2px solid #fbbf24; border-radius: 8px; overflow: hidden; }
+        .leave-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; background: rgba(16, 185, 129, 0.2); color: #10b981; }
     </style>
 </head>
 <body>
+
+    <div id="security-gate">
+        <div class="glass-card w-80 text-center shadow-2xl">
+            <h1 class="text-2xl font-black mb-2 italic text-white">DE-TRUSTED ERP</h1>
+            <p class="text-[10px] text-yellow-500 font-bold mb-6 tracking-widest">SYSTEM ENCRYPTED</p>
+            <input type="password" id="gate-pass" class="input-box text-center mb-4" placeholder="••••••••">
+            <button onclick="unlockSystem()" class="btn-gold w-full">Access Terminal</button>
+        </div>
+    </div>
+
     <div id="root"></div>
+
     <script>
+        // 1. HARD SECURITY LOGIC (Native JS)
+        function unlockSystem() {
+            const pass = document.getElementById('gate-pass').value;
+            if (pass === 'SUPER2025') {
+                document.getElementById('security-gate').style.display = 'none';
+            } else {
+                alert("INVALID ACCESS KEY");
+            }
+        }
+
+        // 2. ERP SYSTEM (React)
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useMemo } = React;
+            const { useState, useMemo, useRef } = React;
 
-            // GHANA PUBLIC HOLIDAYS 2025 (Sample list for logic)
-            const GH_HOLIDAYS = ["2025-01-01", "2025-01-07", "2025-03-06", "2025-04-18", "2025-04-21", "2025-05-01", "2025-05-25", "2025-08-04", "2025-09-21", "2025-12-05", "2025-12-25", "2025-12-26"];
+            const GH_HOLIDAYS = ["2025-01-01", "2025-03-06", "2025-04-18", "2025-12-25"];
 
             function App() {
-                const [isAuth, setIsAuth] = useState(false);
-                const [passInput, setPassInput] = useState('');
-                const [view, setView] = useState('LEAVE');
-
-                // DATA STORE
+                const [view, setView] = useState('DASHBOARD');
                 const [employees, setEmployees] = useState([
-                    { id: 1, name: "Kofi Mensah", annualQuota: 21, used: 0 }
+                    { id: 1, name: "Admin User", annualQuota: 21, used: 0, basic: 5000, dept: 'Management', staffId: 'DT-2025-001' }
                 ]);
-                const [leaveApplications, setLeaveApplications] = useState([]);
+                
+                // Camera & Leave States
+                const videoRef = useRef(null);
+                const [photo, setPhoto] = useState(null);
+                const [leaves, setLeaves] = useState([]);
+                const [leaveForm, setLeaveForm] = useState({ empId: '', type: 'Annual', start: '', end: '', isHalf: false });
 
-                // FORM STATE
-                const [form, setForm] = useState({
-                    empId: '', type: 'Annual', start: '', end: '', reason: '', isHalfDay: false
-                });
-
-                // BUSINESS LOGIC: Calculate working days only
-                const calculateWorkingDays = (start, end, isHalf) => {
+                // --- HELPERS ---
+                const calcWorkingDays = (start, end, isHalf) => {
                     if (isHalf) return 0.5;
                     if (!start || !end) return 0;
-                    let count = 0;
-                    let cur = new Date(start);
-                    let last = new Date(end);
+                    let count = 0; let cur = new Date(start); let last = new Date(end);
                     while (cur <= last) {
-                        const day = cur.getDay();
-                        const dateStr = cur.toISOString().split('T')[0];
-                        const isWeekend = (day === 0 || day === 6);
-                        const isHoliday = GH_HOLIDAYS.includes(dateStr);
-                        if (!isWeekend && !isHoliday) count++;
+                        const d = cur.getDay();
+                        if (d !== 0 && d !== 6 && !GH_HOLIDAYS.includes(cur.toISOString().split('T')[0])) count++;
                         cur.setDate(cur.getDate() + 1);
                     }
                     return count;
                 };
 
-                const currentDays = useMemo(() => calculateWorkingDays(form.start, form.end, form.isHalfDay), [form.start, form.end, form.isHalfDay]);
-
-                const submitLeave = () => {
-                    if (!form.empId || (!form.start && !form.isHalfDay)) return alert("Missing Info");
-                    const newEntry = { ...form, id: Date.now(), days: currentDays, status: 'Approved' };
-                    setLeaveApplications([newEntry, ...leaveApplications]);
-                    
-                    // Update Employee Balance
-                    setEmployees(employees.map(emp => {
-                        if (emp.id == form.empId && (form.type === 'Annual' || form.isHalfDay)) {
-                            return { ...emp, used: emp.used + currentDays };
-                        }
-                        return emp;
-                    }));
-                    alert("Leave Form Processed & Balanced");
+                const startCam = async () => {
+                    const s = await navigator.mediaDevices.getUserMedia({ video: true });
+                    videoRef.current.srcObject = s;
                 };
 
-                if (!isAuth) {
-                    return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
-                        e('form', { onSubmit: (v)=>{v.preventDefault(); if(passInput==='SUPER2025') setIsAuth(true); else alert("FAIL");}, className: 'glass-card w-80 text-center' },
-                            e('h2', {className:'mb-4 font-bold'}, 'DE-TRUSTED ERP'),
-                            e('input', { type:'password', className:'input-box mb-4', value:passInput, onChange:v=>setPassInput(v.target.value)}),
-                            e('button', {className:'btn-gold w-full'}, 'LOGIN')
-                        )
-                    );
-                }
+                const capture = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 320; canvas.height = 240;
+                    canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
+                    setPhoto(canvas.toDataURL('image/png'));
+                };
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
-                        e('div', { className: 'p-8 font-black italic' }, 'DE-TRUSTED'),
-                        e('nav', {className:'mt-4'},
-                            e('div', {onClick:()=>setView('LEAVE'), className:`p-4 cursor-pointer text-xs font-bold ${view==='LEAVE'?'bg-slate-800 text-yellow-500':'text-slate-500'}`}, '📅 LEAVE TRACKER')
+                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
+                        e('nav', { className: 'mt-6 text-xs font-bold' },
+                            e('div', { onClick:()=>setView('DASHBOARD'), className:`p-4 cursor-pointer hover:bg-slate-800 ${view==='DASHBOARD'?'text-yellow-500 bg-slate-800':''}`}, '📊 DASHBOARD'),
+                            e('div', { onClick:()=>setView('LEAVE'), className:`p-4 cursor-pointer hover:bg-slate-800 ${view==='LEAVE'?'text-yellow-500 bg-slate-800':''}`}, '📅 LEAVE & PERMISSION'),
+                            e('div', { onClick:()=>setView('PHOTO'), className:`p-4 cursor-pointer hover:bg-slate-800 ${view==='PHOTO'?'text-yellow-500 bg-slate-800':''}`}, '📸 BIOMETRIC ENTRY')
                         )
                     ),
                     e('main', { className: 'main-content flex-1' },
-                        e('h2', {className:'text-3xl font-black mb-8'}, 'Leave Management System'),
                         
-                        e('div', {className:'grid grid-cols-1 xl:grid-cols-3 gap-8'},
-                            // LEAVE FORM
-                            e('div', {className:'glass-card xl:col-span-1 space-y-4'},
-                                e('h3', {className:'text-xs font-bold text-yellow-500 uppercase'}, 'New Leave Request'),
-                                e('select', {className:'input-box', onChange:v=>setForm({...form, empId:v.target.value})},
-                                    e('option', null, '-- Select Staff --'),
-                                    employees.map(emp => e('option', {key:emp.id, value:emp.id}, emp.name))
+                        view === 'LEAVE' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8'}, 'Ghanaian Standard Leave Manager'),
+                            e('div', {className:'grid grid-cols-3 gap-8'},
+                                e('div', {className:'glass-card space-y-4'},
+                                    e('h3', {className:'text-[10px] text-yellow-500 font-bold uppercase border-b border-slate-700 pb-2'}, 'Apply for Leave / Permission'),
+                                    e('select', {className:'input-box', onChange:v=>setLeaveForm({...leaveForm, empId:v.target.value})}, 
+                                        e('option',null,'-- Select Staff --'),
+                                        employees.map(emp=>e('option',{key:emp.id, value:emp.id},emp.name))
+                                    ),
+                                    e('select', {className:'input-box', onChange:v=>setLeaveForm({...leaveForm, type:v.target.value})}, 
+                                        e('option',null,'Annual Leave'), e('option',null,'Maternity'), e('option',null,'Sick'), e('option',null,'Compassionate'), e('option',null,'Unpaid')
+                                    ),
+                                    e('div', {className:'flex items-center gap-2 py-2'}, 
+                                        e('input', {type:'checkbox', onChange:v=>setLeaveForm({...leaveForm, isHalf:v.target.checked})}),
+                                        e('label', {className:'text-xs'}, 'Half-Day Permission')
+                                    ),
+                                    !leaveForm.isHalf && e('div', {className:'grid grid-cols-2 gap-2'},
+                                        e('input', {type:'date', className:'input-box', onChange:v=>setLeaveForm({...leaveForm, start:v.target.value})}),
+                                        e('input', {type:'date', className:'input-box', onChange:v=>setLeaveForm({...leaveForm, end:v.target.value})})
+                                    ),
+                                    e('button', {className:'btn-gold w-full', onClick:()=>{
+                                        const days = calcWorkingDays(leaveForm.start, leaveForm.end, leaveForm.isHalf);
+                                        setLeaves([{...leaveForm, days, id:Date.now()}, ...leaves]);
+                                        alert(`Leave approved for ${days} working days.`);
+                                    }}, 'Submit Application')
                                 ),
-                                e('select', {className:'input-box', onChange:v=>setForm({...form, type:v.target.value})},
-                                    e('option', null, 'Annual Leave'),
-                                    e('option', null, 'Maternity Leave (Ghana Standard)'),
-                                    e('option', null, 'Sick Leave'),
-                                    e('option', null, 'Study Leave'),
-                                    e('option', null, 'Compassionate Leave'),
-                                    e('option', null, 'Paternity Leave')
-                                ),
-                                e('div', {className:'flex items-center gap-2 py-2'}, 
-                                    e('input', {type:'checkbox', onChange:v=>setForm({...form, isHalfDay:v.target.checked})}),
-                                    e('label', {className:'text-xs'}, 'Half-Day Permission (4 Hours)')
-                                ),
-                                !form.isHalfDay ? e('div', {className:'grid grid-cols-2 gap-2'},
-                                    e('div', null, e('label', {className:'text-[10px] text-slate-500'}, 'START DATE'), e('input', {type:'date', className:'input-box', onChange:v=>setForm({...form, start:v.target.value})})),
-                                    e('div', null, e('label', {className:'text-[10px] text-slate-500'}, 'END DATE'), e('input', {type:'date', className:'input-box', onChange:v=>setForm({...form, end:v.target.value})}))
-                                ) : e('div', null, e('label', {className:'text-[10px] text-slate-500'}, 'DATE'), e('input', {type:'date', className:'input-box', onChange:v=>setForm({...form, start:v.target.value})})),
-                                e('div', {className:'p-4 bg-slate-900 rounded border border-slate-700 text-center'},
-                                    e('p', {className:'text-[10px] text-slate-500'}, 'TOTAL WORKING DAYS'),
-                                    e('h1', {className:'text-2xl font-black text-yellow-500'}, currentDays)
-                                ),
-                                e('button', {className:'btn-gold w-full', onClick: submitLeave}, 'Apply & Update Balance')
-                            ),
-
-                            // STATUS BOARD
-                            e('div', {className:'glass-card xl:col-span-2'},
-                                e('h3', {className:'text-xs font-bold text-slate-500 uppercase mb-4'}, 'Employee Leave Balances'),
-                                e('div', {className:'grid grid-cols-2 gap-4 mb-8'},
-                                    employees.map(emp => e('div', {key:emp.id, className:'bg-slate-950 p-4 rounded-lg border border-slate-800'},
-                                        e('p', {className:'font-bold text-sm'}, emp.name),
-                                        e('div', {className:'flex justify-between mt-2'},
-                                            e('span', {className:'text-[10px] text-slate-500'}, 'Total Taken: ' + emp.used),
-                                            e('span', {className:'text-[10px] text-emerald-500 font-bold'}, 'Remaining: ' + (emp.annualQuota - emp.used))
-                                        ),
-                                        e('div', {className:'w-full bg-slate-800 h-1 mt-2 rounded-full overflow-hidden'},
-                                            e('div', {className:'bg-yellow-500 h-full', style:{width: `${(emp.used/emp.annualQuota)*100}%`}})
-                                        )
-                                    ))
-                                ),
-                                e('h3', {className:'text-xs font-bold text-slate-500 uppercase mb-4'}, 'Recent History'),
-                                e('table', {className:'w-full text-xs text-left'},
-                                    e('thead', null, e('tr', {className:'text-slate-500 border-b border-slate-800'}, e('th',{className:'pb-2'},'Type'), e('th',null,'Days'), e('th',null,'Duration'), e('th',null,'Status'))),
-                                    e('tbody', null, leaveApplications.map(l => e('tr', {key:l.id, className:'border-b border-slate-800/50'},
-                                        e('td', {className:'py-3 font-bold'}, l.type),
-                                        e('td', null, l.days),
-                                        e('td', null, l.isHalfDay ? 'Half-Day' : `${l.start} to ${l.end}`),
-                                        e('td', null, e('span', {className:'leave-tag bg-emerald-500/20 text-emerald-500'}, 'APPROVED'))
-                                    )))
+                                e('div', {className:'glass-card col-span-2'},
+                                    e('h3', {className:'text-[10px] text-slate-500 font-bold uppercase mb-4'}, 'Leave Audit & Balances'),
+                                    e('table', {className:'w-full text-xs text-left'},
+                                        e('thead',null,e('tr',{className:'border-b border-slate-700 text-slate-500'}, e('th',null,'Type'), e('th',null,'Days'), e('th',null,'Duration'), e('th',null,'Status'))),
+                                        e('tbody',null, leaves.map(l=>e('tr',{key:l.id, className:'border-b border-slate-800/50'},
+                                            e('td',{className:'py-3 font-bold'},l.type), e('td',null,l.days), e('td',null,l.isHalf?'Half-Day':`${l.start}`), e('td',null,e('span',{className:'leave-tag'},'AUTHORIZED'))
+                                        )))
+                                    )
                                 )
+                            )
+                        ),
+
+                        view === 'PHOTO' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8'}, 'Staff Biometrics'),
+                            e('div', {className:'glass-card flex flex-col items-center gap-6 w-fit'},
+                                e('div', {className:'cam-box'}, photo ? e('img',{src:photo}) : e('video',{ref:videoRef, autoPlay:true})),
+                                e('div', {className:'flex gap-4'},
+                                    e('button', {onClick:startCam, className:'bg-slate-700 px-4 py-2 rounded text-[10px]'}, 'Activate Lens'),
+                                    e('button', {onClick:capture, className:'bg-emerald-600 px-4 py-2 rounded text-[10px] font-bold'}, 'Capture Face')
+                                )
+                            )
+                        ),
+
+                        view === 'DASHBOARD' && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-4'}, 'System Overview'),
+                            e('div', {className:'grid grid-cols-4 gap-4'},
+                                e('div', {className:'glass-card bg-emerald-500/10 border-emerald-500/20'}, e('p',{className:'text-[10px] font-bold'},'TOTAL STAFF'), e('h1',{className:'text-2xl font-black'}, employees.length)),
+                                e('div', {className:'glass-card bg-yellow-500/10 border-yellow-500/20'}, e('p',{className:'text-[10px] font-bold'},'ON LEAVE'), e('h1',{className:'text-2xl font-black'}, leaves.length))
                             )
                         )
                     )
