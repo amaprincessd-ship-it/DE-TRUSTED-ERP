@@ -4,17 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DE-TRUSTED PAINT ERP | Master Command</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
         
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #f8fafc;
-            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='32' font-weight='400' font-family='serif' fill='%23e2e8f0' text-anchor='middle' opacity='0.4' transform='rotate(-30 200 200)'%3EDE-TRUSTED%3C/text%3E%3C/svg%3E");
+            margin: 0;
+            overflow: hidden;
         }
 
         h1, h2, h3, .cambria-light { 
@@ -32,42 +36,23 @@
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
-        input, select, textarea { 
-            border: 1px solid #d1d5db; 
-            padding: 10px 12px; 
-            font-size: 13px; 
-            width: 100%;
-            border-radius: 4px;
-            background: #fff;
-            color: #334155;
-            outline-color: #2563eb;
-        }
-        label { 
-            font-size: 10px; 
-            font-weight: 600; 
-            text-transform: uppercase; 
-            color: #64748b; 
-            letter-spacing: 0.05em; 
-            margin-bottom: 4px; 
-            display: block; 
-        }
-        .btn-primary {
-            background: #0f172a;
-            color: white;
-            padding: 10px 20px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.3s;
-        }
-        .btn-primary:hover { background: #2563eb; }
+        input, select, textarea { border: 1px solid #d1d5db; padding: 10px 12px; font-size: 13px; width: 100%; border-radius: 4px; background: #fff; }
+        label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
+        .btn-primary { background: #0f172a; color: white; padding: 10px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div id="loader" style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f172a; color: white; font-family: serif;">
+            <div style="text-align: center;">
+                <h2 style="letter-spacing: 4px; font-weight: 300;">DE-TRUSTED ERP</h2>
+                <p style="font-size: 10px; opacity: 0.5; margin-top: 10px;">LOADING CORE MODULES...</p>
+            </div>
+        </div>
+    </div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
 
         const SidebarItem = ({ name, active, onClick }) => (
             <button 
@@ -80,43 +65,22 @@
 
         const Dashboard = () => {
             const [currentDesk, setCurrentDesk] = useState('Administration');
-            
-            // Administration Specific Logic
             const [adminAction, setAdminAction] = useState("");
             const [complianceAgency, setComplianceAgency] = useState("");
 
-            // --- ADMINISTRATION MODULE (FULL DETAIL) ---
             const AdministrationDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl cambria-light mb-2">Administration & Corporate Compliance</h1>
                     <p className="text-sm text-slate-500 mb-10 italic">Ashalaja Industrial Site | Asset & Regulatory Control</p>
                     
-                    {/* STATUTORY MONITORING ROW */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
-                        <div className="bg-white p-5 border-l-4 border-emerald-500 shadow-sm">
-                            <label>GSA Status</label>
-                            <p className="text-sm cambria-light">Cert: DT-2025-01</p>
-                            <p className="text-[10px] text-emerald-600 font-bold uppercase">Compliant</p>
-                        </div>
-                        <div className="bg-white p-5 border-l-4 border-amber-500 shadow-sm">
-                            <label>EPA Permit</label>
-                            <p className="text-sm cambria-light">Review: Feb 2026</p>
-                            <p className="text-[10px] text-amber-600 font-bold uppercase">Pending Audit</p>
-                        </div>
-                        <div className="bg-white p-5 border-l-4 border-blue-500 shadow-sm">
-                            <label>GNFS (Fire)</label>
-                            <p className="text-sm cambria-light">Valid until: 2026</p>
-                            <p className="text-[10px] text-blue-600 font-bold uppercase">Active</p>
-                        </div>
-                        <div className="bg-white p-5 border-l-4 border-slate-900 shadow-sm">
-                            <label>Reg. General</label>
-                            <p className="text-sm cambria-light">Annual Returns</p>
-                            <p className="text-[10px] text-slate-500 font-bold uppercase">Filed 2025</p>
-                        </div>
+                        <div className="bg-white p-5 border-l-4 border-emerald-500 shadow-sm"><label>GSA Status</label><p className="text-sm cambria-light">Cert: DT-2025-01</p><p className="text-[10px] text-emerald-600 font-bold uppercase">Compliant</p></div>
+                        <div className="bg-white p-5 border-l-4 border-amber-500 shadow-sm"><label>EPA Permit</label><p className="text-sm cambria-light">Review: Feb 2026</p><p className="text-[10px] text-amber-600 font-bold uppercase">Pending Audit</p></div>
+                        <div className="bg-white p-5 border-l-4 border-blue-500 shadow-sm"><label>GNFS (Fire)</label><p className="text-sm cambria-light">Valid until: 2026</p><p className="text-[10px] text-blue-600 font-bold uppercase">Active</p></div>
+                        <div className="bg-white p-5 border-l-4 border-slate-900 shadow-sm"><label>Reg. General</label><p className="text-sm cambria-light">Annual Returns</p><p className="text-[10px] text-slate-500 font-bold uppercase">Filed 2025</p></div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                        {/* FORM ACTION SELECTION */}
                         <div className="lg:col-span-2">
                             <div className="locked-card p-8">
                                 <h3 className="text-xl cambria-light mb-6 border-b pb-2">Record Entry Management</h3>
@@ -124,77 +88,3 @@
                                     <div>
                                         <label>Administrative Protocol</label>
                                         <select onChange={(e) => setAdminAction(e.target.value)} value={adminAction}>
-                                            <option value="">Select Category...</option>
-                                            <option value="regulatory">Statutory License Renewal</option>
-                                            <option value="facility">Facility & Security Log</option>
-                                            <option value="corporate">Board / Management Minutes</option>
-                                            <option value="assets">Asset Registry (IT/Plant)</option>
-                                        </select>
-                                    </div>
-
-                                    {adminAction === 'regulatory' && (
-                                        <div className="fade-in">
-                                            <label>Statutory Agency</label>
-                                            <select onChange={(e) => setComplianceAgency(e.target.value)}>
-                                                <option value="">Choose Agency...</option>
-                                                <option value="gsa">Ghana Standards Authority</option>
-                                                <option value="epa">Environmental Protection Agency</option>
-                                                <option value="gnfs">Ghana National Fire Service</option>
-                                                <option value="district">Ga South Municipal Assembly</option>
-                                            </select>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* DYNAMIC FORM SECTIONS */}
-                                {adminAction === 'regulatory' && complianceAgency && (
-                                    <div className="fade-in space-y-6 pt-6 border-t border-dashed">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div><label>Permit Number</label><input type="text" placeholder="GSA/PT/25/..." /></div>
-                                            <div><label>Filing Date</label><input type="date" /></div>
-                                            <div><label>Renewal Cost (GHS)</label><input type="number" /></div>
-                                            <div><label>Officer in Charge</label><input type="text" /></div>
-                                        </div>
-                                        <div><label>Agency Feedback / Notes</label><textarea rows="3"></textarea></div>
-                                    </div>
-                                )}
-
-                                {adminAction === 'facility' && (
-                                    <div className="fade-in space-y-6 pt-6 border-t border-dashed">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div><label>Incident/Service Area</label><select><option>Main Factory Floor</option><option>Perimeter Security</option><option>IT Server Room</option></select></div>
-                                            <div><label>Severity Level</label><select><option>Routine</option><option>Urgent</option><option>Critical Error</option></select></div>
-                                        </div>
-                                        <div><label>Technical Description</label><textarea rows="3"></textarea></div>
-                                    </div>
-                                )}
-
-                                {adminAction === 'corporate' && (
-                                    <div className="fade-in space-y-6 pt-6 border-t border-dashed">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div><label>Meeting Date</label><input type="date" /></div>
-                                            <div><label>Venue</label><input type="text" value="Ashalaja Boardroom" readOnly /></div>
-                                        </div>
-                                        <div><label>Key Resolutions</label><textarea rows="5" placeholder="Documented decisions here..."></textarea></div>
-                                    </div>
-                                )}
-
-                                {adminAction && (
-                                    <div className="mt-10">
-                                        <button className="btn-primary rounded shadow-lg" onClick={() => alert('Record Archiving Initiated')}>Commit to Secure Cloud</button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* RECENT RECORDS LOG (Sidebar of Admin) */}
-                        <div className="lg:col-span-1">
-                            <div className="bg-slate-900 text-white p-6 rounded shadow-xl">
-                                <h3 className="text-lg cambria-light mb-4 text-blue-400">Archived Filings</h3>
-                                <div className="space-y-4">
-                                    <div className="border-b border-slate-800 pb-3">
-                                        <p className="text-[10px] uppercase text-slate-500">Dec 28, 2025</p>
-                                        <p className="text-xs">EPA Effluent Audit Logged</p>
-                                    </div>
-                                    <div className="border-b border-slate-800 pb-3">
-                                        <p className="text-[10px] uppercase text-slate-500">Dec
