@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | SECURE ACCESS</title>
+    <title>DE-TRUSTED ERP | MULTI-USER ACCESS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -27,66 +27,77 @@
             const { useState } = React;
 
             function App() {
-                const [isAuthenticated, setIsAuthenticated] = useState(false);
+                const [user, setUser] = useState({ auth: false, role: '', name: '' });
                 const [password, setPassword] = useState('');
-                const [activeDesk, setActiveDesk] = useState('COMMAND');
+                const [activeDesk, setActiveDesk] = useState('DASHBOARD');
 
                 const handleLogin = (val) => {
                     val.preventDefault();
-                    if(password === 'ADMIN2025') { // TEMPORARY SYSTEM PASSWORD
-                        setIsAuthenticated(true);
+                    // MULTI-USER LOGIC
+                    if(password === 'SUPER2025') {
+                        setUser({ auth: true, role: 'ADMIN', name: 'System Director' });
+                    } else if (password === 'MGR2025') {
+                        setUser({ auth: true, role: 'MANAGER', name: 'Operations Manager' });
+                    } else if (password === 'STAFF2025') {
+                        setUser({ auth: true, role: 'CLERK', name: 'Front Desk Clerk' });
                     } else {
-                        alert("ACCESS DENIED: Invalid Master Key");
+                        alert("INVALID KEY: Access Denied");
                     }
                 };
 
-                // LOGIN SCREEN
-                if (!isAuthenticated) {
+                // Filter desks based on role
+                const allDesks = [
+                    {id: 'DASHBOARD', n: 'Dashboard', i: '📊', roles: ['ADMIN', 'MANAGER', 'CLERK']},
+                    {id: 'ADMIN', n: 'Administration', i: '🛡️', roles: ['ADMIN']},
+                    {id: 'FINANCE', n: 'Finance', i: '💰', roles: ['ADMIN', 'MANAGER']},
+                    {id: 'WHSE', n: 'Warehouse', i: '📦', roles: ['ADMIN', 'MANAGER', 'CLERK']},
+                    {id: 'SALES', n: 'Sales', i: '📈', roles: ['ADMIN', 'MANAGER', 'CLERK']}
+                ];
+
+                const allowedDesks = allDesks.filter(d => d.roles.includes(user.role));
+
+                if (!user.auth) {
                     return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
-                        e('form', { onSubmit: handleLogin, className: 'glass-card w-96 text-center' },
-                            e('h1', { className: 'text-2xl font-black italic text-white mb-2' }, 'DE-TRUSTED ERP'),
-                            e('p', { className: 'text-[10px] text-yellow-500 font-bold mb-8 uppercase' }, 'Secure Gateway'),
-                            e('div', { className: 'mb-6' },
-                                e('label', { className: 'text-[10px] text-slate-400 block mb-2 font-bold' }, 'ENTER SYSTEM ACCESS KEY'),
-                                e('input', { 
-                                    type: 'password', 
-                                    className: 'input-box text-center text-lg tracking-widest',
-                                    value: password,
-                                    onChange: (v) => setPassword(v.target.value)
-                                })
-                            ),
-                            e('button', { type: 'submit', className: 'btn-gold' }, 'INITIALIZE SYSTEM')
+                        e('form', { onSubmit: handleLogin, className: 'glass-card w-96 text-center shadow-2xl' },
+                            e('h1', { className: 'text-3xl font-black italic text-white mb-2' }, 'DE-TRUSTED ERP'),
+                            e('p', { className: 'text-[10px] text-yellow-500 font-bold mb-8 uppercase' }, 'Identity Gateway'),
+                            e('input', { 
+                                type: 'password', 
+                                className: 'input-box text-center text-lg mb-6 tracking-[0.3em]',
+                                placeholder: 'ACCESS KEY',
+                                value: password,
+                                onChange: (v) => setPassword(v.target.value)
+                            }),
+                            e('button', { type: 'submit', className: 'btn-gold' }, 'LOG IN')
                         )
                     );
                 }
 
-                // MAIN ERP INTERFACE (Visible after login)
                 return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar' },
+                    e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-8 border-b border-slate-800' },
                             e('h1', { className: 'text-2xl font-black italic text-white' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[9px] text-yellow-500 font-bold' }, 'SYSTEM ONLINE')
+                            e('div', { className: 'mt-2' },
+                                e('p', { className: 'text-[9px] text-yellow-500 font-bold uppercase' }, user.name),
+                                e('p', { className: 'text-[8px] text-slate-500' }, 'ID: ' + user.role)
+                            )
                         ),
-                        e('nav', { className: 'mt-4' },
-                            [
-                                {id: 'COMMAND', n: 'Dashboard', i: '📊'},
-                                {id: 'ADMIN', n: 'Administration', i: '🛡️'},
-                                {id: 'FINANCE', n: 'Finance Desk', i: '💰'},
-                                {id: 'WHSE', n: 'Warehouse', i: '📦'}
-                            ].map(d => e('div', {
+                        e('nav', { className: 'mt-4 flex-1' },
+                            allowedDesks.map(d => e('div', {
                                 key: d.id,
                                 onClick: () => setActiveDesk(d.id),
                                 className: `nav-link ${activeDesk === d.id ? 'active' : ''}`
                             }, d.i + ' ' + d.n))
                         ),
-                        e('div', { className: 'p-6 mt-auto' },
-                             e('button', { onClick: () => setIsAuthenticated(false), className: 'text-[10px] text-red-400 font-bold uppercase' }, 'Log Out')
-                        )
+                        e('button', { 
+                            onClick: () => window.location.reload(),
+                            className: 'p-6 text-[10px] text-red-500 font-bold uppercase border-t border-slate-800 hover:bg-red-950/20' 
+                        }, 'Logout')
                     ),
                     e('main', { className: 'main-content flex-1' },
-                        e('h2', { className: 'text-3xl font-black mb-6' }, activeDesk),
-                        e('div', { className: 'glass-card' }, 
-                            e('p', null, `Welcome to the ${activeDesk} Module. System is monitoring all inputs.`)
+                        e('h2', { className: 'text-4xl font-black mb-6' }, activeDesk),
+                        e('div', { className: 'glass-card h-64 flex items-center justify-center border-dashed border-slate-700' },
+                            e('p', { className: 'text-slate-500 font-bold' }, `Active Session for ${user.name}`)
                         )
                     )
                 );
