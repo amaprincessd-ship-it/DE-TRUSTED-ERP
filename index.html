@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | EXPENSE CLAIM ENGINE</title>
+    <title>DE-TRUSTED ERP | UNIVERSAL ENGINE v3.0</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,26 +12,33 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #f1f5f9; color: #1e293b; overflow: hidden; }
-
-        .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; height: 65px; }
-        .sidebar { background: #001f3f; height: calc(100vh - 65px); position: fixed; width: 260px; top: 65px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.1); }
-        .nav-btn { width: 100%; text-align: left; padding: 14px 25px; font-size: 11px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .nav-btn.active { background: #003366; color: #fbbf24; border-left: 6px solid #fbbf24; font-weight: 800; }
-
-        .workspace { margin-left: 260px; padding: 90px 40px 40px 40px; height: 100vh; overflow-y: auto; }
-        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 950px; }
+        body { font-family: 'Ubuntu', sans-serif; background: #f1f5f9; color: #1e293b; overflow-y: auto; }
+        .no-print { display: block; }
         
-        .section-header { font-size: 11px; font-weight: 900; color: #1e40af; background: #eff6ff; padding: 8px 15px; border-radius: 4px; margin: 25px 0 15px 0; text-transform: uppercase; border-left: 4px solid #1e40af; }
-        .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #fff; margin-bottom: 15px; border-radius: 4px; }
-        .readonly { background: #f8fafc; font-weight: bold; color: #64748b; }
+        /* ERP THEME */
+        .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; }
+        .sidebar { background: #001f3f; height: 100vh; position: fixed; width: 260px; top: 65px; border-right: 1px solid rgba(255,255,255,0.1); }
+        .workspace { margin-left: 260px; padding: 90px 40px 40px 40px; }
 
-        .words-panel { background: #f0fdf4; border: 1px dashed #16a34a; color: #166534; padding: 12px; font-size: 12px; font-weight: 700; border-radius: 4px; margin-top: -10px; margin-bottom: 15px; }
-        .attachment-zone { border: 2px dashed #cbd5e1; padding: 20px; text-align: center; background: #f8fafc; cursor: pointer; transition: 0.3s; }
-        .attachment-zone:hover { border-color: #1e40af; background: #eff6ff; }
+        /* PRINT STYLES */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; margin: 0; padding: 0; }
+            .workspace { margin-left: 0; padding: 0; }
+            .print-container { border: 1px solid #000; padding: 40px; width: 100%; min-height: 1000px; position: relative; }
+        }
+
+        .print-container { background: white; border: 1px solid #cbd5e1; padding: 50px; border-radius: 4px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto; }
+        .logo-area { font-size: 24px; font-weight: 900; color: #001f3f; letter-spacing: -1px; }
+        .voucher-title { font-size: 20px; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid #001f3f; display: inline-block; margin-top: 10px; }
         
-        .btn-post { background: #001f3f; color: white; padding: 16px 45px; font-weight: 800; border-radius: 4px; text-transform: uppercase; cursor: pointer; border: none; }
+        .grid-data { display: grid; grid-template-columns: 150px 1fr; border-bottom: 1px solid #e2e8f0; padding: 8px 0; font-size: 13px; }
+        .label-cell { font-weight: 800; color: #64748b; text-transform: uppercase; font-size: 11px; }
+        .value-cell { font-family: 'Roboto Mono', monospace; font-weight: 700; color: #0f172a; }
+
+        .words-section { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; margin: 20px 0; font-style: italic; font-size: 14px; font-weight: 700; color: #1e40af; }
+        .sign-box { border: 1px solid #000; height: 80px; margin-top: 10px; }
+        .flag-alert { background: #fef2f2; border-left: 4px solid #ef4444; color: #991b1b; padding: 10px; font-size: 11px; font-weight: 900; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -40,115 +47,133 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState } = React;
+            const { useState, useEffect } = React;
 
-            // GSC - Numeric to Words
-            const gscToWords = (n) => {
-                if (!n || n <= 0) return "Zero Ghana Cedis Only";
-                const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+            // UNIVERSAL FIGURES-TO-WORDS (GHANA CEDIS & PESEWAS)
+            const gscUniversalWords = (n) => {
+                const num = parseFloat(n) || 0;
+                if (num === 0) return "Zero Ghana Cedis Only";
+
+                const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
                 const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-                const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-                let num = Math.floor(n);
-                let res = "";
-                if (num >= 1000) { res += ones[Math.floor(num/1000)] + " Thousand "; num %= 1000; }
-                if (num >= 100) { res += ones[Math.floor(num/100)] + " Hundred "; num %= 100; }
-                if (num >= 20) { res += tens[Math.floor(num/10)] + " "; num %= 10; }
-                if (num >= 10) { res += teens[num-10] + " "; num = 0; }
-                if (num > 0) { res += ones[num] + " "; }
-                return res.trim() + " Ghana Cedis Only";
+
+                const convert = (v) => {
+                    if (v < 20) return ones[v];
+                    if (v < 100) return tens[Math.floor(v / 10)] + (v % 10 !== 0 ? " " + ones[v % 10] : "");
+                    if (v < 1000) return ones[Math.floor(v / 100)] + " Hundred" + (v % 100 !== 0 ? " and " + convert(v % 100) : "");
+                    if (v < 1000000) return convert(Math.floor(v / 1000)) + " Thousand " + (v % 1000 !== 0 ? convert(v % 1000) : "");
+                    return v;
+                };
+
+                const cedis = Math.floor(num);
+                const pesewas = Math.round((num - cedis) * 100);
+
+                let result = convert(cedis) + " Ghana Cedis";
+                if (pesewas > 0) {
+                    result += " and " + convert(pesewas) + " Pesewas";
+                }
+                return result + " Only";
             };
 
             function App() {
-                const [amount, setAmount] = useState(0);
-                const [status, setStatus] = useState('Draft');
-                const [fileUploaded, setFileUploaded] = useState(false);
+                const [val, setVal] = useState(1250.75);
+                const [receipt, setReceipt] = useState("RCP-99801");
+                const [budget, setBudget] = useState(5000);
+                const [policyLimit] = useState(2000);
+                const [status, setStatus] = useState("Draft");
+
+                const isPolicyViolated = val > policyLimit;
+                const isBudgetInsufficent = val > budget;
+                const isDuplicate = receipt === "RCP-EXISTING-001"; // Simulated Check
 
                 return e('div', null,
-                    e('div', { className: 'bank-header shadow-lg' },
-                        e('h1', { className: 'text-2xl font-black tracking-tighter' }, 'DE-TRUSTED ERP'),
-                        e('div', { className: 'bg-blue-600 text-white px-3 py-1 text-[11px] font-black rounded' }, 'EXPENSE_MGMT_ACTIVE')
+                    e('div', { className: 'no-print bank-header' },
+                        e('h1', { className: 'text-2xl font-black' }, 'DE-TRUSTED ERP'),
+                        e('button', { className: 'bg-yellow-400 text-blue-950 px-6 py-2 font-black text-xs rounded', onClick: () => window.print() }, 'GENERATE PDF VOUCHER')
                     ),
 
-                    e('div', { className: 'sidebar' },
-                        ['Executive', 'Administration', 'Finance', 'HR', 'Logistics', 'Warehouse', 'Production', 'Procurement', 'Sales & Marketing', 'Reception'].map(d => 
-                            e('div', { key: d, className: `nav-btn ${d === 'Finance' ? 'active' : ''}` }, d)
+                    e('div', { className: 'no-print sidebar' },
+                        ['Finance', 'Administration', 'Production'].map(d => 
+                            e('div', { key: d, className: `p-4 text-white text-xs font-bold border-b border-white/10` }, d.toUpperCase())
                         )
                     ),
 
                     e('main', { className: 'workspace' },
-                        e('div', { className: 'bank-card' },
-                            e('div', { className: 'flex justify-between items-center border-b pb-6 mb-8' },
+                        
+                        // POLICY CONTROLS (NO-PRINT)
+                        e('div', { className: 'no-print mb-8 p-6 bg-white border rounded shadow-sm' },
+                            e('h3', { className: 'text-xs font-black mb-4 uppercase text-slate-400' }, 'Policy Control Console'),
+                            isPolicyViolated && e('div', { className: 'flag-alert' }, '⚠ POLICY_FLAG: TRANSACTION EXCEEDS SINGLE-LEVEL LIMIT (MAX GHS 2,000)'),
+                            isDuplicate && e('div', { className: 'flag-alert' }, '⚠ SECURITY_BLOCK: DUPLICATE RECEIPT DETECTED IN DATABASE'),
+                            e('div', { className: 'grid grid-cols-3 gap-4' },
                                 e('div', null,
-                                    e('h2', { className: 'text-3xl font-black text-slate-900' }, 'Staff Expense Claim'),
-                                    e('p', { className: 'text-xs text-slate-500 font-bold' }, 'Finance > Expense Management')
+                                    e('label', { className: 'block text-[10px] font-bold' }, 'INPUT AMOUNT'),
+                                    e('input', { className: 'w-full p-2 border rounded font-mono', type: 'number', value: val, onChange: (x) => setVal(x.target.value) })
+                                ),
+                                e('div', null,
+                                    e('label', { className: 'block text-[10px] font-bold' }, 'RECEIPT #'),
+                                    e('input', { className: 'w-full p-2 border rounded font-mono', value: receipt, onChange: (x) => setReceipt(x.target.value) })
+                                ),
+                                e('div', null,
+                                    e('label', { className: 'block text-[10px] font-bold' }, 'DEPT BUDGET BALANCE'),
+                                    e('input', { className: 'w-full p-2 border bg-slate-50 font-bold text-green-700', value: `GHS ${budget}`, readOnly: true })
+                                )
+                            )
+                        ),
+
+                        // PRINT-READY TEMPLATE
+                        e('div', { className: 'print-container' },
+                            e('div', { className: 'flex justify-between items-start' },
+                                e('div', null,
+                                    e('div', { className: 'logo-area' }, 'DE-TRUSTED GROUP LTD'),
+                                    e('div', { className: 'text-[10px] font-bold text-slate-500' }, '12 High Street, Accra, Ghana | IFRS COMPLIANT')
                                 ),
                                 e('div', { className: 'text-right' },
-                                    e('p', { className: 'text-[10px] font-black text-slate-400' }, 'CLAIM ID'),
-                                    e('p', { className: 'text-xl font-mono font-bold' }, 'CLM-DEC-2025-098')
+                                    e('div', { className: 'voucher-title' }, 'Expense Claim Voucher'),
+                                    e('div', { className: 'text-xl font-mono font-bold mt-2' }, 'EXP-2025-00041')
                                 )
                             ),
 
-                            e('div', { className: 'section-header' }, '1. Employee & Department'),
-                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
-                                e('div', null,
-                                    e('label', { className: 'field-label' }, 'Employee Name'),
-                                    e('input', { className: 'bank-input', placeholder: 'Enter Name...' }),
-                                    e('label', { className: 'field-label' }, 'Department'),
-                                    e('input', { className: 'bank-input', placeholder: 'Enter Department...' })
-                                ),
-                                e('div', null,
-                                    e('label', { className: 'field-label' }, 'Employee ID (Auto)'),
-                                    e('input', { className: 'bank-input readonly', value: 'EMP-7712', readOnly: true })
+                            e('div', { className: 'mt-10 border-t-2 border-black pt-6' },
+                                [
+                                    ['Transaction Date', '30-DEC-2025'],
+                                    ['Employee Name', 'Kofi Mensah'],
+                                    ['Department', 'Finance & Operations'],
+                                    ['Vendor/Payee', 'Shell Ghana Ltd'],
+                                    ['Receipt Number', receipt],
+                                    ['Narration', 'Reimbursement for regional site visit fuel and logistics expenses.']
+                                ].map(([l, v]) => e('div', { key: l, className: 'grid-data' },
+                                    e('div', { className: 'label-cell' }, l),
+                                    e('div', { className: 'value-cell' }, v)
+                                ))
+                            ),
+
+                            e('div', { className: 'mt-8 flex justify-end' },
+                                e('div', { className: 'text-right border-b-2 border-slate-200 pb-2 w-full' },
+                                    e('span', { className: 'text-sm font-black mr-10' }, 'TOTAL AMOUNT (FIGURES):'),
+                                    e('span', { className: 'text-2xl font-black font-mono' }, `GHS ${parseFloat(val).toLocaleString(undefined, {minimumFractionDigits: 2})}`)
                                 )
                             ),
 
-                            e('div', { className: 'section-header' }, '2. Expense & Financial Details'),
-                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
-                                e('div', null,
-                                    e('label', { className: 'field-label' }, 'Date of Expense'),
-                                    e('input', { className: 'bank-input', type: 'date' }),
-                                    e('label', { className: 'field-label' }, 'Expense Category'),
-                                    e('select', { className: 'bank-input' }, ['Travel', 'Accommodation', 'Utilities', 'Supplies'].map(o => e('option', {key:o}, o))),
-                                    e('label', { className: 'field-label' }, 'Vendor Name'),
-                                    e('input', { className: 'bank-input', placeholder: 'Where was the money spent?' })
-                                ),
-                                e('div', null,
-                                    e('label', { className: 'field-label' }, 'Claim Amount (Numeric)'),
-                                    e('input', { className: 'bank-input', type: 'number', onChange: (x) => setAmount(x.target.value) }),
-                                    e('div', { className: 'words-panel' }, gscToWords(amount)),
-                                    e('label', { className: 'field-label' }, 'Receipt Number'),
-                                    e('input', { className: 'bank-input', placeholder: 'Serial Number on Receipt...' })
+                            e('div', { className: 'words-section' }, 
+                                e('p', { className: 'text-[10px] font-black uppercase text-slate-400 not-italic mb-1' }, 'Amount in Words'),
+                                gscUniversalWords(val)
+                            ),
+
+                            // SIGNATURE BLOCKS
+                            e('div', { className: 'grid grid-cols-2 gap-8 mt-12' },
+                                ['Prepared By', 'Reviewed By', 'Approved By', 'Received By'].map(s => e('div', { key: s },
+                                    e('div', { className: 'text-[9px] font-black uppercase' }, s),
+                                    e('div', { className: 'sign-box' }),
+                                    e('div', { className: 'text-[10px] font-bold mt-1 text-center border-t border-slate-300' }, 'Signature & Date')
+                                ))
+                            ),
+
+                            e('div', { className: 'mt-16 flex justify-between items-end' },
+                                e('div', { className: 'w-32 h-32 border-2 border-dashed border-slate-300 flex items-center justify-center text-[9px] font-black text-slate-300 text-center uppercase' }, 'Official\nStamp\nArea'),
+                                e('div', { className: 'text-[9px] font-mono text-slate-400 text-right' }, 
+                                    `System IP: 192.168.1.102 | Trace ID: TRC-772819-B\nGenerated at: 2025-12-30 16:04:35`
                                 )
-                            ),
-
-                            e('div', { className: 'section-header' }, '3. Reimbursement Method'),
-                            e('div', { className: 'grid grid-cols-2 gap-x-10' },
-                                e('div', null,
-                                    e('label', { className: 'field-label' }, 'Payment Method'),
-                                    e('select', { className: 'bank-input' }, ['Bank', 'Mobile Money', 'Petty Cash'].map(o => e('option', {key:o}, o)))
-                                ),
-                                e('div', null,
-                                    e('label', { className: 'field-label' }, 'Target Payment Date'),
-                                    e('input', { className: 'bank-input', type: 'date' })
-                                )
-                            ),
-
-                            e('div', { className: 'section-header' }, '4. Evidence (MANDATORY)'),
-                            e('div', { 
-                                className: `attachment-zone ${fileUploaded ? 'border-green-500 bg-green-50' : ''}`,
-                                onClick: () => setFileUploaded(true) 
-                            },
-                                e('p', { className: 'text-sm font-bold' }, fileUploaded ? '✓ RECEIPT_CAPTURED.PDF' : 'CLICK TO UPLOAD RECEIPT / INVOICE'),
-                                e('p', { className: 'text-[10px] text-slate-400 mt-1' }, 'Accepted: JPG, PNG, PDF (Max 5MB)')
-                            ),
-
-                            e('div', { className: 'mt-10 pt-6 border-t flex justify-end gap-5' },
-                                e('button', { className: 'px-8 py-4 bg-slate-100 font-bold text-xs' }, 'SAVE AS DRAFT'),
-                                e('button', { 
-                                    className: `btn-post ${!fileUploaded ? 'opacity-50 cursor-not-allowed' : ''}`,
-                                    disabled: !fileUploaded,
-                                    onClick: () => { setStatus('Approved'); alert('Claim Submitted to Reviewer.'); }
-                                }, 'Submit Claim for Review')
                             )
                         )
                     )
