@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | TOTAL CONSOLIDATED ENGINE</title>
+    <title>DE-TRUSTED ERP | WORKFLOW ENGINE VERSION</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,34 +12,34 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #f1f5f9; color: #1e293b; overflow: hidden; }
+        body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #f8fafc; color: #1e293b; overflow: hidden; }
 
-        /* CORE BANKING HEADER */
         .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; height: 65px; }
         .search-bar { background: #ffffff; color: #333; border: none; padding: 10px 25px; border-radius: 4px; width: 450px; font-weight: 700; border: 2px solid #002366; outline: none; font-size: 13px; }
 
-        /* SIDEBAR - 10 DESKS */
         .sidebar { background: #001f3f; height: calc(100vh - 65px); position: fixed; width: 260px; top: 65px; overflow-y: auto; padding-bottom: 100px; border-right: 1px solid rgba(255,255,255,0.1); }
         .nav-btn { width: 100%; text-align: left; padding: 14px 25px; font-size: 11px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; letter-spacing: 0.05em; display: flex; align-items: center; gap: 10px; }
         .nav-btn.active { background: #003366; color: #fbbf24; border-left: 6px solid #fbbf24; font-weight: 800; }
-        .dept-header { padding: 20px 25px 8px 25px; font-size: 9px; color: #64748b; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; }
+        .dept-header { padding: 20px 25px 8px 25px; font-size: 9px; color: #64748b; font-weight: 900; text-transform: uppercase; }
 
-        /* MAIN WORKSPACE */
         .workspace { margin-left: 260px; padding: 90px 40px 40px 40px; height: 100vh; overflow-y: auto; }
-        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 850px; }
+        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 850px; position: relative; }
         
-        /* UI COMPONENTS */
-        .gsc-tag { font-size: 8px; background: #eff6ff; color: #2563eb; padding: 2px 6px; border: 1px solid #bfdbfe; border-radius: 3px; font-weight: 900; }
-        .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 12px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #f8fafc; margin-bottom: 18px; border-radius: 4px; transition: 0.2s; }
-        .bank-input:focus { border-color: #001f3f; background: #fff; box-shadow: 0 0 0 3px rgba(0,31,63,0.1); outline: none; }
-        .security-select { background: #fffbeb !important; border-left: 4px solid #fbbf24 !important; font-weight: 700; cursor: pointer; }
+        /* WORKFLOW UI COMPONENTS */
+        .workflow-stepper { display: flex; justify-content: space-between; margin-bottom: 30px; background: #f1f5f9; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .step { flex: 1; text-align: center; position: relative; }
+        .step-bubble { width: 24px; height: 24px; background: #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px auto; font-size: 10px; font-weight: bold; color: white; }
+        .step.active .step-bubble { background: #001f3f; border: 2px solid #fbbf24; }
+        .step.completed .step-bubble { background: #16a34a; }
+        .step-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #64748b; }
+        .step.active .step-label { color: #001f3f; }
+
+        .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 12px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #f8fafc; margin-bottom: 18px; border-radius: 4px; }
+        .words-panel { background: #f0fdf4; border: 1px dashed #16a34a; color: #166534; padding: 15px; font-size: 12px; font-weight: 700; margin-bottom: 20px; border-radius: 4px; }
         
-        .words-panel { background: #f0fdf4; border: 1px dashed #16a34a; color: #166534; padding: 15px; font-size: 12px; font-weight: 700; margin-bottom: 20px; border-radius: 4px; line-height: 1.5; }
-        .btn-post { background: #001f3f; color: white; padding: 16px 45px; font-weight: 800; border-radius: 4px; text-transform: uppercase; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-post:hover { background: #003366; transform: translateY(-1px); }
-        
-        .audit-trail { font-family: 'Roboto Mono', monospace; font-size: 10px; background: #0f172a; color: #38bdf8; padding: 20px; border-radius: 4px; margin-top: 25px; border-left: 4px solid #38bdf8; }
+        .btn-post { background: #001f3f; color: white; padding: 16px 45px; font-weight: 800; border-radius: 4px; text-transform: uppercase; cursor: pointer; border: none; }
+        .btn-reject { background: #991b1b; color: white; padding: 16px 20px; font-weight: 800; border-radius: 4px; text-transform: uppercase; cursor: pointer; border: none; }
     </style>
 </head>
 <body>
@@ -48,9 +48,8 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useEffect } = React;
+            const { useState } = React;
 
-            // GLOBAL SHARED COMPONENT: NUMERIC TO WORDS
             const gscToWords = (n, curr = "GHS") => {
                 if (!n || n <= 0) return `Zero ${curr === "GHS" ? "Ghana Cedis" : curr} Only`;
                 const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
@@ -58,7 +57,6 @@
                 const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
                 let num = Math.floor(n);
                 let res = "";
-                if (num >= 1000000) { res += gscToWords(Math.floor(num/1000000)) + " Million "; num %= 1000000; }
                 if (num >= 1000) { res += ones[Math.floor(num/1000)] + " Thousand "; num %= 1000; }
                 if (num >= 100) { res += ones[Math.floor(num/100)] + " Hundred "; num %= 100; }
                 if (num >= 20) { res += tens[Math.floor(num/10)] + " "; num %= 10; }
@@ -68,49 +66,27 @@
             };
 
             const SYSTEM_REGISTRY = {
-                // EXECUTIVE
-                "Executive Dashboard": { desk: "Executive", title: "Strategic Group Overview", fields: ["Group Revenue", "Operational Margin", "Consolidated Cash", "Audit Score"] },
-                
-                // ADMINISTRATION (9/9 FULL RESTORATION)
-                "Fixed Assets": { desk: "Administration", title: "Fixed Asset Registry", fields: ["Asset ID", "Asset Name", "Category", "Cost (Numeric)", "Useful Life", "Depreciation Method", "Location"] },
-                "Regulatory Master": { desk: "Administration", title: "Regulatory Hub", fields: ["Agency ID", "Agency Name", "Governing Act", "Status", "Last Audit Date"] },
-                "Statutory Setup": { desk: "Administration", title: "Statutory Requirements", fields: ["Stat ID", "Requirement", "Legal Code", "Frequency", "Officer"] },
-                "Permit Register": { desk: "Administration", title: "Licenses & Permits", fields: ["Permit #", "Department", "Effective Date", "Expiry Date", "Digital Signature"] },
-                "Renewal Workflow": { desk: "Administration", title: "Renewal Lifecycle", fields: ["Permit Ref", "Next Renewal", "Associated Costs", "Approval Status"] },
-                "Insurance Master": { desk: "Administration", title: "Insurance Control", fields: ["Policy #", "Provider", "Coverage Type", "Premium", "End Date"] },
-                "Facility Maintenance": { desk: "Administration", title: "Maintenance Log", fields: ["Machine ID", "Last Service", "Next Due", "Technician"] },
-                "Site Inspections": { desk: "Administration", title: "Agency Inspections", fields: ["Visit ID", "Agency", "Date", "Findings", "Score"] },
-                "Compliance Breaches": { desk: "Administration", title: "Incident Registry", fields: ["Incident ID", "Regulation", "Penalty", "Closure Status"] },
-
-                // FINANCE (6 CORE + 3 VOUCHERS FULL RESTORATION)
-                "Financial Reporting": { desk: "Finance", title: "IFRS Financial Reporting", fields: ["Reporting Period", "IFRS Standard", "Revenue", "COS", "Expenses", "Audit Status"] },
-                "General Ledger": { desk: "Finance", title: "General Ledger Entries", fields: ["Entry ID", "Date", "Account Name", "Debit", "Credit", "Narration"] },
-                "Accounts Receivable": { desk: "Finance", title: "Sales Ledger / AR", fields: ["Invoice #", "Customer", "Currency", "Base Amount", "Status"] },
-                "Accounts Payable": { desk: "Finance", title: "Purchase Ledger / AP", fields: ["Voucher ID", "Supplier", "Invoice Date", "Net Payable", "Tax Compliance"] },
-                "Cash & Bank": { desk: "Finance", title: "Bank Transaction Master", fields: ["Transaction ID", "Account Name", "Amount", "Authorized By"] },
-                "Import Costing": { desk: "Finance", title: "Duty & Landed Cost", fields: ["Import ID", "FOB Value", "Duty Amount", "VAT", "Status"] },
-                "Payment Voucher": { desk: "Finance", title: "Payment Voucher (PV) Master", fields: ["Voucher ID (Auto)", "Date", "Payment Mode", "Payee Name", "Account No.", "Currency", "Exchange Rate", "Invoice / Ref No.", "Amount (Numeric)", "Amount In Words (Auto)", "Tax Deducted", "Status"] },
-                "Petty Cash Voucher": { desk: "Finance", title: "Petty Cash Voucher", fields: ["Voucher ID (Auto)", "Date", "Department", "Employee", "Amount (Numeric)", "Amount In Words (Auto)", "Category", "Status"] },
-                "Expense Claim": { desk: "Finance", title: "Staff Expense Claim", fields: ["Claim ID (Auto)", "Date of Claim", "Employee Name", "Department", "Amount (Numeric)", "Amount In Words (Auto)", "Expense Date", "Status"] },
-
-                // PRODUCTION
-                "BOM Registry": { desk: "Production", title: "Bill of Materials", fields: ["Product Code", "Component List", "Unit Cost", "Assembly Instructions"] },
-                "Work Orders": { desk: "Production", title: "Production Schedule", fields: ["Order ID", "Product", "Qty to Produce", "Status"] },
-
-                // OTHER DESKS
-                "Employee Registry": { desk: "HR", title: "Personnel Master", fields: ["Staff ID", "Full Name", "Department", "Status"] },
-                "Fleet Master": { desk: "Logistics", title: "Fleet Register", fields: ["Vehicle ID", "Plate #", "Driver", "Insurance Expiry"] },
-                "Stock Registry": { desk: "Warehouse", title: "Inventory Master", fields: ["Item Code", "Description", "Balance", "Reorder Level"] },
-                "Vendor Master": { desk: "Procurement", title: "Supplier Registry", fields: ["Vendor ID", "Company", "Tax ID", "Terms"] },
-                "Customer CRM": { desk: "Sales & Marketing", title: "Client Database", fields: ["Customer ID", "Company", "Region", "Credit Limit"] },
-                "Visitor Log": { desk: "Reception", title: "Entry Registry", fields: ["Visit ID", "Visitor Name", "Purpose", "Time In"] }
+                "Executive Dash": { desk: "Executive", title: "Strategic Performance", fields: ["Revenue", "Margin"] },
+                "Administration": { desk: "Administration", title: "Fixed Asset Registry", fields: ["Asset ID", "Name", "Cost (Numeric)", "Location"] },
+                "Financial Reporting": { desk: "Finance", title: "IFRS Financial Reporting", fields: ["Period", "Revenue", "Expenses"] },
+                "Payment Voucher": { desk: "Finance", title: "Payment Voucher Master", fields: ["Voucher ID (Auto)", "Payee", "Amount (Numeric)", "Amount In Words (Auto)", "Currency", "Status"] },
+                "Petty Cash Voucher": { desk: "Finance", title: "Petty Cash Voucher", fields: ["Voucher ID (Auto)", "Employee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
+                "Expense Claim": { desk: "Finance", title: "Staff Expense Claim", fields: ["Claim ID (Auto)", "Employee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
+                "Production BOM": { desk: "Production", title: "Bill of Materials", fields: ["Product Code", "Unit Cost"] }
             };
+
+            const WORKFLOW_LEVELS = [
+                { step: 1, role: "Preparer" },
+                { step: 2, role: "Reviewer" },
+                { step: 3, role: "Approver" },
+                { step: 4, role: "Finance Controller" }
+            ];
 
             function App() {
                 const [currentDesk, setCurrentDesk] = useState('Finance');
                 const [activeSub, setActiveSub] = useState('Payment Voucher');
+                const [currentStep, setCurrentStep] = useState(1);
                 const [numericValue, setNumericValue] = useState(0);
-                const [currency, setCurrency] = useState('GHS');
 
                 const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
 
@@ -118,26 +94,17 @@
                     e('div', { className: 'bank-header shadow-lg' },
                         e('div', { className: 'flex items-center gap-6' },
                             e('h1', { className: 'text-2xl font-black tracking-tighter' }, 'DE-TRUSTED ERP'),
-                            e('div', { className: 'h-6 w-[1px] bg-slate-600' }),
-                            e('span', { className: 'bg-yellow-400 text-blue-950 px-3 py-1 text-[11px] font-black rounded' }, 'CORE_OS_v2.5_ACTIVE')
+                            e('span', { className: 'bg-yellow-400 text-blue-950 px-2 py-1 text-[10px] font-black rounded' }, 'WORKFLOW_ENGINE_SEQUENTIAL')
                         ),
-                        e('input', { className: 'search-bar', placeholder: 'GLOBAL RETRIEVAL: Search any Voucher, ID, Asset or Staff...' }),
-                        e('div', { className: 'text-right' },
-                            e('p', { className: 'text-[10px] font-bold text-slate-400' }, 'SYSTEM DATE'),
-                            e('p', { className: 'text-[12px] font-black' }, '30-DEC-2025')
-                        )
+                        e('input', { className: 'search-bar', placeholder: 'TRACK VOUCHER WORKFLOW...' }),
+                        e('div', { className: 'text-right' }, e('p', { className: 'text-[12px] font-black' }, '30-DEC-2025'))
                     ),
 
                     e('div', { className: 'sidebar' },
-                        e('div', { className: 'dept-header' }, 'Enterprise Control Desks'),
                         ['Executive', 'Administration', 'Finance', 'HR', 'Logistics', 'Warehouse', 'Production', 'Procurement', 'Sales & Marketing', 'Reception'].map(d => 
                             e('div', { 
                                 key: d, 
-                                onClick: () => { 
-                                    setCurrentDesk(d); 
-                                    const first = Object.keys(SYSTEM_REGISTRY).find(k => SYSTEM_REGISTRY[k].desk === d);
-                                    if(first) setActiveSub(first);
-                                },
+                                onClick: () => { setCurrentDesk(d); setActiveSub(Object.keys(SYSTEM_REGISTRY).find(k => SYSTEM_REGISTRY[k].desk === d)); },
                                 className: `nav-btn ${currentDesk === d ? 'active' : ''}` 
                             }, d)
                         )
@@ -147,70 +114,58 @@
                         e('div', { className: 'flex gap-8' },
                             e('div', { className: 'w-72' },
                                 e('div', { className: 'bg-white border border-slate-300 rounded overflow-hidden shadow-sm' },
-                                    e('div', { className: 'p-4 bg-slate-50 text-[10px] font-black border-b text-slate-500 tracking-widest' }, 'MODULE REGISTRY'),
-                                    e('div', { className: 'h-[700px] overflow-y-auto' },
-                                        Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
-                                            e('div', { 
-                                                key: name, 
-                                                onClick: () => { setActiveSub(name); setNumericValue(0); }, 
-                                                className: `p-4 text-[13px] cursor-pointer border-b hover:bg-blue-50 transition-colors ${activeSub === name ? 'bg-blue-100 font-bold text-blue-900 border-l-4 border-l-blue-900' : 'text-slate-600'}` 
-                                            }, name)
-                                        )
+                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-black border-b' }, 'ACTIVE MODULES'),
+                                    Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
+                                        e('div', { key: name, onClick: () => { setActiveSub(name); setCurrentStep(1); }, className: `p-4 text-[13px] cursor-pointer border-b ${activeSub === name ? 'bg-blue-100 font-bold' : ''}` }, name)
                                     )
                                 )
                             ),
                             e('div', { className: 'flex-1' },
                                 e('div', { className: 'bank-card' },
-                                    e('div', { className: 'flex justify-between items-start border-b pb-6 mb-8' },
-                                        e('div', null,
-                                            e('h2', { className: 'text-3xl font-black text-slate-900' }, schema.title),
-                                            e('p', { className: 'text-sm text-slate-500 mt-1 font-medium' }, `Department: ${currentDesk} Operational Terminal`)
-                                        ),
-                                        e('div', { className: 'flex gap-3' },
-                                            e('span', { className: 'bg-green-100 text-green-700 px-3 py-1 text-[10px] font-bold rounded border border-green-200' }, 'IFRS COMPLIANT'),
-                                            e('span', { className: 'bg-red-100 text-red-700 px-3 py-1 text-[10px] font-bold rounded border border-red-200' }, 'AUDIT LOCKED')
-                                        )
+                                    
+                                    // WORKFLOW STEPPER COMPONENT
+                                    e('div', { className: 'workflow-stepper' },
+                                        WORKFLOW_LEVELS.map(l => e('div', { key: l.step, className: `step ${currentStep === l.step ? 'active' : ''} ${currentStep > l.step ? 'completed' : ''}` },
+                                            e('div', { className: 'step-bubble' }, currentStep > l.step ? '✓' : l.step),
+                                            e('div', { className: 'step-label' }, l.role)
+                                        ))
                                     ),
+
+                                    e('h2', { className: 'text-2xl font-black mb-6 text-slate-800 border-b pb-4' }, schema.title),
 
                                     e('div', { className: 'grid grid-cols-2 gap-x-12' },
                                         schema.fields.map(label => e('div', { key: label },
-                                            e('label', { className: 'field-label' }, 
-                                                e('span', null, label),
-                                                (label.includes("Numeric") || label.includes("Status") || label.includes("Currency")) && e('span', { className: 'gsc-tag' }, 'GLOBAL_ENGINE')
-                                            ),
-                                            
+                                            e('label', { className: 'field-label' }, label),
                                             label === "Amount In Words (Auto)" ? 
-                                                e('div', { className: 'words-panel' }, gscToWords(numericValue, currency)) :
-                                            
-                                            label.includes("Status") || label.includes("Mode") || label.includes("Category") ? 
-                                                e('select', { className: 'bank-input security-select' }, 
-                                                    e('option', null, `-- Select Authorization Status --`),
-                                                    ['Draft / Pending', 'Reviewed', 'Manager Approved', 'Director Authorized', 'Posted to Ledger'].map(o => e('option', {key:o}, o))
-                                                ) :
-                                            
-                                            label === "Currency" ?
-                                                e('select', { className: 'bank-input', value: currency, onChange: (x) => setCurrency(x.target.value) }, 
-                                                    ['GHS', 'USD', 'EUR', 'GBP'].map(c => e('option', {key:c}, c))
-                                                ) :
-
-                                            e(label.includes("Narration") || label.includes("Instructions") || label.includes("Findings") ? 'textarea' : 'input', { 
+                                                e('div', { className: 'words-panel' }, gscToWords(numericValue)) :
+                                            label === "Status" ? 
+                                                e('input', { className: 'bank-input bg-slate-100 font-bold', value: `Pending: ${WORKFLOW_LEVELS[currentStep-1].role}`, readOnly: true }) :
+                                            e('input', { 
                                                 className: 'bank-input', 
-                                                type: label.includes("Numeric") || label.includes("Cost") ? "number" : "text",
-                                                onChange: (x) => { if(label.includes("Numeric") || label.includes("Cost")) setNumericValue(x.target.value); },
-                                                placeholder: `Enter ${label}...`
+                                                type: label.includes("Numeric") ? "number" : "text",
+                                                onChange: (x) => { if(label.includes("Numeric")) setNumericValue(x.target.value); },
+                                                placeholder: `Enter ${label}...`,
+                                                readOnly: currentStep > 1 // Only Preparer can edit
                                             })
                                         ))
                                     ),
 
-                                    e('div', { className: 'audit-trail' }, 
-                                        `[SYSTEM_MSG]: Transaction integrity check initiated... OK.\n` +
-                                        `[LEDGER_MAP]: Current action will affect GL_CODE: ${currentDesk === 'Finance' ? '1100-CASH' : 'ADMIN-EXP-01'}\n` +
-                                        `[USER_AUTH]: USER_ADMIN (30-DEC-2025 15:45 GMT)`
+                                    e('div', { className: 'mt-10 p-5 bg-slate-900 rounded text-[10px] font-mono text-cyan-400' },
+                                        `> WORKFLOW_RULE: SEQUENTIAL_MODE\n` +
+                                        `> REJECTION_BEHAVIOR: RETURN_TO_PREPARER\n` +
+                                        `> CURRENT_ACTOR_REQUIRED: ${WORKFLOW_LEVELS[currentStep-1].role.toUpperCase()}`
                                     ),
 
-                                    e('div', { className: 'mt-10 flex justify-end gap-5 border-t pt-8' },
-                                        e('button', { className: 'px-8 py-4 border border-slate-300 font-bold text-xs hover:bg-slate-50 rounded' }, 'DOWNLOAD AUDIT PDF'),
-                                        e('button', { className: 'btn-post' }, 'Authorize & Commit Transaction')
+                                    e('div', { className: 'mt-12 flex justify-end gap-5' },
+                                        currentStep > 1 && e('button', { 
+                                            className: 'btn-reject',
+                                            onClick: () => setCurrentStep(1) 
+                                        }, 'REJECT TO PREPARER'),
+                                        
+                                        e('button', { 
+                                            className: 'btn-post',
+                                            onClick: () => { if(currentStep < 4) setCurrentStep(currentStep + 1); else alert('Transaction Committed to General Ledger.'); }
+                                        }, currentStep === 4 ? 'Commit to GL' : `Approve to ${WORKFLOW_LEVELS[currentStep] ? WORKFLOW_LEVELS[currentStep].role : 'Next'}`)
                                     )
                                 )
                             )
