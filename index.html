@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | WORKFLOW ENGINE VERSION</title>
+    <title>DE-TRUSTED ERP | AUDIT & TRACEABILITY ENGINE</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,34 +12,33 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #f8fafc; color: #1e293b; overflow: hidden; }
+        body { font-family: 'Ubuntu', sans-serif; margin: 0; background: #f1f5f9; color: #1e293b; overflow: hidden; }
 
+        /* HEADER */
         .bank-header { background: #001f3f; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; height: 65px; }
         .search-bar { background: #ffffff; color: #333; border: none; padding: 10px 25px; border-radius: 4px; width: 450px; font-weight: 700; border: 2px solid #002366; outline: none; font-size: 13px; }
 
+        /* SIDEBAR */
         .sidebar { background: #001f3f; height: calc(100vh - 65px); position: fixed; width: 260px; top: 65px; overflow-y: auto; padding-bottom: 100px; border-right: 1px solid rgba(255,255,255,0.1); }
-        .nav-btn { width: 100%; text-align: left; padding: 14px 25px; font-size: 11px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; letter-spacing: 0.05em; display: flex; align-items: center; gap: 10px; }
+        .nav-btn { width: 100%; text-align: left; padding: 14px 25px; font-size: 11px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
         .nav-btn.active { background: #003366; color: #fbbf24; border-left: 6px solid #fbbf24; font-weight: 800; }
-        .dept-header { padding: 20px 25px 8px 25px; font-size: 9px; color: #64748b; font-weight: 900; text-transform: uppercase; }
 
+        /* WORKSPACE */
         .workspace { margin-left: 260px; padding: 90px 40px 40px 40px; height: 100vh; overflow-y: auto; }
-        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 850px; position: relative; }
+        .bank-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); padding: 35px; min-height: 850px; }
         
-        /* WORKFLOW UI COMPONENTS */
-        .workflow-stepper { display: flex; justify-content: space-between; margin-bottom: 30px; background: #f1f5f9; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .step { flex: 1; text-align: center; position: relative; }
-        .step-bubble { width: 24px; height: 24px; background: #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px auto; font-size: 10px; font-weight: bold; color: white; }
-        .step.active .step-bubble { background: #001f3f; border: 2px solid #fbbf24; }
-        .step.completed .step-bubble { background: #16a34a; }
-        .step-label { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #64748b; }
-        .step.active .step-label { color: #001f3f; }
+        /* AUDIT UI COMPONENTS */
+        .audit-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 30px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; }
+        .meta-box { font-size: 9px; }
+        .meta-label { font-weight: 900; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 2px; }
+        .meta-value { font-family: 'Roboto Mono', monospace; color: #0f172a; font-weight: 700; }
 
         .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 12px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #f8fafc; margin-bottom: 18px; border-radius: 4px; }
+        .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 12px; font-family: 'Roboto Mono', monospace; font-size: 13px; background: #fff; margin-bottom: 18px; border-radius: 4px; }
         .words-panel { background: #f0fdf4; border: 1px dashed #16a34a; color: #166534; padding: 15px; font-size: 12px; font-weight: 700; margin-bottom: 20px; border-radius: 4px; }
         
         .btn-post { background: #001f3f; color: white; padding: 16px 45px; font-weight: 800; border-radius: 4px; text-transform: uppercase; cursor: pointer; border: none; }
-        .btn-reject { background: #991b1b; color: white; padding: 16px 20px; font-weight: 800; border-radius: 4px; text-transform: uppercase; cursor: pointer; border: none; }
+        .workflow-tag { background: #001f3f; color: white; padding: 4px 10px; border-radius: 3px; font-size: 9px; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -50,8 +49,8 @@
             const e = React.createElement;
             const { useState } = React;
 
-            const gscToWords = (n, curr = "GHS") => {
-                if (!n || n <= 0) return `Zero ${curr === "GHS" ? "Ghana Cedis" : curr} Only`;
+            const gscToWords = (n) => {
+                if (!n || n <= 0) return "Zero Ghana Cedis Only";
                 const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
                 const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
                 const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
@@ -62,41 +61,55 @@
                 if (num >= 20) { res += tens[Math.floor(num/10)] + " "; num %= 10; }
                 if (num >= 10) { res += teens[num-10] + " "; num = 0; }
                 if (num > 0) { res += ones[num] + " "; }
-                return `${res.trim()} ${curr === "GHS" ? "Ghana Cedis" : curr} Only`;
+                return res.trim() + " Ghana Cedis Only";
             };
 
             const SYSTEM_REGISTRY = {
                 "Executive Dash": { desk: "Executive", title: "Strategic Performance", fields: ["Revenue", "Margin"] },
-                "Administration": { desk: "Administration", title: "Fixed Asset Registry", fields: ["Asset ID", "Name", "Cost (Numeric)", "Location"] },
-                "Financial Reporting": { desk: "Finance", title: "IFRS Financial Reporting", fields: ["Period", "Revenue", "Expenses"] },
-                "Payment Voucher": { desk: "Finance", title: "Payment Voucher Master", fields: ["Voucher ID (Auto)", "Payee", "Amount (Numeric)", "Amount In Words (Auto)", "Currency", "Status"] },
-                "Petty Cash Voucher": { desk: "Finance", title: "Petty Cash Voucher", fields: ["Voucher ID (Auto)", "Employee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
+                "Fixed Assets": { desk: "Administration", title: "Asset Registry", fields: ["Asset ID", "Name", "Cost (Numeric)"] },
+                "Payment Voucher": { desk: "Finance", title: "Payment Voucher Master", fields: ["Voucher ID (Auto)", "Payee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
+                "Petty Cash Voucher": { desk: "Finance", title: "Petty Cash Form", fields: ["Voucher ID (Auto)", "Employee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
                 "Expense Claim": { desk: "Finance", title: "Staff Expense Claim", fields: ["Claim ID (Auto)", "Employee", "Amount (Numeric)", "Amount In Words (Auto)", "Status"] },
-                "Production BOM": { desk: "Production", title: "Bill of Materials", fields: ["Product Code", "Unit Cost"] }
+                "BOM Registry": { desk: "Production", title: "Bill of Materials", fields: ["Product Code", "Unit Cost"] }
             };
-
-            const WORKFLOW_LEVELS = [
-                { step: 1, role: "Preparer" },
-                { step: 2, role: "Reviewer" },
-                { step: 3, role: "Approver" },
-                { step: 4, role: "Finance Controller" }
-            ];
 
             function App() {
                 const [currentDesk, setCurrentDesk] = useState('Finance');
                 const [activeSub, setActiveSub] = useState('Payment Voucher');
-                const [currentStep, setCurrentStep] = useState(1);
-                const [numericValue, setNumericValue] = useState(0);
+                const [numVal, setNumVal] = useState(0);
+                const [status, setStatus] = useState('Draft');
+                
+                // AUDIT LOG STATE (SIMULATED AUTO-CAPTURE)
+                const [audit, setAudit] = useState({
+                    created_by: "USER_092",
+                    created_at: "2025-12-30 08:00:00",
+                    modified_by: "USER_092",
+                    modified_at: "2025-12-30 15:45:12",
+                    approved_by: "---",
+                    approved_at: "---",
+                    ip_address: "192.168.1.44"
+                });
 
-                const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
+                const schema = SYSTEM_REGISTRY[activeSub];
+
+                const handleCommit = () => {
+                    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                    setAudit(prev => ({
+                        ...prev,
+                        approved_by: "CONTROLLER_FIN_01",
+                        approved_at: now,
+                        modified_at: now
+                    }));
+                    setStatus('Approved');
+                };
 
                 return e('div', null,
                     e('div', { className: 'bank-header shadow-lg' },
                         e('div', { className: 'flex items-center gap-6' },
                             e('h1', { className: 'text-2xl font-black tracking-tighter' }, 'DE-TRUSTED ERP'),
-                            e('span', { className: 'bg-yellow-400 text-blue-950 px-2 py-1 text-[10px] font-black rounded' }, 'WORKFLOW_ENGINE_SEQUENTIAL')
+                            e('span', { className: 'bg-green-600 px-2 py-1 text-[10px] font-black rounded' }, 'AUDIT_LOG_ACTIVE')
                         ),
-                        e('input', { className: 'search-bar', placeholder: 'TRACK VOUCHER WORKFLOW...' }),
+                        e('input', { className: 'search-bar', placeholder: 'SEARCH BY TRANSACTION OR IP...' }),
                         e('div', { className: 'text-right' }, e('p', { className: 'text-[12px] font-black' }, '30-DEC-2025'))
                     ),
 
@@ -116,56 +129,51 @@
                                 e('div', { className: 'bg-white border border-slate-300 rounded overflow-hidden shadow-sm' },
                                     e('div', { className: 'p-4 bg-slate-100 text-[10px] font-black border-b' }, 'ACTIVE MODULES'),
                                     Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
-                                        e('div', { key: name, onClick: () => { setActiveSub(name); setCurrentStep(1); }, className: `p-4 text-[13px] cursor-pointer border-b ${activeSub === name ? 'bg-blue-100 font-bold' : ''}` }, name)
+                                        e('div', { key: name, onClick: () => setActiveSub(name), className: `p-4 text-[13px] cursor-pointer border-b ${activeSub === name ? 'bg-blue-100 font-bold' : ''}` }, name)
                                     )
                                 )
                             ),
                             e('div', { className: 'flex-1' },
                                 e('div', { className: 'bank-card' },
-                                    
-                                    // WORKFLOW STEPPER COMPONENT
-                                    e('div', { className: 'workflow-stepper' },
-                                        WORKFLOW_LEVELS.map(l => e('div', { key: l.step, className: `step ${currentStep === l.step ? 'active' : ''} ${currentStep > l.step ? 'completed' : ''}` },
-                                            e('div', { className: 'step-bubble' }, currentStep > l.step ? '✓' : l.step),
-                                            e('div', { className: 'step-label' }, l.role)
-                                        ))
+                                    e('div', { className: 'flex justify-between items-center mb-8 border-b pb-4' },
+                                        e('h2', { className: 'text-2xl font-black text-slate-800' }, schema.title),
+                                        e('div', { className: 'workflow-tag' }, `STATUS: ${status}`)
                                     ),
-
-                                    e('h2', { className: 'text-2xl font-black mb-6 text-slate-800 border-b pb-4' }, schema.title),
 
                                     e('div', { className: 'grid grid-cols-2 gap-x-12' },
                                         schema.fields.map(label => e('div', { key: label },
                                             e('label', { className: 'field-label' }, label),
                                             label === "Amount In Words (Auto)" ? 
-                                                e('div', { className: 'words-panel' }, gscToWords(numericValue)) :
-                                            label === "Status" ? 
-                                                e('input', { className: 'bank-input bg-slate-100 font-bold', value: `Pending: ${WORKFLOW_LEVELS[currentStep-1].role}`, readOnly: true }) :
+                                                e('div', { className: 'words-panel' }, gscToWords(numVal)) :
+                                            label === "Status" ?
+                                                e('input', { className: 'bank-input font-bold', value: status, readOnly: true }) :
                                             e('input', { 
                                                 className: 'bank-input', 
                                                 type: label.includes("Numeric") ? "number" : "text",
-                                                onChange: (x) => { if(label.includes("Numeric")) setNumericValue(x.target.value); },
-                                                placeholder: `Enter ${label}...`,
-                                                readOnly: currentStep > 1 // Only Preparer can edit
+                                                onChange: (x) => { if(label.includes("Numeric")) setNumVal(x.target.value); },
+                                                placeholder: `Enter ${label}...`
                                             })
                                         ))
                                     ),
 
-                                    e('div', { className: 'mt-10 p-5 bg-slate-900 rounded text-[10px] font-mono text-cyan-400' },
-                                        `> WORKFLOW_RULE: SEQUENTIAL_MODE\n` +
-                                        `> REJECTION_BEHAVIOR: RETURN_TO_PREPARER\n` +
-                                        `> CURRENT_ACTOR_REQUIRED: ${WORKFLOW_LEVELS[currentStep-1].role.toUpperCase()}`
+                                    // AUDIT LOG SECTION
+                                    e('div', { className: 'mt-10 pt-6 border-t border-slate-200' },
+                                        e('h3', { className: 'text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4' }, 'Transaction Audit Trail (Traceability Engine)'),
+                                        e('div', { className: 'audit-meta-grid' },
+                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Created By'), e('span', { className: 'meta-value' }, audit.created_by)),
+                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Created At'), e('span', { className: 'meta-value' }, audit.created_at)),
+                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Modified By'), e('span', { className: 'meta-value' }, audit.modified_by)),
+                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Modified At'), e('span', { className: 'meta-value' }, audit.modified_at)),
+                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Approved By'), e('span', { className: 'meta-value' }, audit.approved_by)),
+                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Approved At'), e('span', { className: 'meta-value' }, audit.approved_at)),
+                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'IP Address'), e('span', { className: 'meta-value' }, audit.ip_address)),
+                                            e('div', { className: 'meta-box' }, e('span', { className: 'meta-label' }, 'Audit Status'), e('span', { className: 'meta-value text-green-600' }, 'VERIFIED'))
+                                        )
                                     ),
 
-                                    e('div', { className: 'mt-12 flex justify-end gap-5' },
-                                        currentStep > 1 && e('button', { 
-                                            className: 'btn-reject',
-                                            onClick: () => setCurrentStep(1) 
-                                        }, 'REJECT TO PREPARER'),
-                                        
-                                        e('button', { 
-                                            className: 'btn-post',
-                                            onClick: () => { if(currentStep < 4) setCurrentStep(currentStep + 1); else alert('Transaction Committed to General Ledger.'); }
-                                        }, currentStep === 4 ? 'Commit to GL' : `Approve to ${WORKFLOW_LEVELS[currentStep] ? WORKFLOW_LEVELS[currentStep].role : 'Next'}`)
+                                    e('div', { className: 'mt-12 flex justify-end gap-4' },
+                                        e('button', { className: 'px-6 py-4 bg-slate-200 font-bold text-xs uppercase' }, 'View Raw JSON Log'),
+                                        e('button', { className: 'btn-post', onClick: handleCommit }, 'Commit & Authorize')
                                     )
                                 )
                             )
