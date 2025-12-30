@@ -3,61 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | 15-MODULE CONSOLIDATED ENGINE</title>
+    <title>DE-TRUSTED ERP | BANK CORE CONSOLIDATED</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #f1f5f9; color: #1e293b;
+            font-family: 'Ubuntu', sans-serif; margin: 0; background: #e2e8f0; color: #1e293b;
         }
 
-        /* BANK CORE HEADER */
-        .bank-top-bar { 
-            background: #001e3c; color: white; padding: 12px 30px; 
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 3px solid #fbbf24; position: fixed; width: 100%; z-index: 100;
-        }
-        .global-search { 
-            background: #ffffff; border: none; padding: 8px 15px; border-radius: 4px; 
-            width: 450px; font-family: 'Roboto Mono', monospace; font-size: 13px; color: #001e3c;
-            outline: none; border: 2px solid #fbbf24;
-        }
+        /* BANK HEADER STYLE */
+        .bank-header { background: #003366; color: white; padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #fbbf24; position: fixed; width: 100%; top: 0; z-index: 100; }
+        .search-bar { background: #ffffff; color: #333; border: none; padding: 8px 20px; border-radius: 4px; width: 450px; font-weight: 700; border: 2px solid #002366; outline: none; }
 
-        /* NAVIGATION TABS */
-        .side-nav { 
-            background: #002b55; min-height: 100vh; position: fixed; width: 240px; 
-            top: 60px; padding-top: 20px; box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-        }
-        .nav-link { 
-            width: 100%; text-align: left; padding: 14px 25px; font-size: 11px; 
-            text-transform: uppercase; color: #94a3b8; cursor: pointer; 
-            border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; font-weight: 700;
-        }
-        .nav-link.active { background: #003d79; color: #fbbf24; border-right: 4px solid #fbbf24; }
+        /* SIDEBAR */
+        .sidebar { background: #002366; min-height: 100vh; position: fixed; width: 240px; top: 58px; }
+        .nav-btn { width: 100%; text-align: left; padding: 15px 25px; font-size: 11px; text-transform: uppercase; color: #cbd5e1; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
+        .nav-btn.active { background: #004080; color: #fbbf24; border-left: 5px solid #fbbf24; font-weight: 800; }
 
-        /* CONTENT ENGINE */
-        .main-engine { margin-left: 240px; padding: 100px 40px 40px 40px; }
-        .module-card { background: white; border-radius: 4px; border: 1px solid #cbd5e1; padding: 40px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        /* MAIN CONTENT */
+        .workspace { margin-left: 240px; padding: 100px 40px 40px 40px; }
+        .bank-card { background: white; border-radius: 2px; border: 1px solid #94a3b8; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); padding: 30px; }
         
-        .bank-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.05em; }
-        .bank-input { 
-            width: 100%; border: 1px solid #cbd5e1; padding: 12px; font-family: 'Roboto Mono', monospace; 
-            font-size: 14px; background: #fdfdfd; margin-bottom: 20px; border-radius: 4px;
-        }
-        .bank-input:focus { border-color: #0056b3; outline: none; background: #fff; }
-        .fetch-active { background: #e0f2fe; color: #0369a1; font-weight: 700; border-left: 4px solid #0369a1; }
+        .field-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; }
+        .bank-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; font-family: 'Roboto Mono', monospace; font-size: 14px; background: #f8fafc; margin-bottom: 15px; }
+        .bank-input:focus { border-color: #003366; background: #fff; outline: none; box-shadow: 0 0 0 2px rgba(0,51,102,0.2); }
+        .fetch-active { background: #f0fdf4; color: #166534; font-weight: 700; border-left: 4px solid #16a34a; }
+        .readonly-fetch { background: #edf2f7; color: #2d3748; font-weight: 700; border-left: 4px solid #003366; }
 
-        .btn-action { background: #001e3c; color: white; padding: 14px 40px; font-weight: 800; border-radius: 4px; text-transform: uppercase; font-size: 12px; cursor: pointer; transition: 0.2s; }
-        .btn-action:hover { background: #003d79; transform: translateY(-1px); }
+        .btn-post { background: #003366; color: white; padding: 12px 40px; font-weight: 800; border-radius: 2px; text-transform: uppercase; cursor: pointer; }
+        .ledger-tag { font-family: 'Roboto Mono', monospace; font-size: 10px; background: #334155; color: #fff; padding: 2px 8px; border-radius: 3px; }
         
-        .sub-menu-item { padding: 12px 20px; font-size: 13px; color: #475569; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.1s; }
-        .sub-menu-item:hover { background: #f8fafc; color: #001e3c; }
-        .sub-menu-item.active { background: #eff6ff; color: #0056b3; font-weight: 800; border-left: 4px solid #0056b3; }
+        .registry-container { background: white; border: 1px solid #94a3b8; height: 600px; overflow-y: auto; }
+        .sub-link { p: 4; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: 0.1s; padding: 15px; }
+        .sub-link:hover { background: #f8fafc; }
+        .sub-link.active { background: #e0f2fe; color: #003366; font-weight: 800; border-left: 4px solid #003366; }
     </style>
 </head>
 <body>
@@ -66,122 +50,107 @@
     <script>
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useEffect } = React;
+            const { useState } = React;
 
-            // --- THE 15 PROTECTED MODULES REGISTRY ---
+            // PRESERVED DATABASE (INCLUDES REPORTING DATA)
+            const MOCK_DB = {
+                "INV-9901": { "Customer Name": "Mainline Distribution", "Total Receivable": "51750", "Payment Status": "Overdue" },
+                "AST-5002": { "Asset Name": "Excavator X1", "Purchase Cost (GHS)": "1200000", "Location": "Ashalaja Factory" },
+                "Q4-2025": { "Revenue Accounts (Auto)": "1,240,500.00", "Cost of Sales (Auto)": "620,000.00", "Total Expenses (Auto)": "145,000.00", "Current Assets (Auto)": "890,000.00", "Fixed Assets (Auto)": "2,400,000.00", "Total Liabilities (Auto)": "500,000.00", "Equity (Auto-Calculated)": "2,790,000.00" }
+            };
+
             const SYSTEM_REGISTRY = {
                 "Executive": { desk: "Executive", isWelcome: true },
                 
+                // FINANCE (6 MODULES - REPORTING ADDED)
+                "Financial Reporting": { 
+                    desk: "Finance", 
+                    title: "Financial Reporting (IFRS/GAAP)", 
+                    fields: ["Reporting Period (Search)", "Revenue Accounts (Auto)", "Cost of Sales (Auto)", "Total Expenses (Auto)", "Current Assets (Auto)", "Fixed Assets (Auto)", "Total Liabilities (Auto)", "Equity (Auto-Calculated)", "Notes / Adjustments"] 
+                },
+                "Accounts Receivable": { desk: "Finance", title: "AR Inquiry & Posting", fields: ["Invoice # (Search)", "Customer Name", "Base Amount", "VAT (15%)", "Total Receivable", "Payment Status"] },
+                "Cash & Bank": { desk: "Finance", title: "Bank Transaction Master", fields: ["Transaction ID (Search)", "Date", "Account Name", "Amount (Local)", "Currency", "Reference #"] },
+                "Accounts Payable": { desk: "Finance", title: "Payables Control", fields: ["Voucher ID", "Supplier", "Invoice Date", "Net Payable", "Due Date"] },
+                "General Ledger": { desk: "Finance", title: "GL Entry Inquiry", fields: ["Entry ID", "Date", "Account Name", "Debit", "Credit", "Narration"] },
+                "Import Costing": { desk: "Finance", title: "Duty & Landed Cost", fields: ["Import ID", "FOB Value", "Duty Amount", "VAT", "Total Landed Cost"] },
+
                 // ADMINISTRATION (9 MODULES)
-                "Fixed Assets & CAPEX": { desk: "Administration", title: "Asset Master Inquiry", fields: ["Asset ID (Search)", "Asset Name", "Category", "Purchase Cost", "Useful Life", "Location", "Current Value"] },
-                "Regulatory Master": { desk: "Administration", title: "Regulatory Agency Hub", fields: ["Agency ID (Search)", "Agency Name", "Contact Person", "Governing Act", "Compliance Status"] },
+                "Fixed Assets": { desk: "Administration", title: "Asset Registry Inquiry", fields: ["Asset ID (Search)", "Asset Name", "Category", "Purchase Cost (GHS)", "Useful Life (Years)", "Location"] },
+                "Regulatory Master": { desk: "Administration", title: "Regulatory Master Hub", fields: ["Agency ID (Search)", "Agency Name", "Contact Person", "Governing Act", "Status"] },
                 "Statutory Setup": { desk: "Administration", title: "Statutory Requirements", fields: ["Stat ID", "Requirement Name", "Legal Code", "Frequency", "Standard Fee"] },
                 "Permit Register": { desk: "Administration", title: "License & Permit Register", fields: ["Permit # (Search)", "Permit Name", "Effective Date", "Expiry Date", "Department"] },
-                "Renewal Workflow": { desk: "Administration", title: "Renewal Lifecycle", fields: ["Permit Ref", "Current Status", "Next Renewal Due", "Associated Costs"] },
-                "Insurance & Liabilities": { desk: "Administration", title: "Insurance Master", fields: ["Policy # (Search)", "Provider", "Coverage Type", "Premium Amount", "End Date"] },
+                "Renewal Workflow": { desk: "Administration", title: "Renewal Lifecycle", fields: ["Permit Ref", "Status", "Next Renewal Due", "Associated Costs"] },
+                "Insurance Master": { desk: "Administration", title: "Insurance Management", fields: ["Policy # (Search)", "Provider", "Coverage Type", "Premium Amount", "End Date"] },
                 "Facility & Maintenance": { desk: "Administration", title: "Maintenance Log", fields: ["Machine ID", "Asset Name", "Last Service", "Next Due", "Status"] },
-                "Site Inspections": { desk: "Administration", title: "Inspection Registry", fields: ["Visit ID", "Agency", "Date", "Findings", "Compliance Score"] },
-                "Compliance Breaches": { desk: "Administration", title: "Breach Incident Log", fields: ["Incident ID", "Regulation", "Penalty", "Closure Date", "Root Cause"] },
-
-                // FINANCE (5 MODULES)
-                "Accounts Receivable": { desk: "Finance", title: "AR Ledger & Retrieval", fields: ["Invoice # (Search)", "Customer Name", "Invoice Date", "Total Receivable", "Amount Received", "Balance"] },
-                "Cash & Bank": { desk: "Finance", title: "Bank Transaction Master", fields: ["Trx ID (Search)", "Account Name", "Transaction Type", "Amount", "Currency", "Reference #"] },
-                "Accounts Payable": { desk: "Finance", title: "Payables Control", fields: ["Voucher ID", "Supplier", "Base Amount", "Tax (15%)", "Net Payable", "Due Date"] },
-                "General Ledger": { desk: "Finance", title: "GL Entry Inquiry", fields: ["Entry ID", "Account Code", "Account Name", "Debit", "Credit", "Narration"] },
-                "Import Costing": { desk: "Finance", title: "Duty & Landed Cost", fields: ["Import ID", "FOB Value", "Duty Amount", "VAT", "Total Landed Cost"] }
-            };
-
-            // MOCK RETRIEVAL DATA
-            const DATABASE = {
-                "INV-9001": { "Customer Name": "Ghana Steel Ltd", "Total Receivable": "85,000.00", "Amount Received": "20,000.00", "Balance": "65,000.00" },
-                "AST-500": { "Asset Name": "Industrial Oven B2", "Category": "Plant", "Purchase Cost": "450,000.00", "Location": "Ashalaja Factory" },
-                "PRM-101": { "Permit Name": "EPA Operational License", "Effective Date": "2025-01-01", "Expiry Date": "2025-12-31", "Department": "Production" }
+                "Site Inspections": { desk: "Administration", title: "Inspection Registry", fields: ["Visit ID", "Agency", "Date", "Findings", "Score"] },
+                "Compliance Breaches": { desk: "Administration", title: "Incident Registry", fields: ["Incident ID", "Regulation", "Penalty", "Closure Date", "Root Cause"] }
             };
 
             function App() {
-                const [currentDesk, setCurrentDesk] = useState('Executive');
-                const [activeSub, setActiveSub] = useState('Executive');
+                const [currentDesk, setCurrentDesk] = useState('Finance');
+                const [activeSub, setActiveSub] = useState('Accounts Receivable');
                 const [form, setForm] = useState({});
-                const [search, setSearch] = useState('');
+                const [searchQuery, setSearchQuery] = useState('');
 
                 const schema = SYSTEM_REGISTRY[activeSub] || { isWelcome: true };
 
-                const handleGlobalSearch = (val) => {
-                    setSearch(val);
-                    if (DATABASE[val]) {
-                        // Intelligent Module Switching based on Search Prefix
+                const handleSearch = (val) => {
+                    setSearchQuery(val);
+                    if (MOCK_DB[val]) {
                         if (val.startsWith("INV")) setActiveSub("Accounts Receivable");
-                        if (val.startsWith("AST")) setActiveSub("Fixed Assets & CAPEX");
-                        if (val.startsWith("PRM")) setActiveSub("Permit Register");
-                        setForm(DATABASE[val]);
+                        if (val.startsWith("AST")) setActiveSub("Fixed Assets");
+                        if (val.includes("-202")) setActiveSub("Financial Reporting");
+                        setForm(MOCK_DB[val]);
                     }
                 };
 
                 return e('div', null,
-                    e('div', { className: 'bank-top-bar shadow-lg' },
-                        e('div', { className: 'flex items-center gap-6' },
-                            e('h1', { className: 'text-2xl font-black tracking-tighter' }, 'DE-TRUSTED'),
-                            e('div', { className: 'bg-yellow-400 text-blue-900 text-[10px] px-2 py-1 font-bold rounded' }, 'CORE BANKING OS')
+                    e('div', { className: 'bank-header' },
+                        e('div', { className: 'flex items-center gap-4' },
+                            e('h1', { className: 'text-xl font-black tracking-tighter' }, 'DE-TRUSTED BANK CORE'),
+                            e('span', { className: 'ledger-tag' }, 'IFRS_STABLE_BUILD')
                         ),
                         e('input', { 
-                            className: 'global-search', 
-                            placeholder: 'GLOBAL RETRIEVAL (ID, Invoice, or Asset #)...',
-                            onChange: (x) => handleGlobalSearch(x.target.value)
+                            className: 'search-bar', 
+                            placeholder: 'QUICK RETRIEVAL (Invoice, Asset, or Period e.g. Q4-2025)...',
+                            onChange: (x) => handleSearch(x.target.value)
                         }),
-                        e('div', { className: 'text-right' }, e('p', { className: 'text-[10px] font-bold text-slate-400' }, '30-DEC-2025'), e('p', { className: 'text-xs font-bold' }, 'ADMIN_SESSION_ACTIVE'))
+                        e('div', { className: 'text-right text-xs font-bold' }, '30-DEC-2025 | SENIOR_ADMIN')
                     ),
 
-                    e('div', { className: 'side-nav' },
-                        ['Executive', 'Administration', 'Finance', 'Logistics', 'Procurement', 'Sales'].map(desk => 
-                            e('button', { 
-                                key: desk, 
-                                onClick: () => setCurrentDesk(desk),
-                                className: `nav-link ${currentDesk === desk ? 'active' : ''}`
-                            }, desk)
+                    e('div', { className: 'sidebar' },
+                        ['Executive', 'Administration', 'Finance', 'Logistics', 'Procurement'].map(d => 
+                            e('div', { key: d, onClick: () => setCurrentDesk(d), className: `nav-btn ${currentDesk === d ? 'active' : ''}` }, d)
                         )
                     ),
 
-                    e('main', { className: 'main-engine' },
-                        e('div', { className: 'flex gap-8' },
-                            // MODULE LIST
-                            e('div', { className: 'w-64' },
-                                e('div', { className: 'bg-white border border-slate-300 rounded overflow-hidden shadow-sm' },
-                                    e('div', { className: 'p-4 bg-slate-50 text-[10px] font-900 border-b tracking-widest' }, 'REGISTRY MODULES'),
+                    e('main', { className: 'workspace' },
+                        e('div', { className: 'flex gap-6' },
+                            e('div', { className: 'w-1/4' },
+                                e('div', { className: 'registry-container' },
+                                    e('div', { className: 'p-4 bg-slate-100 text-[10px] font-900 border-b tracking-widest' }, 'MODULE REGISTRY'),
                                     Object.keys(SYSTEM_REGISTRY).filter(k => SYSTEM_REGISTRY[k].desk === currentDesk).map(name => 
-                                        e('div', { 
-                                            key: name, 
-                                            onClick: () => { setActiveSub(name); setForm({}); },
-                                            className: `sub-menu-item ${activeSub === name ? 'active' : ''}`
-                                        }, name)
+                                        e('div', { key: name, onClick: () => { setActiveSub(name); setForm({}); }, className: `sub-link ${activeSub === name ? 'active' : ''}` }, name)
                                     )
                                 )
                             ),
-                            // WORKSPACE
-                            e('div', { className: 'flex-1' },
-                                e('div', { className: 'module-card' },
-                                    schema.isWelcome ? e('div', { className: 'text-center py-24' }, 
-                                        e('h2', { className: 'text-4xl font-black text-slate-200 uppercase tracking-widest' }, 'Select Module'),
-                                        e('p', { className: 'text-slate-400 font-bold mt-2' }, 'All 15 Registry Engines Online')
-                                    ) :
+                            e('div', { className: 'w-3/4' },
+                                e('div', { className: 'bank-card' },
+                                    schema.isWelcome ? e('div', { className: 'py-20 text-center' }, e('h2', { className: 'text-3xl text-slate-300 font-black' }, 'SYSTEM READY')) :
                                     e('div', null,
-                                        e('div', { className: 'flex justify-between items-center mb-10 border-b pb-6' },
-                                            e('h2', { className: 'text-2xl font-black text-slate-800' }, schema.title),
-                                            e('span', { className: 'text-[10px] font-bold bg-slate-100 px-3 py-1 border' }, `TABLE: ${activeSub.toUpperCase().replace(/ /g, '_')}`)
-                                        ),
-                                        e('div', { className: 'grid grid-cols-2 gap-x-12' },
+                                        e('h2', { className: 'text-2xl font-bold text-slate-800 mb-8 border-b pb-4' }, schema.title),
+                                        e('div', { className: 'grid grid-cols-2 gap-x-10' },
                                             schema.fields.map(label => e('div', { key: label },
-                                                e('label', { className: 'bank-label' }, label),
-                                                e('input', { 
-                                                    className: `bank-input ${form[label] ? 'fetch-active' : ''} ${label.includes("(Search)") ? 'border-blue-500' : ''}`,
-                                                    value: form[label] || (label.includes("(Search)") ? search : ""),
-                                                    onChange: (x) => label.includes("(Search)") ? handleGlobalSearch(x.target.value) : null,
-                                                    placeholder: label.includes("(Search)") ? "Enter ID..." : ""
+                                                e('label', { className: 'field-label' }, label),
+                                                e(label.includes("Notes") ? 'textarea' : 'input', { 
+                                                    className: `bank-input ${form[label] ? 'fetch-active' : ''} ${label.includes("(Search)") || label.includes("Period") ? 'border-blue-500' : 'readonly-fetch'}`,
+                                                    value: form[label] || ( (label.includes("(Search)") || label.includes("Period")) ? searchQuery : ""),
+                                                    onChange: (x) => (label.includes("(Search)") || label.includes("Period")) ? handleSearch(x.target.value) : null
                                                 })
                                             ))
                                         ),
-                                        e('div', { className: 'mt-12 pt-8 border-t flex justify-end gap-4' },
-                                            e('button', { className: 'btn-action bg-white !text-slate-400 border border-slate-200' }, 'Export PDF'),
-                                            e('button', { className: 'btn-action' }, 'Commit Entry')
+                                        e('div', { className: 'mt-10 flex justify-end gap-4' },
+                                            e('button', { className: 'btn-post' }, activeSub === 'Financial Reporting' ? 'Generate Statement' : 'Commit Transaction')
                                         )
                                     )
                                 )
