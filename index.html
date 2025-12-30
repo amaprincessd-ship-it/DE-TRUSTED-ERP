@@ -7,9 +7,9 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
@@ -18,7 +18,7 @@
             font-family: 'Inter', sans-serif; 
             background-color: #f8fafc;
             margin: 0;
-            overflow: hidden;
+            padding: 0;
         }
 
         h1, h2, h3, .cambria-light { 
@@ -27,37 +27,25 @@
             color: #0f172a;
         }
 
-        .sidebar-glass { background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(10px); }
-        .locked-card { border-left: 6px solid #2563eb; background: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .sidebar-glass { background: #0f172a; min-height: 100vh; }
+        .locked-card { border-left: 6px solid #2563eb; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
-        input, select, textarea { border: 1px solid #d1d5db; padding: 10px 12px; font-size: 13px; width: 100%; border-radius: 4px; background: #fff; }
-        label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
-        .btn-primary { background: #0f172a; color: white; padding: 10px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
+        input, select, textarea { border: 1px solid #d1d5db; padding: 10px; font-size: 13px; width: 100%; border-radius: 4px; }
+        label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 4px; display: block; }
     </style>
 </head>
 <body>
-    <div id="root">
-        <div id="loader" style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f172a; color: white; font-family: serif;">
-            <div style="text-align: center;">
-                <h2 style="letter-spacing: 4px; font-weight: 300;">DE-TRUSTED ERP</h2>
-                <p style="font-size: 10px; opacity: 0.5; margin-top: 10px;">LOADING CORE MODULES...</p>
-            </div>
-        </div>
-    </div>
+    <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState } = React;
 
         const SidebarItem = ({ name, active, onClick }) => (
             <button 
                 onClick={() => onClick(name)}
-                className={`w-full text-left p-3 mb-1 font-normal transition-all uppercase text-[9px] tracking-[0.15em] border-l-4 ${active === name ? 'bg-blue-600 text-white border-blue-400 shadow-lg' : 'text-slate-400 border-transparent hover:bg-slate-800 hover:text-blue-400'}`}
+                className={`w-full text-left p-3 mb-1 font-normal transition-all uppercase text-[9px] tracking-[0.15em] border-l-4 ${active === name ? 'bg-blue-600 text-white border-blue-400' : 'text-slate-400 border-transparent hover:bg-slate-800 hover:text-blue-400'}`}
             >
                 {name} DESK
             </button>
@@ -68,6 +56,7 @@
             const [adminAction, setAdminAction] = useState("");
             const [complianceAgency, setComplianceAgency] = useState("");
 
+            // --- ADMINISTRATION MODULE (THE REQUESTED FOCUS) ---
             const AdministrationDesk = () => (
                 <div className="fade-in">
                     <h1 className="text-4xl cambria-light mb-2">Administration & Corporate Compliance</h1>
@@ -88,3 +77,76 @@
                                     <div>
                                         <label>Administrative Protocol</label>
                                         <select onChange={(e) => setAdminAction(e.target.value)} value={adminAction}>
+                                            <option value="">Select Category...</option>
+                                            <option value="regulatory">Statutory License Renewal</option>
+                                            <option value="facility">Facility & Security Log</option>
+                                            <option value="corporate">Board / Management Minutes</option>
+                                        </select>
+                                    </div>
+                                    {adminAction === 'regulatory' && (
+                                        <div className="fade-in">
+                                            <label>Statutory Agency</label>
+                                            <select onChange={(e) => setComplianceAgency(e.target.value)}>
+                                                <option value="">Choose Agency...</option>
+                                                <option value="gsa">Ghana Standards Authority</option>
+                                                <option value="epa">Environmental Protection Agency</option>
+                                            </select>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {adminAction && (
+                                    <button className="bg-slate-900 text-white px-6 py-2 text-[10px] uppercase tracking-widest" onClick={() => alert('Processing...')}>
+                                        Commit Record
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-1">
+                            <div className="bg-slate-900 text-white p-6 rounded">
+                                <h3 className="text-lg cambria-light mb-4 text-blue-400">Site Log</h3>
+                                <p className="text-xs text-slate-400">No active alerts for Ashalaja Sector.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const PlaceholderDesk = ({ name }) => (
+                <div className="fade-in text-center py-20">
+                    <h1 className="text-3xl cambria-light mb-4 italic text-slate-300">{name} Module</h1>
+                    <p className="text-sm text-slate-400">Locked Status: Stable.</p>
+                </div>
+            );
+
+            return (
+                <div className="flex">
+                    <div className="w-72 sidebar-glass flex flex-col p-6">
+                        <div className="mb-8">
+                            <h1 className="cambria-light text-white text-xl tracking-widest uppercase">DE-TRUSTED</h1>
+                            <p className="text-[8px] text-slate-500 font-semibold uppercase">Ashalaja Site Hub</p>
+                        </div>
+                        <SidebarItem name="Executive" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="Administration" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="Finance" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="Production" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="Logistics" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="Procurement" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="Sales" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
+                        <SidebarItem name="Reception" active={currentDesk} onClick={setCurrentDesk} />
+                    </div>
+                    <main className="flex-1 min-h-screen p-16 bg-white overflow-y-auto">
+                        {currentDesk === 'Administration' ? <AdministrationDesk /> : <PlaceholderDesk name={currentDesk} />}
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Dashboard />);
+    </script>
+</body>
+</html>
