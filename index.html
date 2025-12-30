@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | SECURE HUB</title>
+    <title>DE-TRUSTED ERP | GLOBAL COMPLIANCE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
         body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; overflow-x: hidden; }
-        
-        /* HARD SECURITY OVERLAY */
-        #security-gate {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #020617; z-index: 9999; display: flex;
-            align-items: center; justify-content: center;
-        }
-        
+        #security-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; z-index: 50; }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
         .input-box { background: #020617; border: 1px solid #475569; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 4px; font-family: 'Roboto Mono', monospace; font-size: 13px; outline: none; }
-        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; }
-        .cam-box { width: 200px; height: 150px; background: #000; border: 2px solid #fbbf24; border-radius: 8px; overflow: hidden; }
-        .leave-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; transition: 0.2s; }
+        .btn-gold:hover { background: #fcd34d; }
+        .tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        .tag-holiday { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .tag-event { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
     </style>
 </head>
 <body>
@@ -32,141 +27,49 @@
     <div id="security-gate">
         <div class="glass-card w-80 text-center shadow-2xl">
             <h1 class="text-2xl font-black mb-2 italic text-white">DE-TRUSTED ERP</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-6 tracking-widest">SYSTEM ENCRYPTED</p>
-            <input type="password" id="gate-pass" class="input-box text-center mb-4" placeholder="••••••••">
-            <button onclick="unlockSystem()" class="btn-gold w-full">Access Terminal</button>
+            <p class="text-[10px] text-yellow-500 font-bold mb-6 tracking-widest">GATEWAY SECURED</p>
+            <input type="password" id="gate-pass" class="input-box text-center mb-4" placeholder="ENTER MASTER KEY">
+            <button onclick="unlockSystem()" class="btn-gold w-full">Initialize Terminal</button>
         </div>
     </div>
 
     <div id="root"></div>
 
     <script>
-        // 1. HARD SECURITY LOGIC (Native JS)
         function unlockSystem() {
-            const pass = document.getElementById('gate-pass').value;
-            if (pass === 'SUPER2025') {
+            if (document.getElementById('gate-pass').value === 'SUPER2025') {
                 document.getElementById('security-gate').style.display = 'none';
-            } else {
-                alert("INVALID ACCESS KEY");
-            }
+            } else { alert("ACCESS DENIED"); }
         }
 
-        // 2. ERP SYSTEM (React)
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useMemo, useRef } = React;
-
-            const GH_HOLIDAYS = ["2025-01-01", "2025-03-06", "2025-04-18", "2025-12-25"];
+            const { useState, useMemo } = React;
 
             function App() {
-                const [view, setView] = useState('DASHBOARD');
-                const [employees, setEmployees] = useState([
-                    { id: 1, name: "Admin User", annualQuota: 21, used: 0, basic: 5000, dept: 'Management', staffId: 'DT-2025-001' }
+                const [view, setView] = useState('LEAVE');
+                const [holidays, setHolidays] = useState([
+                    { date: "2025-01-01", name: "New Year's Day", type: "National" },
+                    { date: "2025-03-06", name: "Independence Day", type: "National" },
+                    { date: "2025-05-01", name: "May Day", type: "National" }
                 ]);
-                
-                // Camera & Leave States
-                const videoRef = useRef(null);
-                const [photo, setPhoto] = useState(null);
+
+                const [newHoliday, setNewHoliday] = useState({ date: '', name: '', type: 'Company' });
+                const [employees] = useState([{ id: 1, name: "Kofi Mensah", quota: 21, used: 0 }]);
                 const [leaves, setLeaves] = useState([]);
-                const [leaveForm, setLeaveForm] = useState({ empId: '', type: 'Annual', start: '', end: '', isHalf: false });
+                const [form, setForm] = useState({ empId: '', start: '', end: '', type: 'Annual' });
 
-                // --- HELPERS ---
-                const calcWorkingDays = (start, end, isHalf) => {
-                    if (isHalf) return 0.5;
-                    if (!start || !end) return 0;
+                // DYNAMIC CALCULATION LOGIC
+                const calcDays = (start, end) => {
+                    if(!start || !end) return 0;
                     let count = 0; let cur = new Date(start); let last = new Date(end);
-                    while (cur <= last) {
-                        const d = cur.getDay();
-                        if (d !== 0 && d !== 6 && !GH_HOLIDAYS.includes(cur.toISOString().split('T')[0])) count++;
-                        cur.setDate(cur.getDate() + 1);
-                    }
-                    return count;
-                };
+                    const holidayDates = holidays.map(h => h.date);
 
-                const startCam = async () => {
-                    const s = await navigator.mediaDevices.getUserMedia({ video: true });
-                    videoRef.current.srcObject = s;
-                };
+                    while(cur <= last) {
+                        const day = cur.getDay();
+                        const iso = cur.toISOString().split('T')[0];
+                        const isWeekend = (day === 0 || day === 6);
+                        const isHoliday = holidayDates.includes(iso);
 
-                const capture = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 320; canvas.height = 240;
-                    canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
-                    setPhoto(canvas.toDataURL('image/png'));
-                };
-
-                return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar' },
-                        e('div', { className: 'p-8 border-b border-slate-800' }, e('h1', { className: 'text-xl font-black italic' }, 'DE-TRUSTED')),
-                        e('nav', { className: 'mt-6 text-xs font-bold' },
-                            e('div', { onClick:()=>setView('DASHBOARD'), className:`p-4 cursor-pointer hover:bg-slate-800 ${view==='DASHBOARD'?'text-yellow-500 bg-slate-800':''}`}, '📊 DASHBOARD'),
-                            e('div', { onClick:()=>setView('LEAVE'), className:`p-4 cursor-pointer hover:bg-slate-800 ${view==='LEAVE'?'text-yellow-500 bg-slate-800':''}`}, '📅 LEAVE & PERMISSION'),
-                            e('div', { onClick:()=>setView('PHOTO'), className:`p-4 cursor-pointer hover:bg-slate-800 ${view==='PHOTO'?'text-yellow-500 bg-slate-800':''}`}, '📸 BIOMETRIC ENTRY')
-                        )
-                    ),
-                    e('main', { className: 'main-content flex-1' },
-                        
-                        view === 'LEAVE' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8'}, 'Ghanaian Standard Leave Manager'),
-                            e('div', {className:'grid grid-cols-3 gap-8'},
-                                e('div', {className:'glass-card space-y-4'},
-                                    e('h3', {className:'text-[10px] text-yellow-500 font-bold uppercase border-b border-slate-700 pb-2'}, 'Apply for Leave / Permission'),
-                                    e('select', {className:'input-box', onChange:v=>setLeaveForm({...leaveForm, empId:v.target.value})}, 
-                                        e('option',null,'-- Select Staff --'),
-                                        employees.map(emp=>e('option',{key:emp.id, value:emp.id},emp.name))
-                                    ),
-                                    e('select', {className:'input-box', onChange:v=>setLeaveForm({...leaveForm, type:v.target.value})}, 
-                                        e('option',null,'Annual Leave'), e('option',null,'Maternity'), e('option',null,'Sick'), e('option',null,'Compassionate'), e('option',null,'Unpaid')
-                                    ),
-                                    e('div', {className:'flex items-center gap-2 py-2'}, 
-                                        e('input', {type:'checkbox', onChange:v=>setLeaveForm({...leaveForm, isHalf:v.target.checked})}),
-                                        e('label', {className:'text-xs'}, 'Half-Day Permission')
-                                    ),
-                                    !leaveForm.isHalf && e('div', {className:'grid grid-cols-2 gap-2'},
-                                        e('input', {type:'date', className:'input-box', onChange:v=>setLeaveForm({...leaveForm, start:v.target.value})}),
-                                        e('input', {type:'date', className:'input-box', onChange:v=>setLeaveForm({...leaveForm, end:v.target.value})})
-                                    ),
-                                    e('button', {className:'btn-gold w-full', onClick:()=>{
-                                        const days = calcWorkingDays(leaveForm.start, leaveForm.end, leaveForm.isHalf);
-                                        setLeaves([{...leaveForm, days, id:Date.now()}, ...leaves]);
-                                        alert(`Leave approved for ${days} working days.`);
-                                    }}, 'Submit Application')
-                                ),
-                                e('div', {className:'glass-card col-span-2'},
-                                    e('h3', {className:'text-[10px] text-slate-500 font-bold uppercase mb-4'}, 'Leave Audit & Balances'),
-                                    e('table', {className:'w-full text-xs text-left'},
-                                        e('thead',null,e('tr',{className:'border-b border-slate-700 text-slate-500'}, e('th',null,'Type'), e('th',null,'Days'), e('th',null,'Duration'), e('th',null,'Status'))),
-                                        e('tbody',null, leaves.map(l=>e('tr',{key:l.id, className:'border-b border-slate-800/50'},
-                                            e('td',{className:'py-3 font-bold'},l.type), e('td',null,l.days), e('td',null,l.isHalf?'Half-Day':`${l.start}`), e('td',null,e('span',{className:'leave-tag'},'AUTHORIZED'))
-                                        )))
-                                    )
-                                )
-                            )
-                        ),
-
-                        view === 'PHOTO' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8'}, 'Staff Biometrics'),
-                            e('div', {className:'glass-card flex flex-col items-center gap-6 w-fit'},
-                                e('div', {className:'cam-box'}, photo ? e('img',{src:photo}) : e('video',{ref:videoRef, autoPlay:true})),
-                                e('div', {className:'flex gap-4'},
-                                    e('button', {onClick:startCam, className:'bg-slate-700 px-4 py-2 rounded text-[10px]'}, 'Activate Lens'),
-                                    e('button', {onClick:capture, className:'bg-emerald-600 px-4 py-2 rounded text-[10px] font-bold'}, 'Capture Face')
-                                )
-                            )
-                        ),
-
-                        view === 'DASHBOARD' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-4'}, 'System Overview'),
-                            e('div', {className:'grid grid-cols-4 gap-4'},
-                                e('div', {className:'glass-card bg-emerald-500/10 border-emerald-500/20'}, e('p',{className:'text-[10px] font-bold'},'TOTAL STAFF'), e('h1',{className:'text-2xl font-black'}, employees.length)),
-                                e('div', {className:'glass-card bg-yellow-500/10 border-yellow-500/20'}, e('p',{className:'text-[10px] font-bold'},'ON LEAVE'), e('h1',{className:'text-2xl font-black'}, leaves.length))
-                            )
-                        )
-                    )
-                );
-            }
-            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
-        };
-    </script>
-</body>
-</html>
+                        if(!isWeekend && !isHoliday) count++;
+                        cur.setDate(cur.getDate() +
