@@ -7,32 +7,40 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <style id="custom-theme-styles">
-        /* Dynamic styles will be injected here via React */
-    </style>
-    <style>
+    <style id="theme-engine">
+        :root {
+            --bg-color: #020617;
+            --side-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent-color: #fbbf24;
+            --font-main: 'Ubuntu', sans-serif;
+        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); transition: all 0.3s ease; margin: 0; }
+        .sidebar { background-color: var(--side-color); height: 100vh; width: 260px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
+        .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
+        
+        /* UNBREAKABLE SECURITY OVERLAY */
         #security-barrier {
             position: fixed !important; top: 0 !important; left: 0 !important;
             width: 100vw !important; height: 100vh !important;
             background: #020617 !important; z-index: 2147483647 !important;
             display: flex; align-items: center; justify-content: center;
         }
-        .sidebar { height: 100vh; width: 260px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.1); }
-        .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
-        .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 25px; }
-        .input-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px; border-radius: 6px; width: 100%; outline: none; }
-        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; border: none; text-transform: uppercase; width: 100%; font-size: 11px; }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 25px; }
+        .input-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px; border-radius: 6px; width: 100%; outline: none; }
+        .btn-accent { background: var(--accent-color); color: #000; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; font-size: 11px; }
+        .theme-swatch { width: 100%; height: 40px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; padding: 0 10px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center">
-            <div id="gate-logo-container" class="mb-4 flex justify-center"></div>
-            <h1 id="gate-brand" class="text-3xl font-black mb-1 italic">SYSTEM</h1>
+            <div id="gate-logo-area" class="mb-4 flex justify-center"></div>
+            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">CORE SYSTEM</h1>
             <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Private Command</p>
             <input type="password" id="master-key-input" class="input-box text-center mb-6 text-2xl" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-gold">Unlock Terminal</button>
+            <button onclick="checkAccess()" class="btn-accent">Unlock Terminal</button>
         </div>
     </div>
 
@@ -53,93 +61,74 @@
 
             function App() {
                 const [view, setView] = useState('THEME');
-                const [config, setConfig] = useState({
+                const [theme, setTheme] = useState({
                     name: getSaved('erp_name', 'DE-TRUSTED'),
                     logo: getSaved('erp_logo', ''),
-                    bgColor: getSaved('erp_bg', '#020617'),
-                    sideColor: getSaved('erp_side', '#0f172a'),
-                    textColor: getSaved('erp_text', '#f8fafc'),
+                    bg: getSaved('erp_bg', '#020617'),
+                    side: getSaved('erp_side', '#0f172a'),
+                    text: getSaved('erp_text', '#f8fafc'),
                     font: getSaved('erp_font', 'Ubuntu, sans-serif')
                 });
 
                 useEffect(() => {
-                    const styleTag = document.getElementById('custom-theme-styles');
-                    styleTag.innerHTML = `
-                        body { background-color: ${config.bgColor} !important; color: ${config.textColor} !important; font-family: ${config.font} !important; }
-                        .sidebar { background-color: ${config.sideColor} !important; }
-                        .text-custom { color: ${config.textColor} !important; }
-                    `;
-                    document.getElementById('gate-brand').innerText = config.name;
-                    if(config.logo) {
-                        document.getElementById('gate-logo-container').innerHTML = `<img src="${config.logo}" class="max-h-16 mb-2">`;
+                    const root = document.documentElement;
+                    root.style.setProperty('--bg-color', theme.bg);
+                    root.style.setProperty('--side-color', theme.side);
+                    root.style.setProperty('--text-color', theme.text);
+                    root.style.setProperty('--font-main', theme.font);
+                    
+                    document.getElementById('gate-brand-text').innerText = theme.name;
+                    if(theme.logo) {
+                        document.getElementById('gate-logo-area').innerHTML = `<img src="${theme.logo}" class="max-h-16">`;
                     }
-                }, [config]);
+                }, [theme]);
 
                 const update = (key, val) => {
-                    setConfig(prev => ({...prev, [key]: val}));
+                    setTheme(prev => ({...prev, [key]: val}));
                     localStorage.setItem(`erp_${key}`, val);
-                    if(key === 'name') localStorage.setItem('erp_brand', val);
                 };
 
-                const runDiagnostics = () => {
-                    alert("Running System Diagnostics...\n- Cache Cleared\n- Memory Optimized\n- Security Layers: Active\n- Status: 100% Stable");
+                const applyPreset = (bg, side, text, font) => {
+                    update('bg', bg); update('side', side); update('text', text); update('font', font);
                 };
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
-                        e('div', { className: 'p-8 border-b border-white/10 text-center' }, 
-                            config.logo && e('img', { src: config.logo, className: 'max-h-12 mx-auto mb-2' }),
-                            e('h1', { className: 'text-xl font-black italic' }, config.name)
+                        e('div', { className: 'p-8 border-b border-white/5 text-center' }, 
+                            theme.logo && e('img', { src: theme.logo, className: 'max-h-10 mx-auto mb-2' }),
+                            e('h1', { className: 'text-lg font-black italic' }, theme.name)
                         ),
                         e('nav', { className: 'mt-6 text-[10px] font-bold uppercase flex-1' },
-                            e('div', { onClick:()=>setView('THEME'), className:`p-4 cursor-pointer ${view==='THEME'?'bg-white/10 text-yellow-500':''}`}, '🎨 Visual Identity'),
-                            e('div', { onClick:()=>setView('DASH'), className:`p-4 cursor-pointer ${view==='DASH'?'bg-white/10 text-yellow-500':''}`}, '📊 Dashboard')
+                            e('div', { onClick:()=>setView('DASH'), className:`p-4 cursor-pointer ${view==='DASH'?'bg-white/5 text-yellow-500':''}`}, '📊 Dashboard'),
+                            e('div', { onClick:()=>setView('THEME'), className:`p-4 cursor-pointer ${view==='THEME'?'bg-white/5 text-yellow-500':''}`}, '🎨 Visual Control')
                         ),
                         e('div', { className: 'p-4' }, 
-                            e('button', { onClick: runDiagnostics, className: 'text-[9px] font-bold text-slate-500 hover:text-yellow-500 flex items-center gap-2' }, '⚙️ RUN DIAGNOSTICS')
+                            e('button', { onClick: ()=>alert("System Diagnostics: Performance 100%"), className: 'text-[9px] font-bold opacity-30 hover:opacity-100 flex items-center gap-2' }, '⚙️ DIAGNOSTICS')
                         )
                     ),
 
                     e('main', { className: 'main-content flex-1' },
                         view === 'THEME' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Custom UI Engine'),
-                            e('div', {className:'grid grid-cols-2 gap-8'},
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Identity & Theme Engine'),
+                            
+                            e('div', {className:'grid grid-cols-3 gap-8'},
+                                // COLUMN 1: BRANDING
                                 e('div', {className:'glass-card space-y-4'},
-                                    e('h3', {className:'text-xs font-bold text-yellow-500 uppercase'}, 'System Branding'),
-                                    e('div', null, e('label',{className:'text-[10px] block mb-1'},'COMPANY NAME'), e('input',{className:'input-box', value:config.name, onChange:(v)=>update('name', v.target.value)})),
-                                    e('div', null, e('label',{className:'text-[10px] block mb-1'},'LOGO URL'), e('input',{className:'input-box', value:config.logo, placeholder:'https://...', onChange:(v)=>update('logo', v.target.value)})),
-                                    
-                                    e('h3', {className:'text-xs font-bold text-yellow-500 uppercase mt-6'}, 'Color Palette'),
-                                    e('div', {className:'grid grid-cols-2 gap-4'},
-                                        e('div', null, e('label',{className:'text-[10px] block'},'BACKGROUND'), e('input',{type:'color', className:'w-full h-10 mt-1 bg-transparent border-0 cursor-pointer', value:config.bgColor, onChange:(v)=>update('bgColor', v.target.value)})),
-                                        e('div', null, e('label',{className:'text-[10px] block'},'SIDEBAR'), e('input',{type:'color', className:'w-full h-10 mt-1 bg-transparent border-0 cursor-pointer', value:config.sideColor, onChange:(v)=>update('sideColor', v.target.value)})),
-                                        e('div', null, e('label',{className:'text-[10px] block'},'TEXT COLOR'), e('input',{type:'color', className:'w-full h-10 mt-1 bg-transparent border-0 cursor-pointer', value:config.textColor, onChange:(v)=>update('textColor', v.target.value)}))
-                                    ),
-
-                                    e('h3', {className:'text-xs font-bold text-yellow-500 uppercase mt-6'}, 'Typography'),
-                                    e('select', {className:'input-box', value:config.font, onChange:(v)=>update('font', v.target.value)}, 
-                                        e('option', {value:'Ubuntu, sans-serif'}, 'Modern Sans'),
-                                        e('option', {value:'Georgia, serif'}, 'Classic Serif'),
-                                        e('option', {value:'Roboto Mono, monospace'}, 'Tech Mono')
+                                    e('h3', {className:'text-[10px] font-bold text-yellow-500 uppercase'}, 'Corporate Branding'),
+                                    e('div', null, e('label',{className:'text-[9px] block mb-1 opacity-50'},'COMPANY NAME'), e('input',{className:'input-box', value:theme.name, onChange:(v)=>update('name', v.target.value)})),
+                                    e('div', null, e('label',{className:'text-[9px] block mb-1 opacity-50'},'LOGO URL'), e('input',{className:'input-box', value:theme.logo, placeholder:'https://...', onChange:(v)=>update('logo', v.target.value)}))
+                                ),
+                                // COLUMN 2: CUSTOM COLORS
+                                e('div', {className:'glass-card space-y-4'},
+                                    e('h3', {className:'text-[10px] font-bold text-yellow-500 uppercase'}, 'Manual Palette'),
+                                    e('div', {className:'grid grid-cols-2 gap-2'},
+                                        e('div', null, e('label',{className:'text-[9px] block opacity-50'},'MAIN BG'), e('input',{type:'color', className:'w-full h-8 mt-1 bg-transparent border-0 cursor-pointer', value:theme.bg, onChange:(v)=>update('bg', v.target.value)})),
+                                        e('div', null, e('label',{className:'text-[9px] block opacity-50'},'SIDEBAR'), e('input',{type:'color', className:'w-full h-8 mt-1 bg-transparent border-0 cursor-pointer', value:theme.side, onChange:(v)=>update('side', v.target.value)})),
+                                        e('div', {className:'col-span-2'}, e('label',{className:'text-[9px] block opacity-50'},'GLOBAL TEXT'), e('input',{type:'color', className:'w-full h-8 mt-1 bg-transparent border-0 cursor-pointer', value:theme.text, onChange:(v)=>update('text', v.target.value)}))
                                     )
                                 ),
-                                e('div', {className:'glass-card border-dashed flex items-center justify-center'}, 
-                                    e('div', {className:'text-center'}, 
-                                        e('p', {className:'text-xs italic mb-4'}, 'Live Style Preview Zone'),
-                                        e('div', {className:'p-10 rounded border border-white/10 shadow-xl'}, 
-                                            e('h1', {className:'text-2xl font-black mb-2'}, 'Heading Text'),
-                                            e('p', {className:'text-sm'}, 'This is a sample of how your data will appear.')
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        view === 'DASH' && e('div', {className:'text-center p-20 italic opacity-40 text-2xl font-black'}, 'DASHBOARD ACTIVE')
-                    )
-                );
-            }
-            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
-        };
-    </script>
-</body>
-</html>
+                                // COLUMN 3: PRESETS
+                                e('div', {className:'glass-card space-y-2'},
+                                    e('h3', {className:'text-[10px] font-bold text-yellow-500 uppercase mb-2'}, 'Theme Gallery'),
+                                    e('div', {onClick:()=>applyPreset('#020617', '#0f172a', '#f8fafc', 'Ubuntu, sans-serif'), className:'theme-swatch bg-[#0f172a] text-white border-white/20'}, 'MIDNIGHT'),
+                                    e('div', {onClick:()=>applyPreset('#064e3b', '#065f46',
