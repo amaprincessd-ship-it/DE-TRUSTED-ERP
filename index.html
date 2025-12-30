@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED PAINT ERP | Corporate Operations</title>
+    <title>DE-TRUSTED PAINT ERP | Optimized UX</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -11,24 +11,39 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; padding: 0; color: #1e293b; }
         h1, h2, h3, .cambria-light { font-family: 'Cambria', 'Georgia', serif; font-weight: 400 !important; color: #0f172a; }
-        .sidebar-glass { background: #0f172a; min-height: 100vh; position: fixed; width: 288px; z-index: 50; }
-        .locked-card { border-left: 6px solid #2563eb; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 2rem; border-radius: 4px; }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        input, select, textarea { border: 1px solid #d1d5db; padding: 10px; font-size: 13px; width: 100%; border-radius: 4px; background: #fff; color: #1e293b; outline-color: #2563eb; }
-        label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 6px; display: block; letter-spacing: 0.025em; }
+        .sidebar-glass { background: #0f172a; min-height: 100vh; position: fixed; width: 260px; z-index: 50; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
         
-        .nav-btn { width: 100%; text-align: left; padding: 12px 24px; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.2s; color: #94a3b8; }
-        .nav-btn.active { background: #1e293b; color: #60a5fa; border-left-color: #2563eb; }
+        /* User-Friendly Form Styling */
+        .form-group { transition: all 0.2s; border-radius: 6px; }
+        .form-group:focus-within { background: #f8fafc; border-color: #2563eb; }
         
-        .status-pill { padding: 2px 8px; border-radius: 9999px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
-        .pill-blue { background: #eff6ff; color: #1e40af; }
-        .pill-red { background: #fef2f2; color: #991b1b; }
+        input, select, textarea { 
+            border: 1px solid #cbd5e1; 
+            padding: 12px; 
+            font-size: 14px; 
+            width: 100%; 
+            border-radius: 6px; 
+            background: #fff; 
+            transition: border 0.2s;
+        }
+        input:focus { border-color: #2563eb; outline: none; ring: 2px ring-blue-500; }
+        
+        label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #475569; margin-bottom: 6px; display: block; letter-spacing: 0.05em; }
+        
+        .nav-btn { width: 100%; text-align: left; padding: 14px 24px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; border-left: 4px solid transparent; transition: 0.3s; color: #94a3b8; }
+        .nav-btn:hover { background: #1e293b; color: #fff; }
+        .nav-btn.active { background: #1e293b; color: #3b82f6; border-left-color: #3b82f6; font-weight: 600; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .btn-submit { background: #0f172a; color: white; padding: 14px 32px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; transition: all 0.2s; }
+        .btn-submit:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
     </style>
 </head>
 <body>
@@ -49,138 +64,23 @@
                 'Business Continuity'
             ];
 
-            return e('div', { className: 'fade-in' },
-                e('div', { className: 'mb-8 border-b pb-6' },
-                    e('h1', { className: 'text-4xl cambria-light mb-1' }, 'Professional Office & Facilities'),
-                    e('p', { className: 'text-sm text-slate-500 italic' }, 'International Standards Documentation & Controls')
+            return e('div', { className: 'fade-in max-w-5xl mx-auto' },
+                e('div', { className: 'mb-10' },
+                    e('h1', { className: 'text-5xl cambria-light mb-2' }, 'Administrative Portal'),
+                    e('p', { className: 'text-md text-slate-500' }, 'Manage core Ashalaja facility systems and international standard documentation.')
                 ),
 
-                // SUB-NAVIGATION
-                e('div', { className: 'flex flex-wrap gap-2 mb-8' },
+                // USER-FRIENDLY SUB-NAVIGATION (TABS)
+                e('div', { className: 'flex space-x-1 bg-slate-200 p-1 rounded-xl mb-8' },
                     menuItems.map(item => 
                         e('button', {
                             key: item,
                             onClick: () => setSubTab(item),
-                            className: `px-4 py-2 text-[10px] font-bold uppercase tracking-widest border transition-all ${subTab === item ? 'bg-slate-900 text-white border-slate-900 shadow-lg' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400'}`
+                            className: `flex-1 py-3 px-4 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${subTab === item ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`
                         }, item)
                     )
                 ),
 
-                e('div', { className: 'grid grid-cols-1 lg:grid-cols-3 gap-8' },
+                e('div', { className: 'grid grid-cols-1 lg:grid-cols-3 gap-10' },
                     e('div', { className: 'lg:col-span-2' },
-                        e('div', { className: 'locked-card' },
-                            e('h3', { className: 'text-xl cambria-light mb-6 border-b pb-2' }, subTab),
-                            
-                            // 1. OFFICE MANAGEMENT
-                            subTab === 'Office Management' && e('div', { className: 'space-y-6 fade-in' },
-                                e('div', { className: 'grid grid-cols-2 gap-6' },
-                                    e('div', null, e('label', null, 'Document Type'), e('select', null, e('option', null, 'Select...'), e('option', null, 'SOP Manual'), e('option', null, 'Official Correspondence'), e('option', null, 'Legal Document'))),
-                                    e('div', null, e('label', null, 'Filing Reference'), e('input', { type: 'text', placeholder: 'DT-ADM-2025-001' }))
-                                ),
-                                e('div', null, e('label', null, 'Digital Archive Upload'), e('div', { className: 'border-2 border-dashed p-8 text-center rounded bg-slate-50' }, e('span', { className: 'text-[10px] text-slate-400' }, 'CLICK OR DRAG DOCUMENT SCAN')))
-                            ),
-
-                            // 2. ASSET & INVENTORY
-                            subTab === 'Asset & Inventory' && e('div', { className: 'space-y-6 fade-in' },
-                                e('div', { className: 'grid grid-cols-2 gap-6' },
-                                    e('div', null, e('label', null, 'Asset Category'), e('select', null, e('option', null, 'Office Equipment'), e('option', null, 'IT Infrastructure'), e('option', null, 'Plant Machinery'))),
-                                    e('div', null, e('label', null, 'Asset Tag #'), e('input', { type: 'text', placeholder: 'DT-AST-XXXX' }))
-                                ),
-                                e('div', { className: 'grid grid-cols-2 gap-6' },
-                                    e('div', null, e('label', null, 'Condition'), e('select', null, e('option', null, 'Excellent'), e('option', null, 'Fair'), e('option', null, 'Requires Repair'))),
-                                    e('div', null, e('label', null, 'Depreciation Start Date'), e('input', { type: 'date' }))
-                                )
-                            ),
-
-                            // 3. VENDOR & PROCUREMENT
-                            subTab === 'Vendor & Procurement' && e('div', { className: 'space-y-6 fade-in' },
-                                e('div', { className: 'grid grid-cols-2 gap-6' },
-                                    e('div', null, e('label', null, 'Vendor Name'), e('input', { type: 'text' })),
-                                    e('div', null, e('label', null, 'Service Provided'), e('select', null, e('option', null, 'Facility Cleaning'), e('option', null, 'Security Services'), e('option', null, 'Technical Maintenance')))
-                                ),
-                                e('div', { className: 'grid grid-cols-2 gap-6' },
-                                    e('div', null, e('label', null, 'Contract Expiry'), e('input', { type: 'date' })),
-                                    e('div', null, e('label', null, 'Audit Status'), e('span', { className: 'status-pill pill-blue' }, 'Vendor Verified'))
-                                )
-                            ),
-
-                            // 4. HSSE & SECURITY
-                            subTab === 'HSSE & Security' && e('div', { className: 'space-y-6 fade-in' },
-                                e('div', { className: 'grid grid-cols-2 gap-6' },
-                                    e('div', null, e('label', null, 'Incident Reporting'), e('select', null, e('option', null, 'Hazard Observation'), e('option', null, 'Near Miss'), e('option', null, 'First Aid Case'))),
-                                    e('div', null, e('label', null, 'Location'), e('input', { type: 'text', placeholder: 'Factory Site West' }))
-                                ),
-                                e('div', null, e('label', null, 'Safety Action Plan'), e('textarea', { rows: 3 }))
-                            ),
-
-                            // 5. BUSINESS CONTINUITY
-                            subTab === 'Business Continuity' && e('div', { className: 'space-y-6 fade-in' },
-                                e('div', { className: 'grid grid-cols-2 gap-6' },
-                                    e('div', null, e('label', null, 'Plan Review'), e('select', null, e('option', null, 'Fire Evacuation'), e('option', null, 'Data Backup Strategy'), e('option', null, 'Power Outage Protocol'))),
-                                    e('div', null, e('label', null, 'Last Drill Date'), e('input', { type: 'date' }))
-                                ),
-                                e('div', null, e('label', null, 'Critical Contact List Update'), e('button', { className: 'bg-slate-100 text-[9px] px-3 py-1 border' }, 'SYNC CONTACTS'))
-                            ),
-
-                            e('button', { 
-                                className: 'mt-8 bg-slate-900 text-white px-8 py-3 text-[10px] uppercase tracking-widest font-bold shadow-md hover:bg-blue-700 transition-colors',
-                                onClick: () => alert('Record Finalized & Archived')
-                            }, 'Authorize & Save Record')
-                        )
-                    ),
-                    
-                    e('div', { className: 'lg:col-span-1 space-y-4' },
-                        e('div', { className: 'bg-slate-900 p-6 text-white rounded' },
-                            e('h3', { className: 'text-sm cambria-light mb-4 text-blue-400 uppercase tracking-widest' }, 'Admin Oversight'),
-                            e('div', { className: 'space-y-4 text-xs' },
-                                e('div', { className: 'border-b border-slate-800 pb-2' },
-                                    e('p', { className: 'text-slate-400 uppercase text-[9px]' }, 'Next Safety Drill'),
-                                    e('p', null, 'Jan 15, 2026')
-                                ),
-                                e('div', { className: 'border-b border-slate-800 pb-2' },
-                                    e('p', { className: 'text-slate-400 uppercase text-[9px]' }, 'Compliance Audit'),
-                                    e('p', null, e('span', { className: 'text-emerald-400' }, '94% Complete'))
-                                ),
-                                e('div', null,
-                                    e('p', { className: 'text-slate-400 uppercase text-[9px]' }, 'Critical Alerts'),
-                                    e('p', { className: 'text-red-400' }, '1 Vendor Contract Expiring')
-                                )
-                            )
-                        )
-                    )
-                )
-            );
-        }
-
-        function App() {
-            const [currentDesk, setCurrentDesk] = useState('Administration');
-            const desks = ['Executive', 'Administration', 'Finance', 'Production', 'Logistics', 'Procurement', 'Sales', 'Warehouse', 'HR', 'Reception'];
-
-            return e('div', { className: 'flex' },
-                e('div', { className: 'sidebar-glass' },
-                    e('div', { className: 'p-6 mb-8' },
-                        e('h1', { className: 'cambria-light text-white text-xl tracking-widest uppercase' }, 'DE-TRUSTED'),
-                        e('p', { className: 'text-[8px] text-slate-500 font-semibold uppercase' }, 'Ashalaja Site Master')
-                    ),
-                    desks.map(name => 
-                        e('button', {
-                            key: name,
-                            onClick: () => setCurrentDesk(name),
-                            className: `nav-btn ${currentDesk === name ? 'active' : ''}`
-                        }, name + ' DESK')
-                    )
-                ),
-                e('main', { className: 'flex-1 ml-72 min-h-screen p-16 bg-white' },
-                    currentDesk === 'Administration' ? e(AdministrationDesk) : e('div', { className: 'text-center py-20' }, 
-                        e('h1', { className: 'text-3xl cambria-light text-slate-300' }, currentDesk + ' Module'),
-                        e('p', { className: 'text-slate-400 uppercase text-[10px] mt-2' }, 'Ready for deployment')
-                    )
-                )
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(e(App));
-    </script>
-</body>
-</html>
+                        e('div', { className: 'bg-white rounded-2xl shadow-xl p-10 border border-slate-100' },
