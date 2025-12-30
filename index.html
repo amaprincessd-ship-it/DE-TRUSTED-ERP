@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | MASTER COMMANDER</title>
+    <title>DE-TRUSTED ERP | INTEGRATED ENTERPRISE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
-        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
-        .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; }
-        .main { margin-left: 260px; padding: 40px; }
-        .desk-card { background: #1e293b; border: 1px solid #334155; transition: 0.3s; cursor: pointer; }
-        .desk-card:hover { border-color: #fbbf24; background: #1e293b; transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4); }
+        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Roboto+Mono&display=swap');
+        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; overflow: hidden; }
+        .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; transition: 0.3s; }
+        .main-content { margin-left: 260px; height: 100vh; overflow-y: auto; padding: 40px; background: #020617; }
+        .nav-link { cursor: pointer; padding: 12px 20px; font-size: 11px; font-weight: 700; color: #64748b; border-left: 4px solid transparent; transition: 0.2s; text-transform: uppercase; }
+        .nav-link:hover { background: #1e293b; color: white; }
+        .nav-link.active { background: #1e293b; border-left: 4px solid #fbbf24; color: white; }
+        .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
+        .input-box { background: #020617; border: 1px solid #334155; color: white; padding: 10px; border-radius: 6px; width: 100%; margin-top: 5px; font-size: 13px; }
+        .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 12px; border-radius: 6px; font-size: 12px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -24,71 +28,111 @@
             const { useState } = React;
 
             function App() {
-                // This array tracks all the desks we built
+                const [activeDesk, setActiveDesk] = useState('COMMAND');
+
                 const desks = [
-                    { id: 'FIN', n: 'Finance', i: '💰', color: 'text-emerald-400', link: 'finance.html' },
-                    { id: 'HR', n: 'HR & Payroll', i: '👥', color: 'text-blue-400', link: 'hr.html' },
-                    { id: 'WH', n: 'Warehouse', i: '📦', color: 'text-orange-400', link: 'warehouse.html' },
-                    { id: 'PROD', n: 'Production', i: '⚙️', color: 'text-purple-400', link: 'production.html' },
-                    { id: 'SALE', n: 'Sales', i: '📈', color: 'text-yellow-400', link: 'sales.html' },
-                    { id: 'LOG', n: 'Logistics', i: '🚛', color: 'text-sky-400', link: 'logistics.html' },
-                    { id: 'LEG', n: 'Legal', i: '⚖️', color: 'text-red-400', link: 'legal.html' },
-                    { id: 'MAIN', n: 'Maintenance', i: '🛠️', color: 'text-slate-400', link: 'maintenance.html' },
-                    { id: 'QA', n: 'Quality Control', i: '✅', color: 'text-teal-400', link: 'qa.html' },
-                    { id: 'EXEC', n: 'Executive Dashboard', i: '📊', color: 'text-gold', link: 'dashboard.html' }
+                    { id: 'COMMAND', n: 'Master Commander', i: '🎮' },
+                    { id: 'FINANCE', n: 'Finance Desk', i: '💰' },
+                    { id: 'HR', n: 'HR & Payroll', i: '👥' },
+                    { id: 'WAREHOUSE', n: 'Warehouse & Logistics', i: '📦' },
+                    { id: 'SALES', n: 'Sales & Mktg', i: '📈' }
                 ];
 
                 return e('div', { className: 'flex' },
-                    // SIDEBAR
-                    e('aside', { className: 'sidebar p-8 flex flex-col justify-between' },
+                    // SHARED SIDEBAR
+                    e('aside', { className: 'sidebar flex flex-col justify-between' },
                         e('div', null,
-                            e('h1', { className: 'text-2xl font-black italic tracking-tighter mb-1 text-white' }, 'DE-TRUSTED'),
-                            e('p', { className: 'text-[10px] text-yellow-500 font-bold uppercase mb-10' }, 'Master Commander'),
-                            e('nav', { className: 'space-y-4' },
-                                ['Dashboard', 'Audit Logs', 'Reports', 'Settings'].map(item => 
-                                    e('div', { key: item, className: 'text-xs font-bold text-slate-500 hover:text-white cursor-pointer transition' }, item.toUpperCase())
-                                )
+                            e('div', { className: 'p-8' },
+                                e('h1', { className: 'text-2xl font-black italic text-white' }, 'DE-TRUSTED'),
+                                e('p', { className: 'text-[9px] text-yellow-500 font-bold' }, 'PRODUCTION ENVIRONMENT')
+                            ),
+                            e('nav', null,
+                                desks.map(d => e('div', {
+                                    key: d.id,
+                                    onClick: () => setActiveDesk(d.id),
+                                    className: `nav-link ${activeDesk === d.id ? 'active' : ''}`
+                                }, d.i + ' ' + d.n))
                             )
                         ),
-                        e('div', { className: 'bg-slate-900 p-4 rounded border border-slate-800' },
-                            e('p', { className: 'text-[10px] text-slate-500' }, 'SYSTEM STATUS'),
-                            e('p', { className: 'text-xs text-emerald-500 font-bold' }, '● ONLINE & SECURE')
+                        e('div', { className: 'p-6 border-t border-slate-800' },
+                            e('p', { className: 'text-[10px] text-slate-500' }, 'USER: ADMINISTRATOR'),
+                            e('p', { className: 'text-[10px] text-emerald-500 font-bold' }, 'SERVER: ACCRA_PROD_01')
                         )
                     ),
 
-                    // MAIN AREA
-                    e('main', { className: 'main flex-1' },
-                        e('header', { className: 'mb-12 flex justify-between items-end' },
-                            e('div', null,
-                                e('h2', { className: 'text-4xl font-black mb-2' }, 'Enterprise Control Hub'),
-                                e('p', { className: 'text-slate-400 text-sm' }, 'Welcome, Commander. Select a department to begin operations.')
-                            ),
-                            e('div', { className: 'text-right' },
-                                e('p', { className: 'text-[10px] text-slate-500 font-bold' }, 'SESSION ID'),
-                                e('p', { className: 'font-mono text-xs text-yellow-500' }, 'AUTH-SYS-7729-X')
+                    // DYNAMIC WORKSPACE
+                    e('main', { className: 'main-content flex-1' },
+                        
+                        // 1. MASTER COMMANDER VIEW
+                        activeDesk === 'COMMAND' && e('div', null,
+                            e('h2', { className: 'text-4xl font-black mb-8' }, 'System Overview'),
+                            e('div', { className: 'grid grid-cols-2 gap-6' },
+                                desks.filter(x => x.id !== 'COMMAND').map(d => e('div', {
+                                    key: d.id,
+                                    onClick: () => setActiveDesk(d.id),
+                                    className: 'glass-card cursor-pointer hover:border-yellow-500 transition text-center'
+                                }, 
+                                    e('span', { className: 'text-5xl block mb-4' }, d.i),
+                                    e('h3', { className: 'font-bold uppercase' }, d.n),
+                                    e('p', { className: 'text-xs text-slate-500 mt-2' }, 'Click to Enter Workspace')
+                                ))
                             )
                         ),
 
-                        e('div', { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6' },
-                            desks.map(d => e('div', { 
-                                key: d.id, 
-                                onClick: () => alert(`Opening ${d.n} Module...\n(Ensure ${d.link} is saved in the same folder)`),
-                                className: 'desk-card p-6 rounded-xl text-center' 
-                            },
-                                e('span', { className: 'text-4xl mb-4 block' }, d.i),
-                                e('h3', { className: `text-xs font-black uppercase mb-1 ${d.color}` }, d.n),
-                                e('p', { className: 'text-[9px] text-slate-500' }, 'Click to Initialize')
-                            ))
+                        // 2. FINANCE DESK VIEW
+                        activeDesk === 'FINANCE' && e('div', null,
+                            e('h2', { className: 'text-3xl font-black mb-6 text-emerald-400' }, 'Finance & General Ledger'),
+                            e('div', { className: 'glass-card max-w-2xl' },
+                                e('div', { className: 'grid grid-cols-2 gap-4 mb-6' },
+                                    e('div', null, e('label', { className: 'text-[10px] font-bold text-slate-400' }, 'POSTING DATE'), e('input', { type: 'date', className: 'input-box' })),
+                                    e('div', null, e('label', { className: 'text-[10px] font-bold text-slate-400' }, 'GL ACCOUNT CODE'), e('input', { className: 'input-box', placeholder: 'e.g. 1001' }))
+                                ),
+                                e('label', { className: 'text-[10px] font-bold text-slate-400' }, 'NARRATION / DESCRIPTION'),
+                                e('textarea', { className: 'input-box h-24 mb-6' }),
+                                e('button', { className: 'btn-gold w-full' }, 'POST TRANSACTION')
+                            )
                         ),
 
-                        e('div', { className: 'mt-12 p-8 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center justify-between' },
-                            e('div', null,
-                                e('h4', { className: 'font-bold' }, 'Global Health Status'),
-                                e('p', { className: 'text-xs text-slate-500' }, 'Connectivity: 100% | Database: Synchronized')
-                            ),
-                            e('div', { className: 'flex gap-4' },
-                                e('button', { className: 'bg-slate-800 text-white px-6 py-3 rounded-lg font-bold text-xs' }, 'SYSTEM AUDIT'),
-                                e('button', { className: 'bg-yellow-500 text-black px-8 py-3 rounded-lg font-black text-xs' }, 'MASTER REPORT')
+                        // 3. HR DESK VIEW
+                        activeDesk === 'HR' && e('div', null,
+                            e('h2', { className: 'text-3xl font-black mb-6 text-blue-400' }, 'HR & Payroll Management'),
+                            e('div', { className: 'glass-card' },
+                                e('div', { className: 'grid grid-cols-3 gap-6' },
+                                    e('div', null, e('label', { className: 'text-[10px] font-bold text-slate-400' }, 'EMPLOYEE FULL NAME'), e('input', { className: 'input-box' })),
+                                    e('div', null, e('label', { className: 'text-[10px] font-bold text-slate-400' }, 'JOB TITLE'), e('input', { className: 'input-box' })),
+                                    e('div', null, e('label', { className: 'text-[10px] font-bold text-slate-400' }, 'MONTHLY SALARY (GHS)'), e('input', { type: 'number', className: 'input-box' }))
+                                ),
+                                e('button', { className: 'btn-gold mt-8 px-10' }, 'SAVE STAFF RECORD')
+                            )
+                        ),
+
+                        // 4. WAREHOUSE VIEW
+                        activeDesk === 'WAREHOUSE' && e('div', null,
+                            e('h2', { className: 'text-3xl font-black mb-6 text-orange-400' }, 'Warehouse & Logistics Control'),
+                            e('div', { className: 'grid grid-cols-2 gap-6' },
+                                e('div', { className: 'glass-card' },
+                                    e('h4', { className: 'text-xs font-bold mb-4 border-b border-slate-700 pb-2' }, 'INVENTORY ADJUSTMENT'),
+                                    e('input', { className: 'input-box mb-4', placeholder: 'SKU Code' }),
+                                    e('input', { className: 'input-box mb-4', placeholder: 'Quantity to Add/Remove' }),
+                                    e('button', { className: 'btn-gold w-full' }, 'UPDATE STOCK')
+                                ),
+                                e('div', { className: 'glass-card' },
+                                    e('h4', { className: 'text-xs font-bold mb-4 border-b border-slate-700 pb-2' }, 'FLEET DISPATCH'),
+                                    e('select', { className: 'input-box mb-4' }, e('option', null, 'Select Vehicle'), e('option', null, 'Truck GH-202'), e('option', null, 'Van GH-115')),
+                                    e('button', { className: 'bg-sky-600 text-white font-bold p-3 rounded w-full text-xs uppercase' }, 'ASSIGN DRIVER & DISPATCH')
+                                )
+                            )
+                        ),
+
+                        // 5. SALES VIEW
+                        activeDesk === 'SALES' && e('div', null,
+                            e('h2', { className: 'text-3xl font-black mb-6 text-yellow-400' }, 'Sales & Tax Invoicing'),
+                            e('div', { className: 'glass-card' },
+                                e('div', { className: 'flex justify-between mb-8' },
+                                    e('div', null, e('h3', { className: 'text-lg font-bold' }, 'Invoice #8801'), e('p', { className: 'text-xs text-slate-500' }, 'Status: Draft')),
+                                    e('div', { className: 'text-right' }, e('p', { className: 'text-2xl font-black text-emerald-400' }, 'GHS 0.00'))
+                                ),
+                                e('button', { className: 'btn-gold w-full' }, 'GENERATE GRA TAX INVOICE')
                             )
                         )
                     )
