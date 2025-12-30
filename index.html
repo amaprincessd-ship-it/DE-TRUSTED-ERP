@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | HR & PAYROLL MASTER</title>
+    <title>DE-TRUSTED ERP | PROCUREMENT DESK</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -12,20 +12,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
         
-        :root { --navy: #001f3f; --gold: #fbbf24; }
+        :root { --navy: #001f3f; --gold: #fbbf24; --emerald: #065f46; }
         body { font-family: 'Ubuntu', sans-serif; background: #f1f5f9; margin: 0; }
 
         .sidebar { background: var(--navy); height: 100vh; width: 260px; position: fixed; border-right: 4px solid var(--gold); }
         .workspace { margin-left: 260px; padding: 40px; }
         
         .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .header-hr { background: #075985; color: white; padding: 25px; border-radius: 8px 8px 0 0; }
+        .header-procure { background: var(--emerald); color: white; padding: 25px; border-radius: 8px 8px 0 0; }
         
         .field-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .hr-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
+        .p-input { width: 100%; border: 1px solid #cbd5e1; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; }
         
-        .statutory-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 6px; }
-        .tax-pill { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 99px; font-size: 10px; font-weight: 800; }
+        .line-item-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .line-item-table th { background: #f8fafc; text-align: left; padding: 12px; font-size: 10px; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #e2e8f0; }
+        .line-item-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        
+        .summary-box { background: #064e3b; color: white; padding: 20px; border-radius: 6px; text-align: right; }
     </style>
 </head>
 <body>
@@ -36,106 +39,8 @@
             const e = React.createElement;
             const { useState, useEffect } = React;
 
-            function App() {
-                const [basicSalary, setBasicSalary] = useState(0);
-                const [ssnit, setSsnit] = useState(0);
-                const [paye, setPaye] = useState(0);
-                const [netPay, setNetPay] = useState(0);
-
-                useEffect(() => {
-                    // Ghana Statutory Simulation (SSNIT 5.5% Employee share)
-                    const ssnitCalc = basicSalary * 0.055;
-                    // Simplified PAYE Simulation (Graduated scales)
-                    const taxableIncome = basicSalary - ssnitCalc;
-                    const payeCalc = taxableIncome > 500 ? (taxableIncome - 500) * 0.175 : 0;
-                    
-                    setSsnit(ssnitCalc);
-                    setPaye(payeCalc);
-                    setNetPay(basicSalary - ssnitCalc - payeCalc);
-                }, [basicSalary]);
-
-                return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar p-6' },
-                        e('h1', { className: 'text-white text-xl font-black mb-10' }, 'DE-TRUSTED ERP'),
-                        ['Employee Master', 'Payroll Processing', 'Leave Management', 'Appraisals', 'Exit Registry'].map(i => 
-                            e('div', { key: i, className: 'text-sky-200 text-xs font-bold py-3 border-b border-white/10 cursor-pointer' }, i.toUpperCase())
-                        )
-                    ),
-
-                    e('main', { className: 'workspace flex-1' },
-                        e('div', { className: 'card' },
-                            e('div', { className: 'header-hr flex justify-between items-center' },
-                                e('div', null,
-                                    e('h2', { className: 'text-2xl font-black' }, 'Employee Master Registry'),
-                                    e('p', { className: 'text-xs opacity-80' }, 'Core HR > Personnel Database')
-                                ),
-                                e('div', { className: 'text-right' },
-                                    e('p', { className: 'text-[10px] font-black' }, 'MEMBER STATUS'),
-                                    e('span', { className: 'bg-green-400 text-green-900 px-3 py-1 rounded-full text-[10px] font-black' }, 'ACTIVE_STAFF')
-                                )
-                            ),
-
-                            e('div', { className: 'p-8 grid grid-cols-2 gap-10' },
-                                // Left Column
-                                e('div', null,
-                                    e('h3', { className: 'text-sm font-black text-sky-900 mb-4 border-b pb-2' }, '1. PERSONAL IDENTITY'),
-                                    e('label', { className: 'field-label' }, 'Full Name'),
-                                    e('input', { className: 'hr-input', placeholder: 'Surname Firstname Othernames' }),
-                                    e('label', { className: 'field-label' }, 'Ghana Card PIN (ID)'),
-                                    e('input', { className: 'hr-input', placeholder: 'GHA-000000000-0' }),
-                                    
-                                    e('h3', { className: 'text-sm font-black text-sky-900 mt-6 mb-4 border-b pb-2' }, '2. ASSIGNMENT'),
-                                    e('label', { className: 'field-label' }, 'Department'),
-                                    e('select', { className: 'hr-input' }, ['Production', 'Finance', 'Warehouse', 'Logistics'].map(d => e('option', {key:d}, d))),
-                                    e('label', { className: 'field-label' }, 'Reporting Line'),
-                                    e('input', { className: 'hr-input', placeholder: 'Assign Line Manager...' })
-                                ),
-
-                                // Right Column
-                                e('div', null,
-                                    e('h3', { className: 'text-sm font-black text-sky-900 mb-4 border-b pb-2' }, '3. COMPENSATION & STATUTORY'),
-                                    e('label', { className: 'field-label' }, 'Monthly Basic Salary (GHS)'),
-                                    e('input', { 
-                                        className: 'hr-input font-mono font-bold text-lg text-sky-700', 
-                                        type: 'number',
-                                        onChange: (x) => setBasicSalary(x.target.value)
-                                    }),
-                                    
-                                    e('div', { className: 'statutory-box space-y-4' },
-                                        e('div', { className: 'flex justify-between' },
-                                            e('span', { className: 'text-[11px] font-bold' }, 'SSNIT Deduction (5.5%)'),
-                                            e('span', { className: 'font-mono text-red-600' }, `- ${ssnit.toFixed(2)}`)
-                                        ),
-                                        e('div', { className: 'flex justify-between' },
-                                            e('span', { className: 'text-[11px] font-bold' }, 'P.A.Y.E Tax'),
-                                            e('span', { className: 'font-mono text-red-600' }, `- ${paye.toFixed(2)}`)
-                                        ),
-                                        e('div', { className: 'border-t pt-2 flex justify-between' },
-                                            e('span', { className: 'text-xs font-black' }, 'ESTIMATED NET PAY'),
-                                            e('span', { className: 'text-xl font-black text-green-700 font-mono' }, `GHS ${netPay.toLocaleString(undefined, {minimumFractionDigits: 2})}`)
-                                        )
-                                    ),
-
-                                    e('div', { className: 'mt-6 p-4 border-2 border-dashed border-slate-200 rounded' },
-                                        e('label', { className: 'field-label' }, 'Bank Account Details'),
-                                        e('input', { className: 'hr-input mb-0', placeholder: 'Bank Name & Branch' }),
-                                        e('input', { className: 'hr-input mt-2 mb-0', placeholder: 'Account Number' })
-                                    )
-                                )
-                            ),
-
-                            e('div', { className: 'p-8 bg-slate-50 border-t flex justify-end gap-4' },
-                                e('button', { className: 'px-8 py-3 bg-white border border-slate-300 font-bold text-xs rounded' }, 'DOWNLOAD CONTRACT'),
-                                e('button', { className: 'px-10 py-3 bg-sky-900 text-white font-bold text-xs rounded' }, 'ENROLL EMPLOYEE')
-                            )
-                        )
-                    )
-                );
-            }
-
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(e(App));
-        };
-    </script>
-</body>
-</html>
+            // Figure-to-Words for Procurement
+            const toWords = (n) => {
+                const num = parseFloat(n) || 0;
+                if (num === 0) return "Zero Ghana Cedis Only";
+                const ones = ['', '
