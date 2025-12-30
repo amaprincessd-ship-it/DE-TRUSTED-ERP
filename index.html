@@ -3,67 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | FINAL HANDOVER</title>
-    
+    <title>DE-TRUSTED ERP | MASTER COMMANDER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap');
-        
-        body { font-family: 'Ubuntu', sans-serif; background: #0f172a; color: #f8fafc; margin: 0; }
-        .gold-border { border: 1px solid #fbbf24; }
-        .handover-card { background: #1e293b; border: 1px solid #334155; padding: 40px; border-radius: 15px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
-        .security-stamp { transform: rotate(-15deg); font-family: 'Roboto Mono'; opacity: 0.2; }
+        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
+        body { font-family: 'Ubuntu', sans-serif; background: #020617; color: #f8fafc; margin: 0; }
+        .sidebar { background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; width: 260px; position: fixed; }
+        .main { margin-left: 260px; padding: 40px; }
+        .desk-card { background: #1e293b; border: 1px solid #334155; transition: 0.3s; cursor: pointer; }
+        .desk-card:hover { border-color: #fbbf24; background: #1e293b; transform: translateY(-3px); }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen">
+<body>
     <div id="root"></div>
-
     <script>
         window.onload = function() {
             const e = React.createElement;
+            const { useState } = React;
 
             function App() {
-                return e('div', { className: 'handover-card max-w-4xl w-full relative overflow-hidden' },
-                    e('div', { className: 'absolute -right-10 top-10 security-stamp text-5xl font-black text-white pointer-events-none' }, 'DE-TRUSTED'),
-                    
-                    e('header', { className: 'border-b border-slate-700 pb-8 mb-8' },
-                        e('h1', { className: 'text-4xl font-black tracking-tighter' }, 'PROJECT COMPLETION'),
-                        e('p', { className: 'text-yellow-500 font-bold text-xs uppercase' }, 'Final Handover of ERP Intellectual Property')
-                    ),
+                const desks = [
+                    { id: 'FIN', n: 'Finance', i: '💰', color: 'text-emerald-400' },
+                    { id: 'HR', n: 'HR & Payroll', i: '👥', color: 'text-blue-400' },
+                    { id: 'WH', n: 'Warehouse', i: '📦', color: 'text-orange-400' },
+                    { id: 'PROD', n: 'Production', i: '⚙️', color: 'text-purple-400' },
+                    { id: 'SALE', n: 'Sales', i: '📈', color: 'text-yellow-400' },
+                    { id: 'LOG', n: 'Logistics', i: '🚛', color: 'text-sky-400' },
+                    { id: 'LEG', n: 'Legal', i: '⚖️', color: 'text-red-400' },
+                    { id: 'MAIN', n: 'Maintenance', i: '🛠️', color: 'text-slate-400' },
+                    { id: 'QA', n: 'Quality Control', i: '✅', color: 'text-teal-400' },
+                    { id: 'EXEC', n: 'Executive Dashboard', i: '📊', color: 'text-gold' }
+                ];
 
-                    e('div', { className: 'grid grid-cols-2 gap-10' },
+                return e('div', { className: 'flex' },
+                    // SIDEBAR
+                    e('aside', { className: 'sidebar p-8 flex flex-col justify-between' },
                         e('div', null,
-                            e('h3', { className: 'text-sm font-bold text-slate-400 mb-4' }, 'TECHNICAL DEPLOYMENT'),
-                            e('ul', { className: 'space-y-3 text-sm font-mono' },
-                                ['PostgreSQL Schema Built', 'IFRS Chart of Accounts Loaded', 'Ghana Tax Engines Validated', '10 Departmental Desks Logic-Ready'].map(i => 
-                                    e('li', { key: i, className: 'flex gap-2' }, e('span', {className: 'text-emerald-500'}, '✔'), i)
+                            e('h1', { className: 'text-2xl font-black italic tracking-tighter mb-1' }, 'DE-TRUSTED'),
+                            e('p', { className: 'text-[10px] text-yellow-500 font-bold uppercase mb-10' }, 'Master Commander'),
+                            e('nav', { className: 'space-y-4' },
+                                ['Dashboard', 'Audit Logs', 'Reports', 'Settings'].map(item => 
+                                    e('div', { key: item, className: 'text-xs font-bold text-slate-500 hover:text-white cursor-pointer' }, item.toUpperCase())
                                 )
                             )
                         ),
-                        e('div', null,
-                            e('h3', { className: 'text-sm font-bold text-slate-400 mb-4' }, 'SYSTEM DOCUMENTATION'),
-                            e('ul', { className: 'space-y-3 text-sm font-mono' },
-                                ['Finance Training Manual', 'Disaster Recovery Protocol', 'CEO Go-Live Announcement', 'Database ERD Mapping'].map(i => 
-                                    e('li', { key: i, className: 'flex gap-2' }, e('span', {className: 'text-emerald-500'}, '✔'), i)
-                                )
-                            )
+                        e('div', { className: 'bg-slate-900 p-4 rounded border border-slate-800' },
+                            e('p', { className: 'text-[10px] text-slate-500' }, 'SYSTEM STATUS'),
+                            e('p', { className: 'text-xs text-emerald-500 font-bold' }, '● ALL DESKS LIVE')
                         )
                     ),
 
-                    e('footer', { className: 'mt-12 flex flex-col gap-6' },
-                        e('div', { className: 'p-4 bg-slate-900 rounded border border-slate-800' },
-                            e('p', { className: 'text-[10px] text-slate-500 mb-2 font-bold uppercase' }, 'Master System Encryption Key (Virtual)'),
-                            e('p', { className: 'font-mono text-emerald-400 break-all text-xs' }, 'D3-TRU5T3D-3RP-G4-2025-V4-S3CUR3-K3Y-SH4-256')
+                    // MAIN AREA
+                    e('main', { className: 'main flex-1' },
+                        e('header', { className: 'mb-12' },
+                            e('h2', { className: 'text-4xl font-black mb-2' }, 'Enterprise Control Hub'),
+                            e('p', { className: 'text-slate-400 text-sm' }, 'Welcome, Commander. Select a department to begin operations.')
                         ),
-                        e('div', { className: 'flex justify-between items-center' },
-                            e('p', { className: 'text-xs text-slate-500 italic' }, 'Handover completed by Gemini AI System.'),
-                            e('button', { 
-                                onClick: () => window.print(),
-                                className: 'bg-white text-slate-900 px-8 py-3 rounded font-black text-xs uppercase' 
-                            }, 'Print Official Handover')
+
+                        e('div', { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6' },
+                            desks.map(d => e('div', { key: d.id, className: 'desk-card p-6 rounded-xl text-center' },
+                                e('span', { className: 'text-4xl mb-4 block' }, d.i),
+                                e('h3', { className: `text-xs font-black uppercase mb-1 ${d.color}` }, d.n),
+                                e('p', { className: 'text-[9px] text-slate-500' }, 'Click to Initialize')
+                            ))
+                        ),
+
+                        e('div', { className: 'mt-12 p-8 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center justify-between' },
+                            e('div', null,
+                                e('h4', { className: 'font-bold' }, 'Daily Progress Snapshot'),
+                                e('p', { className: 'text-xs text-slate-500' }, 'Total Transactions Today: 142')
+                            ),
+                            e('button', { className: 'bg-yellow-500 text-black px-8 py-3 rounded-lg font-black text-xs' }, 'GENERATE MASTER REPORT')
                         )
                     )
                 );
