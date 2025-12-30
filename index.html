@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | CERTIFIED PAYROLL</title>
+    <title>DE-TRUSTED ERP | PAYROLL & BONUSES</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -16,9 +16,10 @@
         .nav-link { cursor: pointer; padding: 12px 20px; font-size: 11px; font-weight: 700; color: #64748b; border-left: 4px solid transparent; transition: 0.2s; text-transform: uppercase; }
         .nav-link.active { background: #1e293b; border-left: 4px solid #fbbf24; color: white; }
         .glass-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; }
-        .input-box { background: #020617; border: 1px solid #334155; color: white; padding: 12px; border-radius: 6px; width: 100%; margin-top: 5px; font-size: 18px; font-weight: bold; font-family: 'Roboto Mono', monospace; }
+        .input-box { background: #020617; border: 1px solid #334155; color: white; padding: 12px; border-radius: 6px; width: 100%; margin-top: 5px; font-size: 16px; font-weight: bold; font-family: 'Roboto Mono', monospace; outline: none; }
+        .input-box:focus { border-color: #fbbf24; }
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 14px; border-radius: 6px; width: 100%; cursor: pointer; border: none; text-transform: uppercase; font-size: 12px; transition: 0.3s; }
-        .btn-gold:hover { background: #fcd34d; transform: translateY(-1px); }
+        .btn-gold:hover { background: #fcd34d; }
         .mono { font-family: 'Roboto Mono', monospace; }
     </style>
 </head>
@@ -29,22 +30,23 @@
             const e = React.createElement;
             const { useState } = React;
 
-            // Helper for Comma Separation
+            // Currency Formatter
             const fmt = (num) => new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
 
             function App() {
-                const [user, setUser] = useState({ auth: false, role: '', name: '' });
+                const [user, setUser] = useState({ auth: false, name: '' });
                 const [password, setPassword] = useState('');
-                const [basicSalary, setBasicSalary] = useState(0);
                 const [empName, setEmpName] = useState('');
+                const [basicSalary, setBasicSalary] = useState(0);
+                const [bonus, setBonus] = useState(0);
 
-                // GRA 2025 Tax Computation
-                const ssnit = basicSalary * 0.055;
-                const taxableIncome = basicSalary - ssnit;
+                // LOGIC
+                const totalGross = basicSalary + bonus;
+                const ssnit = totalGross * 0.055;
+                const taxableIncome = totalGross - ssnit;
 
                 const calculatePAYE = (income) => {
-                    let tax = 0;
-                    let rem = income;
+                    let tax = 0; let rem = income;
                     const bands = [
                         { a: 490, r: 0.00 }, { a: 110, r: 0.05 }, { a: 130, r: 0.10 },
                         { a: 3167, r: 0.175 }, { a: 16103, r: 0.25 }, { a: Infinity, r: 0.30 }
@@ -61,9 +63,13 @@
                 const payeTax = calculatePAYE(taxableIncome);
                 const netPay = taxableIncome - payeTax;
 
-                const generatePayslip = () => {
+                const generatePDF = () => {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
                     doc.setFont("helvetica", "bold");
-                    doc.text("DE-TRUSTED ENTERPRISE - OFFICIAL PAYSLIP", 105, 20, null, null, "center");
-                    doc.setFontSize(1
+                    doc.text("DE-TRUSTED ENTERPRISE - PAYROLL RECEIPT", 105, 20, null, null, "center");
+                    doc.setFontSize(10);
+                    doc.text(`Employee: ${empName || 'N/A'}`, 20, 40);
+                    doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, 20, 47);
+                    
+                    doc.line(20,
