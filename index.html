@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED PAINT ERP | Master Command</title>
+    <title>DE-TRUSTED PAINT ERP | Utility Master</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -29,11 +29,15 @@
 
         .sidebar-glass { background: #0f172a; min-height: 100vh; }
         .locked-card { border-left: 6px solid #2563eb; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .utility-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+        
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        input, select, textarea { border: 1px solid #d1d5db; padding: 10px; font-size: 13px; width: 100%; border-radius: 4px; }
+        input, select, textarea { border: 1px solid #d1d5db; padding: 10px; font-size: 13px; width: 100%; border-radius: 4px; background: #fff; color: #1e293b; }
         label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 4px; display: block; }
+        
+        .table-text { font-size: 12px; color: #334155; }
     </style>
 </head>
 <body>
@@ -53,100 +57,96 @@
 
         const Dashboard = () => {
             const [currentDesk, setCurrentDesk] = useState('Administration');
-            const [adminAction, setAdminAction] = useState("");
-            const [complianceAgency, setComplianceAgency] = useState("");
+            const [adminSubTab, setAdminSubTab] = useState("compliance"); // compliance or utility
 
-            // --- ADMINISTRATION MODULE (THE REQUESTED FOCUS) ---
-            const AdministrationDesk = () => (
-                <div className="fade-in">
-                    <h1 className="text-4xl cambria-light mb-2">Administration & Corporate Compliance</h1>
-                    <p className="text-sm text-slate-500 mb-10 italic">Ashalaja Industrial Site | Asset & Regulatory Control</p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
-                        <div className="bg-white p-5 border-l-4 border-emerald-500 shadow-sm"><label>GSA Status</label><p className="text-sm cambria-light">Cert: DT-2025-01</p><p className="text-[10px] text-emerald-600 font-bold uppercase">Compliant</p></div>
-                        <div className="bg-white p-5 border-l-4 border-amber-500 shadow-sm"><label>EPA Permit</label><p className="text-sm cambria-light">Review: Feb 2026</p><p className="text-[10px] text-amber-600 font-bold uppercase">Pending Audit</p></div>
-                        <div className="bg-white p-5 border-l-4 border-blue-500 shadow-sm"><label>GNFS (Fire)</label><p className="text-sm cambria-light">Valid until: 2026</p><p className="text-[10px] text-blue-600 font-bold uppercase">Active</p></div>
-                        <div className="bg-white p-5 border-l-4 border-slate-900 shadow-sm"><label>Reg. General</label><p className="text-sm cambria-light">Annual Returns</p><p className="text-[10px] text-slate-500 font-bold uppercase">Filed 2025</p></div>
-                    </div>
+            // --- ADMINISTRATION MODULE ---
+            const AdministrationDesk = () => {
+                const [utilType, setUtilType] = useState("");
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                        <div className="lg:col-span-2">
-                            <div className="locked-card p-8">
-                                <h3 className="text-xl cambria-light mb-6 border-b pb-2">Record Entry Management</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                    <div>
-                                        <label>Administrative Protocol</label>
-                                        <select onChange={(e) => setAdminAction(e.target.value)} value={adminAction}>
-                                            <option value="">Select Category...</option>
-                                            <option value="regulatory">Statutory License Renewal</option>
-                                            <option value="facility">Facility & Security Log</option>
-                                            <option value="corporate">Board / Management Minutes</option>
-                                        </select>
-                                    </div>
-                                    {adminAction === 'regulatory' && (
-                                        <div className="fade-in">
-                                            <label>Statutory Agency</label>
-                                            <select onChange={(e) => setComplianceAgency(e.target.value)}>
-                                                <option value="">Choose Agency...</option>
-                                                <option value="gsa">Ghana Standards Authority</option>
-                                                <option value="epa">Environmental Protection Agency</option>
-                                            </select>
-                                        </div>
-                                    )}
+                return (
+                    <div className="fade-in">
+                        <div className="flex justify-between items-end mb-8 border-b pb-4">
+                            <div>
+                                <h1 className="text-4xl cambria-light mb-1">Administration & Assets</h1>
+                                <p className="text-sm text-slate-500 italic">Facility Resource Monitoring | Ashalaja Site</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => setAdminSubTab("compliance")}
+                                    className={`px-4 py-2 text-[10px] uppercase tracking-widest border transition-all ${adminSubTab === 'compliance' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200'}`}
+                                >
+                                    Compliance Log
+                                </button>
+                                <button 
+                                    onClick={() => setAdminSubTab("utility")}
+                                    className={`px-4 py-2 text-[10px] uppercase tracking-widest border transition-all ${adminSubTab === 'utility' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200'}`}
+                                >
+                                    Utility Management
+                                </button>
+                            </div>
+                        </div>
+
+                        {adminSubTab === 'compliance' ? (
+                            <div className="fade-in">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+                                    <div className="bg-white p-5 border-l-4 border-emerald-500 shadow-sm"><label>GSA Status</label><p className="text-sm cambria-light">Cert: DT-2025-01</p><p className="text-[10px] text-emerald-600 font-bold uppercase">Compliant</p></div>
+                                    <div className="bg-white p-5 border-l-4 border-amber-500 shadow-sm"><label>EPA Permit</label><p className="text-sm cambria-light">Review: Feb 2026</p><p className="text-[10px] text-amber-600 font-bold uppercase">Pending Audit</p></div>
+                                    <div className="bg-white p-5 border-l-4 border-blue-500 shadow-sm"><label>GNFS (Fire)</label><p className="text-sm cambria-light">Valid until: 2026</p><p className="text-[10px] text-blue-600 font-bold uppercase">Active</p></div>
+                                    <div className="bg-white p-5 border-l-4 border-slate-900 shadow-sm"><label>Reg. General</label><p className="text-sm cambria-light">Annual Returns</p><p className="text-[10px] text-slate-500 font-bold uppercase">Filed 2025</p></div>
                                 </div>
-                                
-                                {adminAction && (
-                                    <button className="bg-slate-900 text-white px-6 py-2 text-[10px] uppercase tracking-widest" onClick={() => alert('Processing...')}>
-                                        Commit Record
-                                    </button>
-                                )}
+                                <div className="locked-card p-8 bg-white">
+                                    <h3 className="text-xl cambria-light mb-6 border-b pb-2">Compliance Entry</h3>
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div><label>Filing Category</label><select><option>Statutory License</option><option>Tax Certificate</option></select></div>
+                                        <div><label>Reference #</label><input type="text" /></div>
+                                    </div>
+                                    <button className="mt-6 bg-slate-900 text-white px-6 py-2 text-[10px] uppercase tracking-widest hover:bg-blue-600" onClick={() => alert('Record Committed')}>Commit Record</button>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="fade-in">
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                    {/* Utility Form */}
+                                    <div className="lg:col-span-2 space-y-6">
+                                        <div className="locked-card p-8 bg-white">
+                                            <h3 className="text-xl cambria-light mb-6 border-b pb-2">New Utility Reading / Purchase</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                                <div>
+                                                    <label>Utility Resource</label>
+                                                    <select onChange={(e) => setUtilType(e.target.value)} value={utilType}>
+                                                        <option value="">Select Resource...</option>
+                                                        <option value="ecg">Electricity (ECG Industrial)</option>
+                                                        <option value="water">Water (GWCL/Borehole)</option>
+                                                        <option value="diesel">Diesel (Generator Fuel)</option>
+                                                    </select>
+                                                </div>
+                                                <div><label>Entry Date</label><input type="date" value="2025-12-30" /></div>
+                                            </div>
 
-                        <div className="lg:col-span-1">
-                            <div className="bg-slate-900 text-white p-6 rounded">
-                                <h3 className="text-lg cambria-light mb-4 text-blue-400">Site Log</h3>
-                                <p className="text-xs text-slate-400">No active alerts for Ashalaja Sector.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
+                                            {utilType === 'ecg' && (
+                                                <div className="grid grid-cols-2 gap-6 fade-in">
+                                                    <div><label>Previous Meter Reading (kWh)</label><input type="number" /></div>
+                                                    <div><label>Current Meter Reading (kWh)</label><input type="number" /></div>
+                                                    <div><label>Bill Amount (GHS)</label><input type="number" /></div>
+                                                    <div><label>Meter Number</label><input type="text" placeholder="ECG-ASH-102" /></div>
+                                                </div>
+                                            )}
 
-            const PlaceholderDesk = ({ name }) => (
-                <div className="fade-in text-center py-20">
-                    <h1 className="text-3xl cambria-light mb-4 italic text-slate-300">{name} Module</h1>
-                    <p className="text-sm text-slate-400">Locked Status: Stable.</p>
-                </div>
-            );
+                                            {utilType === 'diesel' && (
+                                                <div className="grid grid-cols-2 gap-6 fade-in">
+                                                    <div><label>Quantity Purchased (Litres)</label><input type="number" /></div>
+                                                    <div><label>Cost per Litre (GHS)</label><input type="number" value="15.20" /></div>
+                                                    <div><label>Supplier</label><select><option>GOIL</option><option>Shell / Vivo</option><option>Star Oil</option></select></div>
+                                                    <div><label>Gen-Set Hours (Reading)</label><input type="number" /></div>
+                                                </div>
+                                            )}
 
-            return (
-                <div className="flex">
-                    <div className="w-72 sidebar-glass flex flex-col p-6">
-                        <div className="mb-8">
-                            <h1 className="cambria-light text-white text-xl tracking-widest uppercase">DE-TRUSTED</h1>
-                            <p className="text-[8px] text-slate-500 font-semibold uppercase">Ashalaja Site Hub</p>
-                        </div>
-                        <SidebarItem name="Executive" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="Administration" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="Finance" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="Production" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="Logistics" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="Procurement" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="Sales" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="Warehouse" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="HR" active={currentDesk} onClick={setCurrentDesk} />
-                        <SidebarItem name="Reception" active={currentDesk} onClick={setCurrentDesk} />
-                    </div>
-                    <main className="flex-1 min-h-screen p-16 bg-white overflow-y-auto">
-                        {currentDesk === 'Administration' ? <AdministrationDesk /> : <PlaceholderDesk name={currentDesk} />}
-                    </main>
-                </div>
-            );
-        };
+                                            {utilType && (
+                                                <button className="mt-8 bg-blue-600 text-white px-8 py-3 text-[10px] uppercase tracking-widest font-bold shadow-lg shadow-blue-200" onClick={() => alert('Utility Data Logged')}>Save Utility Entry</button>
+                                            )}
+                                        </div>
+                                    </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Dashboard />);
-    </script>
-</body>
-</html>
+                                    {/* Utility Statistics */}
+                                    <div className="lg:col-span-1 space-y-4">
+                                        <div className="bg-slate-900 p-6 text-white rounded shadow-xl">
