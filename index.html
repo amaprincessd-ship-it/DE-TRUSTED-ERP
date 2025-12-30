@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DE-TRUSTED ERP | PAYROLL & BONUSES</title>
+    <title>DE-TRUSTED ERP | ULTIMATE PAYROLL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -21,6 +21,7 @@
         .btn-gold { background: #fbbf24; color: #020617; font-weight: 900; padding: 14px; border-radius: 6px; width: 100%; cursor: pointer; border: none; text-transform: uppercase; font-size: 12px; transition: 0.3s; }
         .btn-gold:hover { background: #fcd34d; }
         .mono { font-family: 'Roboto Mono', monospace; }
+        .toggle-btn { padding: 6px 12px; font-size: 10px; font-weight: 800; border-radius: 4px; cursor: pointer; transition: 0.2s; }
     </style>
 </head>
 <body>
@@ -30,20 +31,20 @@
             const e = React.createElement;
             const { useState } = React;
 
-            // Currency Formatter
             const fmt = (num) => new Intl.NumberFormat('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
 
             function App() {
                 const [user, setUser] = useState({ auth: false, name: '' });
-                const [password, setPassword] = useState('');
+                const [passInput, setPassInput] = useState('');
                 const [empName, setEmpName] = useState('');
                 const [basicSalary, setBasicSalary] = useState(0);
                 const [bonus, setBonus] = useState(0);
+                const [isBonusTaxable, setIsBonusTaxable] = useState(true);
 
-                // LOGIC
-                const totalGross = basicSalary + bonus;
-                const ssnit = totalGross * 0.055;
-                const taxableIncome = totalGross - ssnit;
+                // PAYROLL LOGIC
+                const ssnitBase = isBonusTaxable ? (basicSalary + bonus) : basicSalary;
+                const ssnit = ssnitBase * 0.055;
+                const taxableIncome = ssnitBase - ssnit;
 
                 const calculatePAYE = (income) => {
                     let tax = 0; let rem = income;
@@ -61,7 +62,16 @@
                 };
 
                 const payeTax = calculatePAYE(taxableIncome);
-                const netPay = taxableIncome - payeTax;
+                const finalNetPay = (isBonusTaxable) ? (taxableIncome - payeTax) : (basicSalary - (basicSalary * 0.055) - calculatePAYE(basicSalary - (basicSalary * 0.055)) + bonus);
+
+                const handleLogin = (val) => {
+                    val.preventDefault();
+                    if(passInput === 'SUPER2025') {
+                        setUser({ auth: true, name: 'System Director' });
+                    } else {
+                        alert("ACCESS DENIED: Master Key Incorrect");
+                    }
+                };
 
                 const generatePDF = () => {
                     const { jsPDF } = window.jspdf;
@@ -69,7 +79,27 @@
                     doc.setFont("helvetica", "bold");
                     doc.text("DE-TRUSTED ENTERPRISE - PAYROLL RECEIPT", 105, 20, null, null, "center");
                     doc.setFontSize(10);
-                    doc.text(`Employee: ${empName || 'N/A'}`, 20, 40);
-                    doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, 20, 47);
+                    doc.text(`Staff: ${empName || 'General Staff'}`, 20, 40);
+                    doc.text(`Status: ${isBonusTaxable ? 'Bonus Taxed' : 'Bonus Tax-Free'}`, 20, 47);
                     
-                    doc.line(20,
+                    doc.line(20, 52, 190, 52);
+                    doc.text("Description", 20, 60); doc.text("GHS", 170, 60, {align:'right'});
+                    doc.setFont("helvetica", "normal");
+                    doc.text("Basic Salary", 20, 70); doc.text(fmt(basicSalary), 170, 70, {align:'right'});
+                    doc.text(`${isBonusTaxable ? 'Taxable' : 'Tax-Free'} Allowance`, 20, 78); doc.text(fmt(bonus), 170, 78, {align:'right'});
+                    
+                    doc.text("SSNIT (5.5%)", 20, 95); doc.text(`-${fmt(ssnit)}`, 170, 95, {align:'right'});
+                    doc.text("Income Tax (PAYE)", 20, 103); doc.text(`-${fmt(payeTax)}`, 170, 103, {align:'right'});
+
+                    doc.line(130, 115, 190, 115);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("TOTAL NET PAYABLE", 20, 125); 
+                    doc.text(`GHS ${fmt(finalNetPay)}`, 170, 125, {align:'right'});
+                    doc.save(`Payslip_${empName}.pdf`);
+                };
+
+                if (!user.auth) {
+                    return e('div', { className: 'h-screen flex items-center justify-center bg-slate-950' },
+                        e('form', { onSubmit: handleLogin, className: 'glass-card w-96 text-center border-slate-800' },
+                            e('div', { className: 'mb-8' },
+                                e('h1', { className:
