@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v88.0 STOCK DEDUCTION</title>
+    <title>CORPORATE COMMAND ERP | v89.0 BATCH TRACEABILITY</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -21,9 +21,8 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        .stock-tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; }
-        .tag-reserved { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-        .tag-available { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .trace-node { border-left: 2px dashed rgba(251, 191, 36, 0.3); padding-left: 20px; position: relative; margin-bottom: 20px; }
+        .trace-node::before { content: ""; width: 10px; height: 10px; background: var(--accent-color); position: absolute; left: -6px; top: 0; border-radius: 50%; box-shadow: 0 0 10px var(--accent-color); }
 
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -32,10 +31,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">STOCK COMMAND</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Inventory Deduction v88.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">LOT CONTROL</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Batch Traceability v89.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Warehouse Link</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Access Traceability Vault</button>
         </div>
     </div>
 
@@ -53,49 +52,32 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('WAREHOUSE');
-                
-                // SIMULATED INVENTORY STATE
-                const [inventory, setInventory] = useState([
-                    { id: 101, name: 'Industrial Resin (Grade A)', stock: 5000, reserved: 450, unit: 'KG' },
-                    { id: 102, name: 'Titanium White Pigment', stock: 1200, reserved: 120, unit: 'KG' },
-                    { id: 103, name: 'Chemical Solvent X-1', stock: 800, reserved: 50, unit: 'L' }
-                ]);
+                const [view, setView] = useState('TRACE');
+                const [searchLot, setSearchLot] = useState('BT-2025-0042');
 
-                const [activeJobs, setActiveJobs] = useState([
-                    { id: 'JOB-9901', status: 'PENDING', items: [
-                        { name: 'Industrial Resin (Grade A)', qty: 200 },
-                        { name: 'Titanium White Pigment', qty: 150 }
-                    ]}
-                ]);
-
-                // LOGIC: HARD DEDUCTION (The "Commit" step)
-                const executeDeduction = (jobId) => {
-                    const job = activeJobs.find(j => j.id === jobId);
-                    const newInventory = inventory.map(item => {
-                        const required = job.items.find(i => i.name === item.name);
-                        if (required) {
-                            return { 
-                                ...item, 
-                                stock: item.stock - required.qty,
-                                reserved: item.reserved - required.qty 
-                            };
-                        }
-                        return item;
-                    });
-                    setInventory(newInventory);
-                    setActiveJobs(activeJobs.map(j => j.id === jobId ? {...j, status: 'IN_PROGRESS'} : j));
-                    alert(`INVENTORY UPDATED: Job ${jobId} moved to floor.`);
+                const batchData = {
+                    lotNumber: 'BT-2025-0042',
+                    product: 'Weather-Shield Exterior (Ocean Blue)',
+                    manufactureDate: '2025-12-30',
+                    operator: 'Kwame Mensah',
+                    machine: 'Vat Mixer V-01',
+                    ingredients: [
+                        { name: 'Resin R-40', supplier: 'Titanium Global', supplier_lot: 'TG-992-X', qty: '200kg' },
+                        { name: 'Blue Pigment P-12', supplier: 'EcoChem Ltd', supplier_lot: 'EC-441-B', qty: '45kg' }
+                    ],
+                    qc_status: 'PASSED',
+                    viscosity: '95 KU',
+                    density: '1.24 g/cm³'
                 };
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Stock Integrity')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Compliance Engine')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['WAREHOUSE', 'RESERVATIONS', 'JOBS', 'CEO_DASHBOARD'].map(v => 
+                            ['TRACE', 'WAREHOUSE', 'JOBS', 'CEO_DASHBOARD'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
                             )
                         )
@@ -103,57 +85,69 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'WAREHOUSE' && e('div', null,
-                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4 text-white'}, 'Inventory'),
-                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Real-Time Stock & Reservation Sync'),
+                        view === 'TRACE' && e('div', null,
+                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4 text-white'}, 'Traceability'),
+                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'End-to-End Batch Genealogy'),
 
-                            e('div', {className:'glass-card'},
-                                e('table', {className:'w-full text-left'},
-                                    e('thead', null, e('tr', {className:'text-[10px] uppercase opacity-40 border-b border-white/10 pb-4'},
-                                        e('th', {className:'pb-4'}, 'Raw Material'),
-                                        e('th', {className:'pb-4 text-center'}, 'On Hand'),
-                                        e('th', {className:'pb-4 text-center'}, 'Reserved'),
-                                        e('th', {className:'pb-4 text-center'}, 'Net Available'),
-                                        e('th', {className:'pb-4 text-right'}, 'Status')
-                                    )),
-                                    e('tbody', null, inventory.map(item => e('tr', {key: item.id, className:'border-b border-white/5'},
-                                        e('td', {className:'py-6 font-bold'}, item.name),
-                                        e('td', {className:'py-6 text-center font-mono'}, `${item.stock} ${item.unit}`),
-                                        e('td', {className:'py-6 text-center text-yellow-500 font-mono'}, `${item.reserved} ${item.unit}`),
-                                        e('td', {className:'py-6 text-center font-black text-emerald-400'}, `${item.stock - item.reserved} ${item.unit}`),
-                                        e('td', {className:'py-6 text-right'}, 
-                                            e('span', {className:`stock-tag ${(item.stock - item.reserved) > 100 ? 'tag-available' : 'bg-red-500/20 text-red-500'}`}, 
-                                                (item.stock - item.reserved) > 100 ? 'HEALTHY' : 'CRITICAL'
-                                            )
+                            e('div', {className:'flex gap-4 mb-10'},
+                                e('input', {
+                                    className:'bg-white/5 border border-white/10 p-4 flex-1 rounded text-white font-mono uppercase',
+                                    value: searchLot,
+                                    onChange: (e) => setSearchLot(e.target.value)
+                                }),
+                                e('button', {className:'btn-accent px-10'}, 'Trace Batch')
+                            ),
+
+                            e('div', {className:'grid grid-cols-1 lg:grid-cols-3 gap-8'},
+                                e('div', {className:'lg:col-span-2 space-y-6'},
+                                    e('div', {className:'glass-card'},
+                                        e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest'}, 'The Production Timeline'),
+                                        e('div', {className:'trace-node'},
+                                            e('p', {className:'text-xs font-black text-yellow-500 uppercase'}, 'Phase 1: Sourcing'),
+                                            e('p', {className:'text-sm opacity-80 mt-1'}, `Materials received from ${batchData.ingredients.length} suppliers. Integrity verified.`)
+                                        ),
+                                        e('div', {className:'trace-node'},
+                                            e('p', {className:'text-xs font-black text-yellow-500 uppercase'}, 'Phase 2: Mixing'),
+                                            e('p', {className:'text-sm opacity-80 mt-1'}, `Job executed by ${batchData.operator} on ${batchData.machine}.`)
+                                        ),
+                                        e('div', {className:'trace-node'},
+                                            e('p', {className:'text-xs font-black text-yellow-500 uppercase'}, 'Phase 3: Quality Control'),
+                                            e('p', {className:'text-sm opacity-80 mt-1'}, `Batch passed with Viscosity of ${batchData.viscosity}.`)
                                         )
-                                    )))
+                                    ),
+                                    e('div', {className:'glass-card'},
+                                        e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest'}, 'Component Lot Breakdown'),
+                                        e('table', {className:'w-full text-left'},
+                                            e('thead', null, e('tr', {className:'text-[9px] uppercase opacity-40'},
+                                                e('th', null, 'Component'), e('th', null, 'Supplier'), e('th', null, 'Supplier Lot #')
+                                            )),
+                                            e('tbody', null, batchData.ingredients.map((ing, i) => e('tr', {key: i, className:'border-b border-white/5'},
+                                                e('td', {className:'py-4 text-sm font-bold'}, ing.name),
+                                                e('td', {className:'py-4 text-sm opacity-70'}, ing.supplier),
+                                                e('td', {className:'py-4 text-sm font-mono text-blue-400'}, ing.supplier_lot)
+                                            )))
+                                        )
+                                    )
+                                ),
+                                e('div', {className:'glass-card border-emerald-500/20'},
+                                    e('div', {className:'text-center mb-8 pb-8 border-b border-white/10'},
+                                        e('div', {className:'bg-emerald-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4'}, 
+                                            e('span', {className:'text-black text-2xl font-black'}, '✓')
+                                        ),
+                                        e('h4', {className:'text-xl font-black'}, 'QC CERTIFIED'),
+                                        e('p', {className:'text-[10px] opacity-60 uppercase'}, `Batch ID: ${batchData.lotNumber}`)
+                                    ),
+                                    e('div', {className:'space-y-4 text-xs'},
+                                        e('div', {className:'flex justify-between'}, e('span',{className:'opacity-50'},'Density'), e('span',null,batchData.density)),
+                                        e('div', {className:'flex justify-between'}, e('span',{className:'opacity-50'},'Viscosity'), e('span',null,batchData.viscosity)),
+                                        e('div', {className:'flex justify-between'}, e('span',{className:'opacity-50'},'Finished At'), e('span',null,'2025-12-30 14:22')),
+                                        e('button', {className:'w-full bg-white/5 py-3 rounded text-[9px] font-black uppercase mt-6'}, 'Print COA / Batch Ticket')
+                                    )
                                 )
                             )
                         ),
 
-                        view === 'JOBS' && e('div', null,
-                            e('h2', {className:'text-4xl font-black uppercase italic mb-8'}, 'Job Material Release'),
-                            e('div', {className:'grid grid-cols-1 gap-6'},
-                                activeJobs.map(j => e('div', {key: j.id, className:'glass-card border-yellow-500/20'},
-                                    e('div', {className:'flex justify-between items-center mb-6'},
-                                        e('div', null,
-                                            e('p', {className:'text-xl font-black'}, j.id),
-                                            e('p', {className:'text-[10px] uppercase opacity-60'}, `Status: ${j.status}`)
-                                        ),
-                                        j.status === 'PENDING' && e('button', {onClick: () => executeDeduction(j.id), className:'btn-accent px-8'}, 'Deduct & Release to Mixing')
-                                    ),
-                                    e('div', {className:'bg-black/20 p-4 rounded-xl'},
-                                        e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-3'}, 'Required Materials'),
-                                        j.items.map((it, idx) => e('div', {key: idx, className:'flex justify-between text-xs py-1'},
-                                            e('span', null, it.name),
-                                            e('span', {className:'font-mono font-bold'}, `${it.qty} unit`)
-                                        ))
-                                    )
-                                ))
-                            )
-                        ),
-
-                        view !== 'WAREHOUSE' && view !== 'JOBS' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view !== 'TRACE' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
