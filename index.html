@@ -24,7 +24,7 @@
         }
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); z-index: -1;
+            background: rgba(0,0,0,0.65); backdrop-filter: blur(15px); z-index: -1;
         }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 260px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; position: relative; z-index: 10; }
@@ -36,14 +36,17 @@
             display: flex; align-items: center; justify-content: center;
         }
         .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 22px; }
-        .btn-accent { background: var(--accent-color); color: #000; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; font-size: 11px; border: none; }
         
-        /* MAINTENANCE SPECIFIC STYLES */
-        .health-bar-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 4px; overflow: hidden; }
-        .health-bar-fill { height: 100%; transition: width 0.5s ease-in-out; }
-        .status-danger { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
-        .status-ok { background: #10b981; }
-        .status-warn { background: #f59e0b; }
+        /* FLASHING CRITICAL ALERT */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0px rgba(239, 68, 68, 0); background: rgba(239, 68, 68, 0.05); }
+            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.2); }
+            100% { box-shadow: 0 0 0px rgba(239, 68, 68, 0); background: rgba(239, 68, 68, 0.05); }
+        }
+        .alert-flash { animation: pulse-red 1.5s infinite; border: 1px solid #ef4444 !important; }
+        
+        .btn-accent { background: var(--accent-color); color: #000; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; font-size: 11px; border: none; }
+        .input-box { border: 1px solid rgba(255,255,255,0.2); bg: rgba(0,0,0,0.4); padding: 10px; width: 100%; color: white; border-radius: 6px; outline: none; }
     </style>
 </head>
 <body>
@@ -51,10 +54,10 @@
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center">
             <div id="gate-logo-area" class="mb-4 flex justify-center"></div>
-            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">MAINTENANCE HUB</h1>
+            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">COMPLIANCE HUB</h1>
             <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Private Command</p>
-            <input type="password" id="master-key-input" class="input-box border border-white/20 bg-black/40 p-3 text-center mb-6 text-2xl w-full text-white" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent">Access Systems</button>
+            <input type="password" id="master-key-input" class="input-box text-center mb-6 text-2xl" placeholder="••••" autofocus>
+            <button onclick="checkAccess()" class="btn-accent">Unlock Regulatory Vault</button>
         </div>
     </div>
 
@@ -74,7 +77,7 @@
             const { useState, useEffect } = React;
 
             function App() {
-                const [view, setView] = useState('MAINTENANCE');
+                const [view, setView] = useState('COMPLIANCE');
                 const [theme, setTheme] = useState({
                     name: getSaved('erp_name', 'DE-TRUSTED'),
                     logo: getSaved('erp_logo', ''),
@@ -85,11 +88,12 @@
                     font: getSaved('erp_font', 'Ubuntu, sans-serif')
                 });
 
-                // Mock Maintenance Data
-                const fleetHealth = [
-                    { id: 1, tag: "VAN-01", mileage: 12400, oil: 85, tyres: 40, status: "Healthy" },
-                    { id: 2, tag: "TRK-05", mileage: 45800, oil: 12, tyres: 15, status: "URGENT SERVICE" },
-                    { id: 3, tag: "VAN-03", mileage: 21000, oil: 50, tyres: 90, status: "Warning" }
+                // Regulatory Data
+                const complianceLogs = [
+                    { id: 1, vehicle: "TRK-05", item: "Comprehensive Insurance", expiry: "2026-01-15", daysLeft: 15, status: "CRITICAL" },
+                    { id: 2, vehicle: "VAN-01", item: "Roadworthiness Cert", expiry: "2026-04-10", daysLeft: 100, status: "VALID" },
+                    { id: 3, vehicle: "TRK-05", item: "Cross-Border Permit", expiry: "2026-01-05", daysLeft: 5, status: "CRITICAL" },
+                    { id: 4, vehicle: "FLEET", item: "Haulage License", expiry: "2026-02-28", daysLeft: 59, status: "WARNING" }
                 ];
 
                 useEffect(() => {
@@ -115,50 +119,46 @@
                             e('h1', { className: 'text-lg font-black italic text-yellow-500' }, theme.name)
                         ),
                         e('nav', { className: 'mt-6 text-[10px] font-bold uppercase flex-1' },
-                            e('div', { onClick:()=>setView('MAINTENANCE'), className:`p-4 cursor-pointer ${view==='MAINTENANCE'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🛠️ Maintenance Scheduler'),
-                            e('div', { onClick:()=>setView('ROUTING'), className:`p-4 cursor-pointer ${view==='ROUTING'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🗺️ Route Optimizer'),
-                            e('div', { onClick:()=>setView('VISUALS'), className:`p-4 cursor-pointer ${view==='VISUALS'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🖼️ Visual Settings')
+                            e('div', { onClick:()=>setView('COMPLIANCE'), className:`p-4 cursor-pointer ${view==='COMPLIANCE'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '⚖️ Regulatory Watchdog'),
+                            e('div', { onClick:()=>setView('MAINTENANCE'), className:`p-4 cursor-pointer ${view==='MAINTENANCE'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🛠️ Maintenance Hub'),
+                            e('div', { onClick:()=>setView('VISUALS'), className:`p-4 cursor-pointer ${view==='VISUALS'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🖼️ Settings')
                         )
                     ),
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'MAINTENANCE' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Predictive Maintenance Hub'),
-                            e('div', {className:'grid grid-cols-1 gap-6'},
-                                fleetHealth.map(v => e('div', {key: v.id, className:`glass-card border-l-8 ${v.oil < 20 ? 'border-red-600' : 'border-emerald-600'}`},
-                                    e('div', {className:'flex justify-between items-center mb-6'},
-                                        e('div', null, 
-                                            e('h3', {className:'text-2xl font-black'}, v.tag),
-                                            e('p', {className:'text-[10px] opacity-50 font-bold uppercase'}, `Odometer: ${v.mileage} KM`)
-                                        ),
-                                        e('div', {className:'text-right'},
-                                            e('p', {className:`text-xs font-black uppercase ${v.oil < 20 ? 'text-red-500' : 'text-emerald-500'}`}, v.status),
-                                            e('button', {className:'mt-2 text-[9px] bg-white/10 px-3 py-1 rounded hover:bg-white/20 transition'}, 'Schedule Service')
-                                        )
+                        view === 'COMPLIANCE' && e('div', null,
+                            e('div', {className:'flex justify-between items-end mb-8'},
+                                e('div', null,
+                                    e('h2', {className:'text-3xl font-black italic uppercase text-white'}, 'Regulatory Compliance'),
+                                    e('p', {className:'text-[10px] text-yellow-500 font-bold'}, 'ACTIVE MONITORING: ALL PERMITS & LICENSES')
+                                ),
+                                e('button', {className:'btn-accent w-auto px-6'}, '+ Register New Permit')
+                            ),
+                            
+                            e('div', {className:'grid grid-cols-1 gap-4'},
+                                complianceLogs.map(log => e('div', {key: log.id, className:`glass-card flex justify-between items-center ${log.daysLeft < 20 ? 'alert-flash' : ''}`},
+                                    e('div', null,
+                                        e('p', {className:'text-[10px] opacity-50 font-bold uppercase'}, log.vehicle),
+                                        e('h3', {className:'text-xl font-black'}, log.item),
+                                        e('p', {className:'text-xs opacity-70'}, `Expires: ${log.expiry}`)
                                     ),
-                                    e('div', {className:'grid grid-cols-2 gap-10'},
-                                        e('div', null,
-                                            e('p', {className:'text-[10px] opacity-50 font-bold uppercase'}, 'Engine Oil Life'),
-                                            e('div', {className:'health-bar-bg'}, e('div', {className:`health-bar-fill ${v.oil < 20 ? 'status-danger' : 'status-ok'}`, style:{width:`${v.oil}%` }}))
-                                        ),
-                                        e('div', null,
-                                            e('p', {className:'text-[10px] opacity-50 font-bold uppercase'}, 'Tyre Tread Health'),
-                                            e('div', {className:'health-bar-bg'}, e('div', {className:`health-bar-fill ${v.tyres < 30 ? 'status-warn' : 'status-ok'}`, style:{width:`${v.tyres}%` }}))
-                                        )
+                                    e('div', {className:'text-right'},
+                                        e('p', {className:`text-2xl font-black ${log.daysLeft < 20 ? 'text-red-500' : 'text-emerald-500'}`}, `${log.daysLeft} DAYS`),
+                                        e('p', {className:'text-[9px] font-bold uppercase'}, 'Until Expiry')
                                     )
                                 ))
                             )
                         ),
 
-                        view === 'ROUTING' && e('div', {className:'text-center p-20 opacity-30 italic text-2xl font-black'}, 'GPS ROUTE OPTIMIZER ACTIVE'),
+                        view === 'MAINTENANCE' && e('div', {className:'text-center p-20 opacity-30 italic text-2xl font-black'}, 'PREDICTIVE MAINTENANCE HUB ACTIVE'),
 
                         view === 'VISUALS' && e('div', null,
                             e('h2', {className:'text-3xl font-black mb-8 italic uppercase text-yellow-500'}, 'Identity Settings'),
                             e('div', {className:'glass-card max-w-md space-y-4'},
-                                e('input', {className:'input-box border border-white/20 bg-black/40 p-2 w-full text-white', value:theme.name, placeholder:'System Name', onChange:(v)=>update('name', v.target.value)}),
-                                e('input', {className:'input-box border border-white/20 bg-black/40 p-2 w-full text-white', value:theme.logo, placeholder:'Logo URL', onChange:(v)=>update('logo', v.target.value)}),
-                                e('input', {className:'input-box border border-white/20 bg-black/40 p-2 w-full text-white', value:theme.wallpaper, placeholder:'Wallpaper URL', onChange:(v)=>update('wallpaper', v.target.value)})
+                                e('input', {className:'input-box', value:theme.name, placeholder:'System Name', onChange:(v)=>update('name', v.target.value)}),
+                                e('input', {className:'input-box', value:theme.logo, placeholder:'Logo URL', onChange:(v)=>update('logo', v.target.value)}),
+                                e('input', {className:'input-box', value:theme.wallpaper, placeholder:'Wallpaper URL', onChange:(v)=>update('wallpaper', v.target.value)})
                             )
                         )
                     )
