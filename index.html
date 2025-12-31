@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v63.0</title>
+    <title>CORPORATE COMMAND ERP | v64.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,147 +13,40 @@
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
         body { 
-            background-color: var(--bg-color); background-image: var(--bg-image);
-            background-size: cover; background-position: center; background-attachment: fixed;
-            color: var(--text-color); font-family: var(--font-main); margin: 0;
+            background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0;
         }
         body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(35px); z-index: -1;
+            content: ""; position: fixed; inset: 0;
+            background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(35px); z-index: -1;
         }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.1); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 50px; position: relative; z-index: 10; }
         
         .glass-card { 
             background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%); 
-            backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.12); 
-            border-radius: 20px; padding: 30px;
+            backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 30px;
         }
         
         .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; border: none; font-size: 10px; }
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
 
-        /* DEBT STATUS COLORS */
-        .age-30 { color: #fbbf24; } /* Amber */
-        .age-60 { color: #f97316; } /* Orange */
-        .age-90 { color: #ef4444; font-weight: 900; animation: pulse 1s infinite; } /* Red Flash */
+        /* STATUS BADGES */
+        .status-pill { padding: 4px 10px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+        .status-pending { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+        .status-approved { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .status-rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-        @keyframes pulse {
-            0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
+        #security-barrier {
+            position: fixed; inset: 0; background: #020617; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .msg-pop { position: fixed; bottom: 20px; right: 20px; background: #fbbf24; color: black; padding: 15px 25px; border-radius: 10px; font-weight: 900; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-    <div id="security-barrier" class="fixed inset-0 bg-slate-950 z-[2000] flex items-center justify-center">
-        <div class="glass-card w-full max-w-md text-center">
-            <h1 id="gate-brand-text" class="text-4xl font-black mb-1 italic tracking-tighter uppercase">RECOVERY SYSTEM</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-10 tracking-[0.5em] uppercase">Private Command</p>
-            <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-3xl mb-6 outline-none" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full">Access Recovery Core</button>
-        </div>
-    </div>
-
-    <div id="root"></div>
-
-    <script>
-        const getSaved = (k, d) => localStorage.getItem(k) || d;
-
-        function checkAccess() {
-            if (document.getElementById('master-key-input').value === 'SUPER2025') {
-                document.getElementById('security-barrier').style.display = 'none';
-            } else { alert("ACCESS DENIED"); location.reload(); }
-        }
-
-        window.onload = function() {
-            const e = React.createElement;
-            const { useState, useEffect } = React;
-
-            function App() {
-                const [view, setView] = useState('RECOVERY');
-                const [notification, setNotification] = useState(null);
-                const [theme, setTheme] = useState({
-                    name: getSaved('erp_name', 'DE-TRUSTED'),
-                    logo: getSaved('erp_logo', ''),
-                    wallpaper: getSaved('erp_wall', ''),
-                });
-
-                const debtors = [
-                    { id: 1, client: "Apex Logistics", balance: 15400, age: 15, contact: "024XXXX999", email: "finance@apex.com" },
-                    { id: 2, client: "Unity Haulage", balance: 42000, age: 35, contact: "055XXXX111", email: "billing@unity.gh" },
-                    { id: 3, client: "Global Trans", balance: 8500, age: 65, contact: "020XXXX222", email: "ceo@global.com" },
-                    { id: 4, client: "Unknown Vendor", balance: 1200, age: 92, contact: "027XXXX333", email: "admin@vendor.com" }
-                ];
-
-                const triggerMessage = (client, type) => {
-                    setNotification(`SENT: Automated ${type} Reminder to ${client}`);
-                    setTimeout(() => setNotification(null), 4000);
-                };
-
-                return e('div', { className: 'flex' },
-                    notification && e('div', { className: 'msg-pop' }, notification),
-
-                    e('aside', { className: 'sidebar flex flex-col' },
-                        e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
-                            e('h1', { className: 'text-xl font-black italic text-white tracking-tighter' }, theme.name),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 mt-1 uppercase tracking-widest'}, 'Debt Recovery')
-                        ),
-                        e('nav', { className: 'flex-1' },
-                            ['DASHBOARD', 'RECOVERY', 'STATEMENTS', 'FORGE', 'VENDORS', 'VISUALS'].map(v => 
-                                e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
-                            )
-                        )
-                    ),
-
-                    e('main', { className: 'main-content flex-1' },
-                        
-                        view === 'RECOVERY' && e('div', null,
-                            e('div', {className:'flex justify-between items-end mb-12'},
-                                e('div', null,
-                                    e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter'}, 'Recovery Command'),
-                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Automated Debt Collection & Messaging')
-                                ),
-                                e('div', {className:'flex gap-4'},
-                                    e('button', {className:'bg-white/5 border border-white/10 px-6 py-2 rounded text-[10px] font-bold'}, 'Export Arrears List')
-                                )
-                            ),
-
-                            e('div', {className:'grid grid-cols-1 gap-6'},
-                                debtors.map(d => e('div', {key: d.id, className:`glass-card flex justify-between items-center ${d.age > 90 ? 'border-red-500/50' : ''}`},
-                                    e('div', {className:'flex gap-10 items-center'},
-                                        e('div', null,
-                                            e('p', {className:'text-[10px] opacity-40 font-bold uppercase'}, 'Client'),
-                                            e('h3', {className:'text-2xl font-black'}, d.client),
-                                            e('p', {className:'text-xs opacity-60 font-mono'}, d.email)
-                                        ),
-                                        e('div', null,
-                                            e('p', {className:'text-[10px] opacity-40 font-bold uppercase'}, 'Debt Age'),
-                                            e('p', {className: `text-2xl font-black ${d.age > 90 ? 'age-90' : d.age > 60 ? 'age-60' : d.age > 30 ? 'age-30' : ''}`}, `${d.age} Days`)
-                                        )
-                                    ),
-                                    e('div', {className:'text-right flex items-center gap-8'},
-                                        e('div', null,
-                                            e('p', {className:'text-[10px] opacity-40 font-bold uppercase'}, 'Outstanding'),
-                                            e('p', {className:'text-3xl font-black text-white'}, `GHS ${d.balance.toLocaleString()}`)
-                                        ),
-                                        e('div', {className:'flex flex-col gap-2'},
-                                            e('button', {onClick: ()=>triggerMessage(d.client, 'Email'), className:'btn-accent w-32'}, 'Send Email'),
-                                            e('button', {onClick: ()=>triggerMessage(d.client, 'SMS'), className:'bg-white/10 hover:bg-white/20 px-4 py-2 rounded text-[9px] font-bold uppercase'}, 'Send SMS')
-                                        )
-                                    )
-                                ))
-                            )
-                        ),
-
-                        view !== 'RECOVERY' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-20 text-3xl font-black uppercase'}, `${view} Sub-System Active`)
-                    )
-                );
-            }
-            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
-        };
-    </script>
-</body>
-</html>
+    <div id="security-barrier">
+        <div class="glass-card w-full max-w-sm text-center border-yellow-500/20 shadow-2xl">
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">Command Core</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">V64.0 Deployment</p>
+            <input type="password" id="master-key-
