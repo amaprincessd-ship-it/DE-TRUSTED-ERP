@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v85.0</title>
+    <title>CORPORATE COMMAND ERP | v87.0 MTO PRODUCTION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -21,9 +21,11 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        .vendor-rank-1 { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
-        .quality-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.05); overflow: hidden; margin-top: 8px; }
-        
+        .status-pill { padding: 4px 10px; border-radius: 4px; font-size: 9px; font-weight: 900; }
+        .pending { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+        .progress { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .complete { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -31,10 +33,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">SUPPLY AUDIT</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Vendor Quality Matrix v85.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">MTO PRODUCTION</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Architecture v87.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Run Quality Audit</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Production Floor</button>
         </div>
     </div>
 
@@ -52,22 +54,60 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('VENDOR_AUDIT');
-                
-                const vendors = [
-                    { name: 'Titanium Global', price: 'High', passRate: 99.2, wasteGenerated: '0.8%', output: 'Highest', trueCost: 'GHS 540' },
-                    { name: 'EcoChem Ltd', price: 'Mid', passRate: 85.0, wasteGenerated: '15.0%', output: 'Medium', trueCost: 'GHS 610' },
-                    { name: 'Discount Resins', price: 'Low', passRate: 62.5, wasteGenerated: '37.5%', output: 'Low', trueCost: 'GHS 780' }
+                const [view, setView] = useState('DASHBOARD');
+                const [selectedJob, setSelectedJob] = useState(null);
+
+                // SIMULATED DATABASE DATA BASED ON SCHEMA
+                const salesOrders = [
+                    { id: 1, order_no: 'SO-1001', customer: 'Ghana Build Co', type: 'Industrial Coating', quantity: 500, status: 'CONFIRMED' },
+                    { id: 2, order_no: 'SO-1002', customer: 'Tema Decor', type: 'Special Color Paint', quantity: 200, status: 'CONFIRMED' }
                 ];
+
+                const [jobs, setJobs] = useState([
+                    { id: 1, job_no: 'JOB-9901', sales_order_id: 1, type: 'Industrial Coating', quantity: 500, status: 'PENDING', bom: [] }
+                ]);
+
+                // LOGIC: DYNAMIC BOM GENERATOR (MTO SPEC)
+                const generateBOM = (type, qty) => {
+                    const formulations = {
+                        "Industrial Coating": [
+                            { material: "Resin", ratio: 0.4, cost: 45 },
+                            { material: "Pigment", ratio: 0.3, cost: 120 },
+                            { material: "Solvent", ratio: 0.3, cost: 15 }
+                        ],
+                        "Special Color Paint": [
+                            { material: "Base Paint", ratio: 0.8, cost: 35 },
+                            { material: "Colorant", ratio: 0.2, cost: 250 }
+                        ]
+                    };
+                    return formulations[type].map(item => ({
+                        raw_material: item.material,
+                        quantity_required: (qty * item.ratio).toFixed(2),
+                        total_cost: (qty * item.ratio * item.cost).toFixed(2)
+                    }));
+                };
+
+                const createJob = (order) => {
+                    const newJob = {
+                        id: jobs.length + 1,
+                        job_no: `JOB-${Date.now()}`,
+                        sales_order_id: order.id,
+                        type: order.type,
+                        quantity: order.quantity,
+                        status: 'PENDING',
+                        bom: generateBOM(order.type, order.quantity)
+                    };
+                    setJobs([...jobs, newJob]);
+                };
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
-                            e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Quality Intelligence')
+                            e('h1', { className: 'text-xl font-black italic text-white' }, "PRODUCTION"),
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'MTO Architecture')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['VENDOR_AUDIT', 'RECLAIM', 'PAYROLL', 'UTILITIES', 'CEO_DASHBOARD'].map(v => 
+                            ['DASHBOARD', 'JOBS', 'BOM_ENGINE', 'COSTING'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v.replace('_', ' '))
                             )
                         )
@@ -75,66 +115,70 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'VENDOR_AUDIT' && e('div', null,
-                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4'}, 'Supply Integrity'),
-                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Comparing Cost vs Quality vs Production Volume'),
+                        view === 'DASHBOARD' && e('div', null,
+                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4 text-white'}, 'Control Center'),
+                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Sales-to-Production Synchronization'),
 
-                            e('div', {className:'glass-card mb-10'},
-                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest'}, 'The "True Cost" Comparison'),
-                                e('div', {className:'grid grid-cols-1 md:grid-cols-3 gap-6 text-center'},
-                                    e('div', {className:'p-6 border border-yellow-500/20 rounded-2xl bg-yellow-500/5'},
-                                        e('p', {className:'text-[10px] font-black uppercase opacity-60 mb-1'}, 'Top Performance'),
-                                        e('p', {className:'text-xl font-black'}, 'Titanium Global'),
-                                        e('p', {className:'text-[10px] text-emerald-400 font-bold'}, '99% Clean Production')
-                                    ),
-                                    e('div', {className:'p-6 border border-white/10 rounded-2xl'},
-                                        e('p', {className:'text-[10px] font-black uppercase opacity-60 mb-1'}, 'Production Volume'),
-                                        e('p', {className:'text-xl font-black'}, '12,000L / Month'),
-                                        e('p', {className:'text-[10px] opacity-60'}, 'Highest Speed Throughput')
-                                    ),
-                                    e('div', {className:'p-6 border border-red-500/20 rounded-2xl bg-red-500/5'},
-                                        e('p', {className:'text-[10px] font-black uppercase opacity-60 mb-1'}, 'Financial Leakage'),
-                                        e('p', {className:'text-xl font-black text-red-500'}, 'Discount Resins'),
-                                        e('p', {className:'text-[10px] text-red-400 font-bold'}, 'Expensive in the long run')
-                                    )
-                                )
-                            ),
-
-                            e('div', {className:'glass-card overflow-hidden'},
-                                e('table', {className:'w-full text-left'},
-                                    e('thead', null, e('tr', {className:'text-[10px] font-black uppercase opacity-40 border-b border-white/10'},
-                                        e('th', {className:'pb-4'}, 'Supplier Name'),
-                                        e('th', {className:'pb-4'}, 'Stated Price'),
-                                        e('th', {className:'pb-4'}, 'QC Pass Rate'),
-                                        e('th', {className:'pb-4 text-yellow-500'}, 'Calculated True Cost'),
-                                        e('th', {className:'pb-4 text-right'}, 'Final Status')
-                                    )),
-                                    e('tbody', null, vendors.map((v, i) => e('tr', {key: i, className:'border-b border-white/5'},
-                                        e('td', {className:'py-6 font-black'}, v.name),
-                                        e('td', {className:'py-6 text-sm'}, v.price),
-                                        e('td', {className:'py-6'}, 
-                                            e('span', {className:'text-xs font-bold'}, `${v.passRate}%`),
-                                            e('div', {className:'quality-bar w-24'}, e('div', {className:'h-full bg-emerald-500', style:{width:`${v.passRate}%` }}))
+                            e('div', {className:'grid grid-cols-1 lg:grid-cols-2 gap-8'},
+                                e('div', {className:'glass-card'},
+                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest'}, 'Awaiting Production Job Creation'),
+                                    salesOrders.map(so => e('div', {key: so.id, className:'flex justify-between items-center bg-white/5 p-4 rounded-xl mb-3'},
+                                        e('div', null,
+                                            e('p', {className:'font-black text-sm'}, so.order_no),
+                                            e('p', {className:'text-[10px] opacity-60 uppercase'}, `${so.customer} | ${so.type}`)
                                         ),
-                                        e('td', {className:'py-6 font-black text-lg'}, v.trueCost),
-                                        e('td', {className:'py-6 text-right'}, 
-                                            e('span', {className:`text-[9px] font-black px-3 py-1 rounded ${v.passRate > 90 ? 'bg-emerald-500 text-white' : 'bg-red-500/20 text-red-500'}`}, 
-                                                v.passRate > 90 ? 'PREFERRED' : 'AVOID'
-                                            )
-                                        )
-                                    )))
-                                )
-                            ),
-
-                            e('div', {className:'mt-10 p-8 glass-card border-emerald-500/20 bg-emerald-500/5'},
-                                e('h4', {className:'text-xs font-black uppercase text-emerald-500 mb-4'}, 'CEO Strategy Insight'),
-                                e('p', {className:'text-sm opacity-80 leading-relaxed'}, 
-                                    "Analysis proves that 'Titanium Global' (High Price) results in a 99% first-time pass rate. 'Discount Resins' (Low Price) triggers the Reclaim Engine 37% of the time, consuming 4x more energy and labor per bucket. Total savings by switching to higher quality: GHS 240 per produced unit."
+                                        e('button', {onClick: () => createJob(so), className:'btn-accent px-4 py-2'}, 'Generate Job')
+                                    ))
+                                ),
+                                e('div', {className:'glass-card'},
+                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest'}, 'Active Job Status'),
+                                    jobs.map(j => e('div', {key: j.id, className:'flex justify-between items-center border-b border-white/5 pb-3 mb-3'},
+                                        e('span', {className:'text-xs font-bold'}, j.job_no),
+                                        e('span', {className:`status-pill ${j.status.toLowerCase()}`}, j.status),
+                                        e('button', {onClick: () => {setSelectedJob(j); setView('BOM_ENGINE')}, className:'text-[9px] font-black underline'}, 'View BOM')
+                                    ))
                                 )
                             )
                         ),
 
-                        view !== 'VENDOR_AUDIT' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view === 'BOM_ENGINE' && e('div', null,
+                            e('h2', {className:'text-4xl font-black uppercase italic mb-8'}, 'Dynamic BOM Engine'),
+                            selectedJob ? e('div', {className:'glass-card'},
+                                e('div', {className:'flex justify-between mb-8 border-b border-white/10 pb-4'},
+                                    e('div', null,
+                                        e('p', {className:'text-2xl font-black'}, selectedJob.job_no),
+                                        e('p', {className:'text-xs opacity-60 uppercase'}, `Product: ${selectedJob.type} | Target: ${selectedJob.quantity}L`)
+                                    ),
+                                    e('div', {className:'text-right text-emerald-500'},
+                                        e('p', {className:'text-[10px] font-black uppercase'}, 'Material Cost'),
+                                        e('p', {className:'text-2xl font-black font-mono'}, `GHS ${selectedJob.bom.reduce((acc, curr) => acc + parseFloat(curr.total_cost), 0).toLocaleString()}`)
+                                    )
+                                ),
+                                e('table', {className:'w-full text-left'},
+                                    e('thead', null, e('tr', {className:'text-[10px] uppercase opacity-40 border-b border-white/10 pb-2'},
+                                        e('th', null, 'Raw Material'), e('th', null, 'Qty Required'), e('th', null, 'Estimated Cost')
+                                    )),
+                                    e('tbody', null, selectedJob.bom.map((item, idx) => e('tr', {key: idx, className:'border-b border-white/5'},
+                                        e('td', {className:'py-4 font-bold text-sm'}, item.raw_material),
+                                        e('td', {className:'py-4 text-sm font-mono text-yellow-500'}, `${item.quantity_required} units`),
+                                        e('td', {className:'py-4 text-sm font-mono'}, `GHS ${parseFloat(item.total_cost).toLocaleString()}`)
+                                    )))
+                                ),
+                                e('button', {className:'btn-accent w-full mt-8 py-4'}, 'Reserve Inventory & Start Production')
+                            ) : e('p', null, 'Select a job from the Dashboard')
+                        ),
+
+                        view === 'COSTING' && e('div', null,
+                            e('h2', {className:'text-4xl font-black uppercase italic mb-8'}, 'Margin Analytics'),
+                            e('div', {className:'glass-card'},
+                                e('div', {className:'grid grid-cols-1 md:grid-cols-4 gap-4'},
+                                    e('div', null, e('p', {className:'text-[9px] opacity-40'}, 'Raw Material'), e('p', {className:'text-xl font-black'}, 'GHS 42,000')),
+                                    e('div', null, e('p', {className:'text-[9px] opacity-40'}, 'Labor Cost'), e('p', {className:'text-xl font-black'}, 'GHS 4,500')),
+                                    e('div', null, e('p', {className:'text-[9px] opacity-40'}, 'Overheads'), e('p', {className:'text-xl font-black text-red-500'}, 'GHS 1,200')),
+                                    e('div', {className:'bg-emerald-500/10 p-4 rounded'}, e('p', {className:'text-[9px] opacity-40 text-emerald-500'}, 'Net Profit Margin'), e('p', {className:'text-2xl font-black text-emerald-500'}, '32.4%'))
+                                )
+                            )
+                        )
                     )
                 );
             }
