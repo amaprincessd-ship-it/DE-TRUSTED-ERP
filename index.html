@@ -3,30 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP</title>
+    <title>CORPORATE COMMAND ERP | v60.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style id="theme-engine">
         :root {
             --bg-color: #020617;
-            --side-color: #0f172a;
+            --side-color: #080c14;
             --text-color: #f8fafc;
             --accent-color: #fbbf24;
-            --font-main: 'Ubuntu', sans-serif;
+            --font-main: 'Inter', 'Ubuntu', sans-serif;
             --bg-image: none;
         }
         body { 
             background-color: var(--bg-color); background-image: var(--bg-image);
             background-size: cover; background-position: center; background-attachment: fixed;
             color: var(--text-color); font-family: var(--font-main); margin: 0; overflow-x: hidden;
+            letter-spacing: -0.02em;
         }
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: -1;
+            background: radial-gradient(circle at top right, rgba(251, 191, 36, 0.05), transparent),
+                        rgba(2, 6, 23, 0.85); 
+            backdrop-filter: blur(25px); z-index: -1;
         }
-        .sidebar { background-color: var(--side-color); height: 100vh; width: 260px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
-        .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; position: relative; z-index: 10; }
+        .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.1); box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
+        .main-content { margin-left: 280px; min-height: 100vh; padding: 50px; position: relative; z-index: 10; }
+        
+        .glass-card { 
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%); 
+            backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.12); 
+            border-radius: 20px; padding: 30px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .input-box { border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.6); padding: 14px; width: 100%; color: white; border-radius: 10px; outline: none; font-size: 14px; transition: 0.3s; }
+        .input-box:focus { border-color: var(--accent-color); box-shadow: 0 0 15px rgba(251, 191, 36, 0.2); }
+        
+        .btn-accent { 
+            background: linear-gradient(to bottom right, #fbbf24, #d97706); 
+            color: #000; font-weight: 800; padding: 14px; border-radius: 10px; cursor: pointer; 
+            text-transform: uppercase; width: 100%; font-size: 12px; border: none; 
+            letter-spacing: 0.1em; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3); }
+
+        .stat-massive { font-size: 42px; font-weight: 900; line-height: 1; margin-top: 10px; background: linear-gradient(to right, #fff, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .nav-item { padding: 16px 30px; cursor: pointer; transition: 0.3s; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; border-left: 4px solid transparent; color: rgba(255,255,255,0.5); }
+        .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
         #security-barrier {
             position: fixed !important; top: 0 !important; left: 0 !important;
@@ -34,30 +59,24 @@
             background: #020617 !important; z-index: 2147483647 !important;
             display: flex; align-items: center; justify-content: center;
         }
-        .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 22px; }
-        .input-box { border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); padding: 12px; width: 100%; color: white; border-radius: 8px; outline: none; font-size: 13px; }
-        .btn-accent { background: var(--accent-color); color: #000; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; font-size: 11px; border: none; transition: 0.2s; }
-        .btn-accent:hover { transform: scale(1.02); opacity: 0.9; }
-        
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0px rgba(239, 68, 68, 0); background: rgba(239, 68, 68, 0.05); }
-            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.2); }
-            100% { box-shadow: 0 0 0px rgba(239, 68, 68, 0); background: rgba(239, 68, 68, 0.05); }
-        }
-        .alert-flash { animation: pulse-red 1.5s infinite; border: 1px solid #ef4444 !important; }
-        
-        .tag-pill { font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; background: rgba(255,255,255,0.1); color: var(--accent-color); }
+
+        /* DATA GRID STYLING */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .data-table tr { background: rgba(255,255,255,0.03); transition: 0.3s; }
+        .data-table tr:hover { background: rgba(255,255,255,0.08); }
+        .data-table td { padding: 16px; font-size: 13px; }
+        .data-table th { padding: 16px; text-align: left; font-size: 10px; text-transform: uppercase; opacity: 0.5; letter-spacing: 0.1em; }
     </style>
 </head>
 <body>
 
     <div id="security-barrier">
-        <div class="glass-card w-full max-w-sm text-center">
-            <div id="gate-logo-area" class="mb-4 flex justify-center"></div>
-            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">SYSTEM ACCESS</h1>
-            <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Private Command</p>
-            <input type="password" id="master-key-input" class="input-box text-center mb-6 text-2xl" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent">Unlock ERP</button>
+        <div class="glass-card w-full max-w-md text-center">
+            <div id="gate-logo-area" class="mb-6 flex justify-center"></div>
+            <h1 id="gate-brand-text" class="text-4xl font-black mb-1 italic tracking-tighter">FINANCIAL COMMAND</h1>
+            <p class="text-[10px] text-yellow-500 font-bold mb-10 tracking-[0.6em] uppercase opacity-80">Authenticated Session Required</p>
+            <input type="password" id="master-key-input" class="input-box text-center mb-6 text-3xl" placeholder="••••" autofocus>
+            <button onclick="checkAccess()" class="btn-accent">Establish Uplink</button>
         </div>
     </div>
 
@@ -77,22 +96,22 @@
             const { useState, useEffect } = React;
 
             function App() {
-                const [view, setView] = useState('VENDORS');
+                const [view, setView] = useState('PROCUREMENT');
                 const [theme, setTheme] = useState({
                     name: getSaved('erp_name', 'DE-TRUSTED'),
                     logo: getSaved('erp_logo', ''),
                     wallpaper: getSaved('erp_wall', ''),
                     bg: getSaved('erp_bg', '#020617'),
-                    side: getSaved('erp_side', '#0f172a'),
+                    side: getSaved('erp_side', '#080c14'),
                     text: getSaved('erp_text', '#f8fafc'),
-                    font: getSaved('erp_font', 'Ubuntu, sans-serif')
+                    font: getSaved('erp_font', 'Inter, sans-serif')
                 });
 
-                const vendors = [
-                    { id: 1, name: "Star Assurance", type: "Insurance", contact: "024-555-0192", email: "support@star.com", location: "Accra, High Street", map: "https://maps.google.com" },
-                    { id: 2, name: "Goil Energy", type: "Fuel Provider", contact: "030-222-9000", email: "fleet@goil.com.gh", location: "Nationwide Hubs", map: "https://maps.google.com" },
-                    { id: 3, name: "Elite Auto Garage", type: "Maintenance", contact: "055-123-4567", email: "service@elite.com", location: "Spintex Rd", map: "https://maps.google.com" },
-                    { id: 4, name: "DVLA Ghana", type: "Regulatory", contact: "311", email: "info@dvla.gov.gh", location: "37 Cantonments", map: "https://maps.google.com" }
+                const vendorSpend = [
+                    { id: 1, name: "Star Assurance", category: "Insurance", ytd: "GHS 45,000", lastPaid: "2025-12-20", status: "Paid" },
+                    { id: 2, name: "Goil Energy", category: "Fuel", ytd: "GHS 128,400", lastPaid: "2025-12-28", status: "Pending" },
+                    { id: 3, name: "Elite Auto Garage", category: "Maintenance", ytd: "GHS 12,200", lastPaid: "2025-11-15", status: "Paid" },
+                    { id: 4, name: "DVLA Ghana", category: "Regulatory", ytd: "GHS 8,500", lastPaid: "2025-06-12", status: "Paid" }
                 ];
 
                 useEffect(() => {
@@ -103,7 +122,7 @@
                     root.style.setProperty('--font-main', theme.font);
                     root.style.setProperty('--bg-image', theme.wallpaper ? `url('${theme.wallpaper}')` : 'none');
                     document.getElementById('gate-brand-text').innerText = theme.name;
-                    if(theme.logo) document.getElementById('gate-logo-area').innerHTML = `<img src="${theme.logo}" class="max-h-16">`;
+                    if(theme.logo) document.getElementById('gate-logo-area').innerHTML = `<img src="${theme.logo}" class="max-h-20">`;
                 }, [theme]);
 
                 const update = (key, val) => {
@@ -113,69 +132,79 @@
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
-                        e('div', { className: 'p-8 border-b border-white/5 text-center' }, 
-                            theme.logo && e('img', { src: theme.logo, className: 'max-h-10 mx-auto mb-2' }),
-                            e('h1', { className: 'text-lg font-black italic text-yellow-500' }, theme.name)
+                        e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
+                            theme.logo && e('img', { src: theme.logo, className: 'max-h-12 mx-auto mb-4' }),
+                            e('h1', { className: 'text-xl font-black italic text-white tracking-tighter' }, theme.name),
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 mt-1 uppercase tracking-widest'}, 'Executive Suite')
                         ),
-                        e('nav', { className: 'mt-6 text-[10px] font-bold uppercase flex-1' },
-                            ['DASHBOARD', 'VENDORS', 'LOGISTICS', 'COMPLIANCE', 'VISUALS'].map(v => 
-                                e('div', { key:v, onClick:()=>setView(v), className:`p-4 cursor-pointer transition ${view===v?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, v)
+                        e('nav', { className: 'flex-1' },
+                            ['DASHBOARD', 'PROCUREMENT', 'VENDORS', 'LOGISTICS', 'COMPLIANCE', 'VISUALS'].map(v => 
+                                e('div', { 
+                                    key:v, 
+                                    onClick:()=>setView(v), 
+                                    className:`nav-item ${view===v?'active':''}`
+                                }, v)
                             )
-                        )
+                        ),
+                        e('div', {className:'p-8 text-[9px] opacity-20 font-bold uppercase'}, 'System v60.0.0-PRO')
                     ),
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'VENDORS' && e('div', null,
-                            e('div', {className:'flex justify-between items-center mb-8'},
+                        view === 'PROCUREMENT' && e('div', null,
+                            e('div', {className:'flex justify-between items-end mb-12'},
                                 e('div', null,
-                                    e('h2', {className:'text-3xl font-black italic uppercase'}, 'Vendor Ecosystem'),
-                                    e('p', {className:'text-[10px] text-yellow-500 font-bold uppercase tracking-widest'}, 'Strategic Partners & Government Bodies')
+                                    e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter mb-2'}, 'Procurement Ledger'),
+                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Capital & Operational Expenditure Tracking')
                                 ),
-                                e('button', {className:'btn-accent w-auto px-6'}, '+ Onboard New Vendor')
+                                e('button', {className:'btn-accent w-auto px-10 rounded-full'}, 'Issue New Purchase Order')
                             ),
-                            
-                            e('div', {className:'grid grid-cols-1 md:grid-cols-2 gap-6'},
-                                vendors.map(v => e('div', {key: v.id, className:'glass-card flex flex-col justify-between hover:border-yellow-500/50 transition cursor-default'},
-                                    e('div', {className:'flex justify-between items-start mb-4'},
-                                        e('div', null,
-                                            e('span', {className:'tag-pill'}, v.type),
-                                            e('h3', {className:'text-xl font-black mt-2 uppercase'}, v.name)
-                                        ),
-                                        e('a', {href: v.map, target:'_blank', className:'text-[10px] font-bold text-yellow-500 hover:underline'}, '📍 VIEW ON MAP')
-                                    ),
-                                    e('div', {className:'space-y-2 mb-6'},
-                                        e('div', {className:'flex items-center gap-3'}, 
-                                            e('span', {className:'opacity-50 text-xs font-bold w-16 uppercase'}, 'Phone:'),
-                                            e('span', {className:'text-xs'}, v.contact)
-                                        ),
-                                        e('div', {className:'flex items-center gap-3'}, 
-                                            e('span', {className:'opacity-50 text-xs font-bold w-16 uppercase'}, 'Email:'),
-                                            e('span', {className:'text-xs font-mono'}, v.email)
-                                        ),
-                                        e('div', {className:'flex items-center gap-3'}, 
-                                            e('span', {className:'opacity-50 text-xs font-bold w-16 uppercase'}, 'Office:'),
-                                            e('span', {className:'text-xs'}, v.location)
-                                        )
-                                    ),
-                                    e('div', {className:'flex gap-2'},
-                                        e('button', {className:'flex-1 bg-white/10 p-2 rounded text-[9px] font-black uppercase hover:bg-white/20 transition'}, 'Call Agent'),
-                                        e('button', {className:'flex-1 bg-white/10 p-2 rounded text-[9px] font-black uppercase hover:bg-white/20 transition'}, 'History')
-                                    )
-                                ))
+
+                            e('div', {className:'grid grid-cols-3 gap-8 mb-12'},
+                                e('div', {className:'glass-card'}, 
+                                    e('p', {className:'text-[10px] font-bold opacity-50 uppercase tracking-widest'}, 'Total Annual Spend'),
+                                    e('p', {className:'stat-massive'}, 'GHS 194.1k')
+                                ),
+                                e('div', {className:'glass-card'}, 
+                                    e('p', {className:'text-[10px] font-bold opacity-50 uppercase tracking-widest'}, 'Active Invoices'),
+                                    e('p', {className:'stat-massive text-white'}, '14'),
+                                    e('p', {className:'text-[9px] text-yellow-500 font-bold mt-2'}, '4 PENDING APPROVAL')
+                                ),
+                                e('div', {className:'glass-card'}, 
+                                    e('p', {className:'text-[10px] font-bold opacity-50 uppercase tracking-widest'}, 'Vendor Compliance'),
+                                    e('p', {className:'stat-massive text-emerald-400'}, '98%')
+                                )
+                            ),
+
+                            e('div', {className:'glass-card'},
+                                e('h3', {className:'text-xs font-black uppercase tracking-widest mb-6 opacity-70'}, 'Master Spending Grid'),
+                                e('table', {className:'data-table'},
+                                    e('thead', null, e('tr', null, 
+                                        e('th', null, 'Vendor Name'), e('th', null, 'Category'), e('th', null, 'YTD Total'), e('th', null, 'Last Activity'), e('th', null, 'Status')
+                                    )),
+                                    e('tbody', null, vendorSpend.map(s => e('tr', {key: s.id},
+                                        e('td', {className:'font-bold'}, s.name),
+                                        e('td', null, e('span', {className:'bg-white/5 px-3 py-1 rounded text-[10px] uppercase'}, s.category)),
+                                        e('td', {className:'font-mono text-yellow-500 font-bold'}, s.ytd),
+                                        e('td', null, s.lastPaid),
+                                        e('td', null, e('span', {className:`font-black text-[10px] uppercase ${s.status === 'Pending' ? 'text-yellow-500' : 'text-emerald-500'}`}, s.status))
+                                    )))
+                                )
                             )
                         ),
 
-                        view === 'COMPLIANCE' && e('div', {className:'text-center p-20 italic opacity-30 text-2xl font-black'}, 'COMPLIANCE ENGINE ACTIVE'),
-                        view === 'DASHBOARD' && e('div', {className:'text-center p-20 italic opacity-30 text-2xl font-black'}, 'OPERATIONAL CONTROL CENTER ACTIVE'),
-                        view === 'LOGISTICS' && e('div', {className:'text-center p-20 italic opacity-30 text-2xl font-black'}, 'FLEET TRACKING ACTIVE'),
+                        view !== 'PROCUREMENT' && view !== 'VISUALS' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-20 text-3xl font-black'}, `${view} MODULE LOADED`),
                         
                         view === 'VISUALS' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase text-yellow-500'}, 'Visual Identity'),
-                            e('div', {className:'glass-card max-w-md space-y-4'},
-                                e('div', null, e('label',{className:'text-[10px] font-bold opacity-50 uppercase'},'System Name'), e('input',{className:'input-box mt-1', value:theme.name, onChange:(v)=>update('name', v.target.value)})),
-                                e('div', null, e('label',{className:'text-[10px] font-bold opacity-50 uppercase'},'Logo URL'), e('input',{className:'input-box mt-1', value:theme.logo, onChange:(v)=>update('logo', v.target.value)})),
-                                e('div', null, e('label',{className:'text-[10px] font-bold opacity-50 uppercase'},'Wallpaper URL'), e('input',{className:'input-box mt-1', value:theme.wallpaper, onChange:(v)=>update('wallpaper', v.target.value)}))
+                            e('h2', {className:'text-4xl font-black mb-10 italic uppercase tracking-tighter'}, 'Visual System Settings'),
+                            e('div', {className:'grid grid-cols-2 gap-10'},
+                                e('div', {className:'glass-card space-y-6'},
+                                    e('div', null, e('label',{className:'text-[10px] font-bold opacity-50 uppercase tracking-widest mb-2 block'},'Global System Branding'), e('input',{className:'input-box', value:theme.name, onChange:(v)=>update('name', v.target.value)})),
+                                    e('div', null, e('label',{className:'text-[10px] font-bold opacity-50 uppercase tracking-widest mb-2 block'},'Master Logo Path'), e('input',{className:'input-box', value:theme.logo, onChange:(v)=>update('logo', v.target.value)}))
+                                ),
+                                e('div', {className:'glass-card space-y-6'},
+                                    e('div', null, e('label',{className:'text-[10px] font-bold opacity-50 uppercase tracking-widest mb-2 block'},'Wallpaper Matrix'), e('input',{className:'input-box', value:theme.wallpaper, placeholder: 'URL to high-res image', onChange:(v)=>update('wallpaper', v.target.value)}))
+                                )
                             )
                         )
                     )
