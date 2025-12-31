@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v83.0</title>
+    <title>CORPORATE COMMAND ERP | v85.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,7 +13,7 @@
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
-        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top left, #1e293b, #020617); z-index: -1; }
+        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #0f172a, #020617); z-index: -1; }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; }
@@ -21,10 +21,9 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        .worker-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px 0; transition: 0.3s; }
-        .worker-row:hover { background: rgba(255,255,255,0.02); }
-        .badge-active { background: #10b981; color: #fff; font-size: 8px; padding: 2px 6px; border-radius: 4px; }
-
+        .vendor-rank-1 { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+        .quality-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.05); overflow: hidden; margin-top: 8px; }
+        
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -32,10 +31,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">HR COMMAND</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Payroll & Labor v83.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">SUPPLY AUDIT</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Vendor Quality Matrix v85.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Payroll Access</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Run Quality Audit</button>
         </div>
     </div>
 
@@ -53,80 +52,89 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('PAYROLL');
-                const [staff, setStaff] = useState([
-                    { id: 'ST-001', name: 'Kwame Mensah', role: 'Vat Lead', clockIn: '07:45 AM', batches: 3, dailyRate: 150, bonus: 45 },
-                    { id: 'ST-002', name: 'Ama Serwaa', role: 'QC Tech', clockIn: '08:02 AM', batches: 8, dailyRate: 180, bonus: 60 },
-                    { id: 'ST-003', name: 'Kojo Antwi', role: 'Mixer Op', clockIn: '07:55 AM', batches: 2, dailyRate: 120, bonus: 20 }
-                ]);
+                const [view, setView] = useState('VENDOR_AUDIT');
+                
+                const vendors = [
+                    { name: 'Titanium Global', price: 'High', passRate: 99.2, wasteGenerated: '0.8%', output: 'Highest', trueCost: 'GHS 540' },
+                    { name: 'EcoChem Ltd', price: 'Mid', passRate: 85.0, wasteGenerated: '15.0%', output: 'Medium', trueCost: 'GHS 610' },
+                    { name: 'Discount Resins', price: 'Low', passRate: 62.5, wasteGenerated: '37.5%', output: 'Low', trueCost: 'GHS 780' }
+                ];
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Workforce Engine')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Quality Intelligence')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['PAYROLL', 'UTILITIES', 'MAINTENANCE', 'CEO_DASHBOARD'].map(v => 
-                                e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
+                            ['VENDOR_AUDIT', 'RECLAIM', 'PAYROLL', 'UTILITIES', 'CEO_DASHBOARD'].map(v => 
+                                e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v.replace('_', ' '))
                             )
                         )
                     ),
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'PAYROLL' && e('div', null,
-                            e('div', {className:'flex justify-between items-center mb-10'},
-                                e('div', null,
-                                    e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter'}, 'Workforce'),
-                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Live Shift Tracking & Performance Wages')
-                                ),
-                                e('div', {className:'flex gap-4'},
-                                    e('button', {className:'bg-white/5 text-[10px] font-bold px-6 py-3 rounded uppercase border border-white/10'}, 'Shift Reports'),
-                                    e('button', {className:'btn-accent px-6 py-3'}, 'Close Daily Payroll')
-                                )
-                            ),
+                        view === 'VENDOR_AUDIT' && e('div', null,
+                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4'}, 'Supply Integrity'),
+                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Comparing Cost vs Quality vs Production Volume'),
 
-                            e('div', {className:'grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10'},
-                                e('div', {className:'glass-card'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Active Staff On-Floor'),
-                                    e('p', {className:'text-4xl font-black'}, '14'),
-                                    e('p', {className:'text-[10px] font-bold text-emerald-400 mt-2'}, 'All Systems Manned')
-                                ),
-                                e('div', {className:'glass-card'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Total Daily Labor Cost'),
-                                    e('p', {className:'text-4xl font-black'}, 'GHS 2,850'),
-                                    e('p', {className:'text-[10px] font-bold opacity-60 mt-2'}, 'Including Performance Bonuses')
-                                ),
-                                e('div', {className:'glass-card'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Labor vs Revenue Ratio'),
-                                    e('p', {className:'text-4xl font-black text-yellow-500'}, '4.2%'),
-                                    e('p', {className:'text-[10px] font-bold opacity-60 mt-2'}, 'Optimal Target: < 5%')
-                                )
-                            ),
-
-                            e('div', {className:'glass-card'},
-                                e('div', {className:'flex justify-between items-center mb-8 border-b border-white/10 pb-4'},
-                                    e('h3', {className:'text-xs font-black uppercase tracking-widest'}, 'Shift Log & Earnings'),
-                                    e('span', {className:'badge-active'}, 'LIVE SHIFT')
-                                ),
-                                e('div', {className:'hidden md:grid grid-cols-5 text-[10px] font-black uppercase opacity-30 mb-4 px-2'},
-                                    e('span',null,'Employee'), e('span',null,'Role'), e('span',null,'Clock In'), e('span',null,'Batches Handled'), e('span',null,'Daily Total')
-                                ),
-                                staff.map((s, i) => e('div', {key: i, className:'worker-row flex flex-col md:grid md:grid-cols-5 items-center px-2'},
-                                    e('span', {className:'font-bold text-sm'}, s.name),
-                                    e('span', {className:'text-xs opacity-60 uppercase'}, s.role),
-                                    e('span', {className:'text-xs font-mono'}, s.clockIn),
-                                    e('span', {className:'text-xs font-bold text-yellow-500'}, `${s.batches} Batches`),
-                                    e('div', null,
-                                        e('p', {className:'text-sm font-black'}, `GHS ${s.dailyRate + s.bonus}`),
-                                        e('p', {className:'text-[8px] opacity-40'}, `Base ${s.dailyRate} + Bonus ${s.bonus}`)
+                            e('div', {className:'glass-card mb-10'},
+                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest'}, 'The "True Cost" Comparison'),
+                                e('div', {className:'grid grid-cols-1 md:grid-cols-3 gap-6 text-center'},
+                                    e('div', {className:'p-6 border border-yellow-500/20 rounded-2xl bg-yellow-500/5'},
+                                        e('p', {className:'text-[10px] font-black uppercase opacity-60 mb-1'}, 'Top Performance'),
+                                        e('p', {className:'text-xl font-black'}, 'Titanium Global'),
+                                        e('p', {className:'text-[10px] text-emerald-400 font-bold'}, '99% Clean Production')
+                                    ),
+                                    e('div', {className:'p-6 border border-white/10 rounded-2xl'},
+                                        e('p', {className:'text-[10px] font-black uppercase opacity-60 mb-1'}, 'Production Volume'),
+                                        e('p', {className:'text-xl font-black'}, '12,000L / Month'),
+                                        e('p', {className:'text-[10px] opacity-60'}, 'Highest Speed Throughput')
+                                    ),
+                                    e('div', {className:'p-6 border border-red-500/20 rounded-2xl bg-red-500/5'},
+                                        e('p', {className:'text-[10px] font-black uppercase opacity-60 mb-1'}, 'Financial Leakage'),
+                                        e('p', {className:'text-xl font-black text-red-500'}, 'Discount Resins'),
+                                        e('p', {className:'text-[10px] text-red-400 font-bold'}, 'Expensive in the long run')
                                     )
-                                ))
+                                )
+                            ),
+
+                            e('div', {className:'glass-card overflow-hidden'},
+                                e('table', {className:'w-full text-left'},
+                                    e('thead', null, e('tr', {className:'text-[10px] font-black uppercase opacity-40 border-b border-white/10'},
+                                        e('th', {className:'pb-4'}, 'Supplier Name'),
+                                        e('th', {className:'pb-4'}, 'Stated Price'),
+                                        e('th', {className:'pb-4'}, 'QC Pass Rate'),
+                                        e('th', {className:'pb-4 text-yellow-500'}, 'Calculated True Cost'),
+                                        e('th', {className:'pb-4 text-right'}, 'Final Status')
+                                    )),
+                                    e('tbody', null, vendors.map((v, i) => e('tr', {key: i, className:'border-b border-white/5'},
+                                        e('td', {className:'py-6 font-black'}, v.name),
+                                        e('td', {className:'py-6 text-sm'}, v.price),
+                                        e('td', {className:'py-6'}, 
+                                            e('span', {className:'text-xs font-bold'}, `${v.passRate}%`),
+                                            e('div', {className:'quality-bar w-24'}, e('div', {className:'h-full bg-emerald-500', style:{width:`${v.passRate}%` }}))
+                                        ),
+                                        e('td', {className:'py-6 font-black text-lg'}, v.trueCost),
+                                        e('td', {className:'py-6 text-right'}, 
+                                            e('span', {className:`text-[9px] font-black px-3 py-1 rounded ${v.passRate > 90 ? 'bg-emerald-500 text-white' : 'bg-red-500/20 text-red-500'}`}, 
+                                                v.passRate > 90 ? 'PREFERRED' : 'AVOID'
+                                            )
+                                        )
+                                    )))
+                                )
+                            ),
+
+                            e('div', {className:'mt-10 p-8 glass-card border-emerald-500/20 bg-emerald-500/5'},
+                                e('h4', {className:'text-xs font-black uppercase text-emerald-500 mb-4'}, 'CEO Strategy Insight'),
+                                e('p', {className:'text-sm opacity-80 leading-relaxed'}, 
+                                    "Analysis proves that 'Titanium Global' (High Price) results in a 99% first-time pass rate. 'Discount Resins' (Low Price) triggers the Reclaim Engine 37% of the time, consuming 4x more energy and labor per bucket. Total savings by switching to higher quality: GHS 240 per produced unit."
+                                )
                             )
                         ),
 
-                        view !== 'PAYROLL' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view !== 'VENDOR_AUDIT' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
