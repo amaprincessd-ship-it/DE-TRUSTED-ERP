@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v78.0</title>
+    <title>CORPORATE COMMAND ERP | v79.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,7 +13,7 @@
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
-        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #0f172a, #020617); z-index: -1; }
+        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #1e293b, #020617); z-index: -1; }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; }
@@ -21,8 +21,9 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        .debt-alert { background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 15px; border-radius: 8px; }
-        .lock-icon { font-size: 24px; color: #ef4444; }
+        .stress-bg { background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .impact-indicator { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+        .impact-fill { height: 100%; background: #ef4444; }
 
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -31,10 +32,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">DEBT COMMAND</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Credit Control v78.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">STRESS COMMAND</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Simulation Protocol v79.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Credit Review</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Simulation</button>
         </div>
     </div>
 
@@ -52,22 +53,23 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('CREDIT_CONTROL');
-                
-                const clients = [
-                    { name: 'BuildGhana Ltd', balance: 145000, limit: 100000, status: 'LOCKED', overdue: '15 Days' },
-                    { name: 'Estate Dev Co', balance: 25000, limit: 50000, status: 'ACTIVE', overdue: 'None' },
-                    { name: 'Tema Paint Depot', balance: 89000, limit: 100000, status: 'ACTIVE', overdue: 'None' }
-                ];
+                const [view, setView] = useState('STRESS_TEST');
+                const [inflation, setInflation] = useState(20); // 20% Inflation Simulation
+
+                const currentCOGS = 520; // Cost of Goods Sold
+                const stressedCOGS = currentCOGS * (1 + (inflation / 100));
+                const currentProfit = 385000;
+                const profitErosion = (stressedCOGS - currentCOGS) * 1000; // Assuming 1000 buckets monthly
+                const newProfit = currentProfit - profitErosion;
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Risk Management')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Scenario Planning')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['CREDIT_CONTROL', 'PRICE_WATCH', 'CEO_DASHBOARD', 'FINANCE'].map(v => 
+                            ['STRESS_TEST', 'CREDIT_CONTROL', 'CEO_DASHBOARD', 'FINANCE'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v.replace('_', ' '))
                             )
                         )
@@ -75,50 +77,48 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'CREDIT_CONTROL' && e('div', null,
-                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4'}, 'Credit Guard'),
-                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Automatic Dispatch Prevention Engine'),
+                        view === 'STRESS_TEST' && e('div', null,
+                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4'}, 'Stress Simulator'),
+                            e('p', {className:'text-[11px] text-red-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Warning: Financial Shock Analysis Active'),
 
-                            e('div', {className:'grid grid-cols-1 gap-6 mb-12'},
-                                clients.map((client, i) => e('div', {key: i, className:`glass-card flex justify-between items-center ${client.status === 'LOCKED' ? 'border-red-500/40' : 'border-white/10'}`},
-                                    e('div', {className:'flex items-center gap-6'},
-                                        e('div', {className: 'lock-icon'}, client.status === 'LOCKED' ? '🔒' : '🔓'),
-                                        e('div', null,
-                                            e('h3', {className:'text-xl font-black uppercase'}, client.name),
-                                            e('p', {className:'text-[10px] font-bold opacity-40 uppercase'}, `Status: ${client.status}`)
-                                        )
-                                    ),
-                                    e('div', {className:'flex gap-12 text-right'},
-                                        e('div', null, e('p', {className:'text-[9px] uppercase opacity-40'}, 'Current Balance'), e('p', {className:`font-black ${client.balance > client.limit ? 'text-red-500' : ''}`}, `GHS ${client.balance.toLocaleString()}`)),
-                                        e('div', null, e('p', {className:'text-[9px] uppercase opacity-40'}, 'Credit Limit'), e('p', {className:'font-black'}, `GHS ${client.limit.toLocaleString()}`)),
-                                        e('div', {className:'w-32'}, 
-                                            client.status === 'LOCKED' 
-                                            ? e('button', {className:'bg-red-600 text-[9px] font-black text-white px-4 py-2 rounded uppercase'}, 'Dispatch Blocked')
-                                            : e('button', {className:'bg-emerald-600 text-[9px] font-black text-white px-4 py-2 rounded uppercase'}, 'Approved')
-                                        )
-                                    )
-                                ))
+                            e('div', {className:'glass-card mb-10 border-red-500/20'},
+                                e('label', {className:'text-[10px] font-black uppercase opacity-40 mb-4 block'}, 'Simulate Raw Material Price Hike (%)'),
+                                e('input', {className:'w-full accent-red-600 mb-4', type:'range', min:0, max:100, value: inflation, onChange: (e)=>setInflation(e.target.value)}),
+                                e('div', {className:'flex justify-between font-black text-4xl'}, 
+                                    e('span', {className:'text-red-500'}, `${inflation}% INCREASE`),
+                                    e('span', null, `COGS: GHS ${stressedCOGS.toFixed(2)}`)
+                                )
                             ),
 
-                            e('div', {className:'glass-card bg-red-500/5'},
-                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest text-red-500'}, 'Critical Revenue Alert'),
-                                e('div', {className:'debt-alert flex items-start gap-4'},
-                                    e('span', {className:'text-2xl'}, '⚠️'),
-                                    e('div', null,
-                                        e('p', {className:'font-black uppercase text-sm'}, 'System Lockdown Triggered'),
-                                        e('p', {className:'text-xs leading-relaxed opacity-80 mt-1'}, 
-                                            "BuildGhana Ltd has exceeded their credit limit by GHS 45,000. All active delivery orders for this client have been suspended. Truck assignment is disabled until a payment of at least GHS 50,000 is logged in the Finance Module."
+                            e('div', {className:'grid grid-cols-1 lg:grid-cols-2 gap-8'},
+                                e('div', {className:'glass-card stress-bg'},
+                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest'}, 'Profitability Impact'),
+                                    e('div', {className:'space-y-6'},
+                                        e('div', null,
+                                            e('p', {className:'text-[10px] uppercase font-bold opacity-50'}, 'Monthly Profit Erosion'),
+                                            e('p', {className:'text-3xl font-black text-red-500'}, `- GHS ${profitErosion.toLocaleString()}`),
+                                            e('div', {className:'impact-indicator'}, e('div', {className:'impact-fill', style: {width: `${(profitErosion/currentProfit)*100}%`}}))
+                                        ),
+                                        e('div', null,
+                                            e('p', {className:'text-[10px] uppercase font-bold opacity-50'}, 'Projected Net Profit (Post-Shock)'),
+                                            e('p', {className:'text-3xl font-black text-white'}, `GHS ${newProfit.toLocaleString()}`)
                                         )
                                     )
                                 ),
-                                e('div', {className:'mt-8 flex gap-4'},
-                                    e('button', {className:'btn-accent flex-1'}, 'Auto-Email Statement to Client'),
-                                    e('button', {className:'bg-white text-black font-black text-[10px] px-8 py-4 rounded uppercase'}, 'Manual Override (CEO Only)')
+
+                                e('div', {className:'glass-card'},
+                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest'}, 'Automated Strategic Response'),
+                                    e('div', {className:'space-y-4'},
+                                        e('div', {className:'flex items-center gap-3 text-xs'}, e('span', {className:'text-red-500'}, '●'), e('span', null, `Required Price Adjustment: +GHS ${(stressedCOGS-currentCOGS).toFixed(2)} per unit`)),
+                                        e('div', {className:'flex items-center gap-3 text-xs'}, e('span', {className:'text-red-500'}, '●'), e('span', null, 'Contract Re-negotiation suggested for 5 key accounts')),
+                                        e('div', {className:'flex items-center gap-3 text-xs font-black text-yellow-500'}, e('span', null, '●'), e('span', null, 'Switching to Alternative Binder Supplier saves 4%')),
+                                        e('button', {className:'btn-accent w-full mt-6 py-4'}, 'Apply Inflation Correction to Master Pricing')
+                                    )
                                 )
                             )
                         ),
 
-                        view !== 'CREDIT_CONTROL' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view !== 'STRESS_TEST' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
