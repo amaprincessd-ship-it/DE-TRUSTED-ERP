@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLATINUM ERP | v102.0 PRODUCTION & QMS</title>
+    <title>PLATINUM ERP | v103.0 EXECUTIVE WAR ROOM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -16,23 +16,20 @@
         .sidebar { background-color: var(--side-color); height: 100vh; width: 260px; position: fixed; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 24px; }
-        .input-field { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; color: white; width: 100%; font-size: 12px; }
-        .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 10px 20px; border-radius: 6px; cursor: pointer; text-transform: uppercase; border: none; font-size: 10px; }
-        .nav-item { padding: 12px 25px; cursor: pointer; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; transition: 0.3s; text-transform: uppercase; }
+        .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; border: none; font-size: 11px; }
+        .nav-item { padding: 14px 25px; cursor: pointer; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; transition: 0.3s; text-transform: uppercase; }
         .nav-item.active { background: rgba(251, 191, 36, 0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
-        .variance-pos { color: #f87171; } /* Excess usage */
-        .variance-neg { color: #34d399; } /* Efficiency gain */
-        #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .code-block { background: #000; color: #10b981; padding: 20px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.5; overflow-x: auto; border: 1px solid rgba(16, 185, 129, 0.2); }
     </style>
 </head>
 <body>
 
-    <div id="security-barrier">
+    <div id="security-barrier" style="position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center;">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/20">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">PROD COMMAND</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Manufacturing Logic v102.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">WAR ROOM</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Executive Deployment v103.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded-xl font-mono" placeholder="••••" autofocus>
-            <button onclick="document.getElementById('security-barrier').style.display='none'" class="btn-accent w-full py-4">Authorize Production</button>
+            <button onclick="document.getElementById('security-barrier').style.display='none'" class="btn-accent w-full py-4">Release Command</button>
         </div>
     </div>
 
@@ -44,27 +41,15 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('MRP');
-
-                // Logic 2.2: MRP Results Mock
-                const mrpResults = [
-                    { item: 'Titanium Dioxide', req: 500, avail: 120, shortage: 380, order_date: '2026-01-05' },
-                    { item: 'Acrylic Binder', req: 1200, avail: 1500, shortage: 0, order_date: 'N/A' }
-                ];
-
-                // Logic 3.3: Cost Variance Mock
-                const variances = [
-                    { job: 'JOB-9942', standard: 100, actual: 112, variance: 12, reason: 'High temperature evaporation' },
-                    { job: 'JOB-9945', standard: 250, actual: 248, variance: -2, reason: 'Precision filtering' }
-                ];
+                const [view, setView] = useState('DASHBOARD');
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar' },
                         e('div', { className: 'p-8 border-b border-white/5 text-center' }, 
-                            e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM MFG")
+                            e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM HQ")
                         ),
                         e('nav', { className: 'py-6' },
-                            ['BOM_BUILDER', 'MRP', 'WIP_TRACKER', 'QUALITY_QC', 'MAINTENANCE'].map(m => 
+                            ['DASHBOARD', 'SQL_SCHEMA', 'SALES_CREDIT', 'PRODUCTION'].map(m => 
                                 e('div', { key: m, onClick: () => setView(m), className: `nav-item ${view === m ? 'active' : ''}` }, m.replace('_', ' '))
                             )
                         )
@@ -72,58 +57,47 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'MRP' && e('div', null,
-                            e('h2', { className: 'text-4xl font-black italic uppercase text-white mb-2' }, 'Material Requirements (MRP)'),
-                            e('p', { className: 'text-[10px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-8' }, 'Explosion Logic: (MPS Qty * BOM Qty) - Available'),
-                            
-                            e('div', { className: 'glass-card' },
-                                e('table', { className: 'w-full text-left font-mono' },
-                                    e('thead', {className:'text-[10px] uppercase opacity-40'}, 
-                                        e('tr', null, e('th','Item'), e('th','Required'), e('th','Available'), e('th','Shortage'), e('th','Planned Order'))
-                                    ),
-                                    e('tbody', null, mrpResults.map((r, i) => e('tr', {key:i, className:'border-b border-white/5 text-xs'},
-                                        e('td', {className:'py-4 font-bold text-white'}, r.item),
-                                        e('td', null, r.req), e('td', null, r.avail),
-                                        e('td', {className: r.shortage > 0 ? 'text-red-500 font-black' : ''}, r.shortage),
-                                        e('td', {className:'opacity-60'}, r.order_date)
-                                    )))
+                        view === 'DASHBOARD' && e('div', null,
+                            e('h2', { className: 'text-4xl font-black italic uppercase text-white mb-2' }, 'Executive Overview'),
+                            e('p', { className: 'text-[10px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12' }, 'Integrated Financial & Material Intelligence'),
+
+                            e('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6 mb-8' },
+                                e('div', {className:'glass-card'}, 
+                                    e('p', {className:'text-[10px] opacity-40 uppercase font-black'}, 'Total Receivables'),
+                                    e('h3', {className:'text-3xl font-black text-emerald-400'}, 'GHS 284,500'),
+                                    e('p', {className:'text-[10px] mt-2 text-red-500'}, '● 12% Past Due')
+                                ),
+                                e('div', {className:'glass-card'}, 
+                                    e('p', {className:'text-[10px] opacity-40 uppercase font-black'}, 'Production WIP'),
+                                    e('h3', {className:'text-3xl font-black text-white'}, '14 Jobs Active'),
+                                    e('p', {className:'text-[10px] mt-2 text-yellow-500'}, '▲ 2 Bottlenecks Detected')
+                                ),
+                                e('div', {className:'glass-card'}, 
+                                    e('p', {className:'text-[10px] opacity-40 uppercase font-black'}, 'Raw Material Shortage'),
+                                    e('h3', {className:'text-3xl font-black text-red-500'}, '8 SKU Warnings'),
+                                    e('p', {className:'text-[10px] mt-2 opacity-60'}, 'Action Required: MRP Desk')
                                 )
+                            ),
+
+                            e('div', {className:'glass-card border-white/10'},
+                                e('h4', {className:'text-xs font-black uppercase mb-4 opacity-40'}, 'Cross-Module Risk Analysis'),
+                                e('p', {className:'text-sm italic'}, "Alert: Order #SAL-802 for 'Airport City Dev' is at risk. Required 'Titanium White' is out of stock. MRP predicts 5-day delay. Credit limit check passed.")
                             )
                         ),
 
-                        view === 'WIP_TRACKER' && e('div', null,
-                            e('h2', { className: 'text-4xl font-black italic uppercase text-white mb-2' }, 'WIP & Cost Variance'),
-                            e('p', { className: 'text-[10px] text-blue-400 font-bold uppercase tracking-[0.4em] mb-8' }, 'Standard vs Actual Consumption Analysis'),
-                            
-                            e('div', { className: 'grid grid-cols-1 gap-6' },
-                                variances.map((v, i) => e('div', {key:i, className:'glass-card flex justify-between items-center'},
-                                    e('div', null,
-                                        e('p', {className:'text-[10px] opacity-40 font-black'}, v.job),
-                                        e('h4', {className:'text-lg font-black text-white'}, v.reason)
-                                    ),
-                                    e('div', {className:'flex gap-10 text-center font-mono'},
-                                        e('div', null, e('p',{className:'text-[9px] opacity-40'},'STD'), e('p',null,v.standard)),
-                                        e('div', null, e('p',{className:'text-[9px] opacity-40'},'ACTUAL'), e('p',null,v.actual)),
-                                        e('div', null, e('p',{className:'text-[9px] opacity-40'},'VAR'), e('p',{className: v.variance > 0 ? 'variance-pos' : 'variance-neg'}, v.variance))
-                                    )
-                                ))
-                            )
-                        ),
-
-                        view === 'QUALITY_QC' && e('div', null,
-                            e('h2', { className: 'text-4xl font-black italic uppercase text-white mb-8' }, 'QMS Inspection'),
-                            e('div', { className: 'glass-card max-w-md' },
-                                e('div', {className:'space-y-4'},
-                                    e('div', null, e('label',{className:'text-[10px] font-bold uppercase opacity-50'},'Job ID'), e('input',{className:'input-field mt-1', placeholder:'Link to WIP Job'})),
-                                    e('div', null, e('label',{className:'text-[10px] font-bold uppercase opacity-50'},'Stage'), e('select',{className:'input-field mt-1'}, 
-                                        ['Mixing', 'Grinding', 'Filling', 'Packing'].map(s => e('option',{key:s},s))
-                                    )),
-                                    e('div', null, e('label',{className:'text-[10px] font-bold uppercase opacity-50'},'Result'), e('select',{className:'input-field mt-1 text-emerald-400'}, 
-                                        ['PASS', 'FAIL', 'REWORK'].map(s => e('option',{key:s},s))
-                                    )),
-                                    e('button', {className:'btn-accent w-full mt-4'}, 'Log QC Release')
-                                )
-                            )
+                        view === 'SQL_SCHEMA' && e('div', null,
+                            e('h2', { className: 'text-4xl font-black italic uppercase text-white mb-8' }, 'Database Blueprint'),
+                            e('div', { className: 'code-block' }, 
+                                `-- 1. PRODUCTION & BOM CORE\n`,
+                                `CREATE TABLE bom_headers (id SERIAL PRIMARY KEY, product_id INT, bom_version VARCHAR(20), is_active BOOLEAN, effective_from DATE, effective_to DATE);\n`,
+                                `CREATE TABLE bom_lines (id SERIAL PRIMARY KEY, bom_id INT REFERENCES bom_headers(id), component_item_id INT, quantity DECIMAL(12,4));\n\n`,
+                                `-- 2. SALES & CREDIT CONTROL\n`,
+                                `CREATE TABLE customers (id SERIAL PRIMARY KEY, customer_name VARCHAR(150), credit_limit DECIMAL(12,2), status VARCHAR(20));\n`,
+                                `CREATE TABLE sales_orders (id SERIAL PRIMARY KEY, customer_id INT, total_amount DECIMAL(12,2), status VARCHAR(20));\n\n`,
+                                `-- 3. COSTING & WIP\n`,
+                                `CREATE TABLE wip_ledger (id SERIAL PRIMARY KEY, job_id INT, material_cost DECIMAL(12,2), labor_cost DECIMAL(12,2), completion_percent DECIMAL(5,2));`
+                            ),
+                            e('button', {className: 'btn-accent mt-6', onClick: () => alert('Full SQL Export Initialized')}, 'Download Full SQL Schema')
                         )
                     )
                 );
