@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v80.0</title>
+    <title>CORPORATE COMMAND ERP | v81.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -21,13 +21,12 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        /* PRODUCTION SPECIFIC */
-        .stage-pill { padding: 4px 12px; border-radius: 99px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
-        .stage-active { background: #fbbf24; color: #000; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
-        .stage-todo { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); }
-        .vat-card { border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .vat-card:hover { border-color: var(--accent-color); background: rgba(255,255,255,0.02); }
-
+        /* MAINTENANCE STYLES */
+        .asset-card { border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; padding: 20px; border-radius: 16px; margin-bottom: 12px; }
+        .status-ok { color: #10b981; }
+        .status-fault { color: #ef4444; border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
+        .priority-high { background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; }
+        
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -35,10 +34,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">PRODUCTION FLOOR</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Vat Control & Loading v80.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">ASSET GUARD</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Maintenance & Engineering v81.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Open Floor Terminal</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Maintenance</button>
         </div>
     </div>
 
@@ -56,22 +55,30 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('LIVE_PRODUCTION');
-                
-                const [batches, setBatches] = useState([
-                    { id: 'BATCH-402', product: 'High-Gloss White', volume: '500L', stage: 'MIXING', vat: 'V-01', start: '08:00 AM' },
-                    { id: 'BATCH-403', product: 'Semi-Gloss Grey', volume: '1000L', stage: 'LOADING', vat: 'V-02', start: '09:30 AM' },
-                    { id: 'BATCH-401', product: 'Undercoat Matt', volume: '200L', stage: 'CANNING', vat: 'V-04', start: '07:00 AM' }
+                const [view, setView] = useState('MAINTENANCE');
+                const [assets, setAssets] = useState([
+                    { name: 'Vat Mixer V-01', status: 'OPERATIONAL', lastService: '2025-11-20', issues: 0 },
+                    { name: 'Disperser D-02', status: 'FAULT DETECTED', lastService: '2025-12-01', issues: 1, note: 'Bearing friction/Overheating' },
+                    { name: 'Canning Line C-01', status: 'OPERATIONAL', lastService: '2025-12-15', issues: 0 },
+                    { name: 'Vat Mixer V-02', status: 'OPERATIONAL', lastService: '2025-10-10', issues: 0 }
                 ]);
+
+                const reportIssue = (index) => {
+                    const newAssets = [...assets];
+                    newAssets[index].status = 'FAULT DETECTED';
+                    newAssets[index].issues += 1;
+                    setAssets(newAssets);
+                    alert("EMERGENCY: Asset Locked. Production Schedule Updated.");
+                };
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Factory Floor')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Engineering Hub')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['LIVE_PRODUCTION', 'MIXING', 'STRESS_TEST', 'CEO_DASHBOARD'].map(v => 
+                            ['MAINTENANCE', 'LIVE_PRODUCTION', 'FINANCE', 'CEO_DASHBOARD'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v.replace('_', ' '))
                             )
                         )
@@ -79,62 +86,43 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'LIVE_PRODUCTION' && e('div', null,
+                        view === 'MAINTENANCE' && e('div', null,
                             e('div', {className:'flex justify-between items-center mb-10'},
                                 e('div', null,
-                                    e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter'}, 'Production'),
-                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Active Vat Monitoring & Progress')
+                                    e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter'}, 'Asset Health'),
+                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Machinery Monitoring & Mechanical Integrity')
                                 ),
-                                e('button', {className:'btn-accent px-10 rounded-full'}, '+ Start New Batch')
+                                e('button', {className:'bg-red-600 text-white font-black px-8 py-3 rounded text-[10px] uppercase'}, 'REPORT CRITICAL FAILURE')
                             ),
 
-                            e('div', {className:'grid grid-cols-1 gap-4'},
-                                batches.map((b, i) => e('div', {key: i, className:'glass-card vat-card'},
-                                    e('div', {className:'flex flex-wrap justify-between items-center'},
-                                        e('div', {className:'flex items-center gap-8'},
-                                            e('div', {className:'text-center'},
-                                                e('p', {className:'text-[10px] uppercase font-black opacity-40'}, 'Vat #'),
-                                                e('p', {className:'text-2xl font-black text-yellow-500'}, b.vat)
-                                            ),
-                                            e('div', null,
-                                                e('h3', {className:'text-xl font-black uppercase'}, b.product),
-                                                e('p', {className:'text-[10px] font-bold opacity-60'}, `${b.id} | ${b.volume} Target`)
-                                            )
+                            e('div', {className:'grid grid-cols-1 md:grid-cols-2 gap-6'},
+                                assets.map((a, i) => e('div', {key: i, className:`asset-card ${a.status.includes('FAULT') ? 'status-fail border-red-500' : 'bg-white/5'}`},
+                                    e('div', {className:'flex justify-between items-start mb-6'},
+                                        e('div', null,
+                                            e('h3', {className:'text-xl font-black'}, a.name),
+                                            e('p', {className:`text-[9px] font-black uppercase ${a.status === 'OPERATIONAL' ? 'text-emerald-500' : 'text-red-500'}`}, a.status)
                                         ),
-                                        
-                                        e('div', {className:'flex gap-2'},
-                                            ['LOADING', 'MIXING', 'QC_CHECK', 'CANNING'].map(s => 
-                                                e('span', {key: s, className: `stage-pill ${b.stage === s ? 'stage-active' : 'stage-todo'}`}, s)
-                                            )
-                                        ),
-
-                                        e('div', {className:'flex gap-4 items-center'},
-                                            e('div', {className:'text-right'},
-                                                e('p', {className:'text-[9px] uppercase opacity-40'}, 'Started At'),
-                                                e('p', {className:'text-xs font-bold'}, b.start)
-                                            ),
-                                            e('button', {className:'bg-white/10 hover:bg-white/20 p-3 rounded-lg text-white font-black text-[10px] uppercase'}, 'Update Stage')
-                                        )
+                                        a.status.includes('FAULT') && e('span', {className:'priority-high'}, 'IMMEDIATE REPAIR')
+                                    ),
+                                    e('div', {className:'space-y-2 mb-6 text-xs'},
+                                        e('p', {className:'opacity-50'}, `Last Service: ${a.lastService}`),
+                                        a.note && e('p', {className:'text-red-400 italic'}, `Note: ${a.note}`)
+                                    ),
+                                    e('div', {className:'flex gap-2'},
+                                        a.status === 'OPERATIONAL' ? 
+                                        e('button', {onClick: () => reportIssue(i), className:'w-full bg-white/5 hover:bg-red-900 text-[9px] font-black py-2 rounded transition uppercase'}, 'Report Issue') :
+                                        e('button', {className:'w-full bg-emerald-600 text-white text-[9px] font-black py-2 rounded uppercase'}, 'Mark as Fixed')
                                     )
                                 ))
                             ),
 
-                            e('div', {className:'mt-10 grid grid-cols-1 md:grid-cols-2 gap-6'},
-                                e('div', {className:'glass-card border-emerald-500/20 bg-emerald-500/5'},
-                                    e('h4', {className:'text-[10px] font-black uppercase opacity-40 mb-4'}, 'Raw Material Auto-Pull'),
-                                    e('p', {className:'text-sm opacity-80 leading-relaxed'}, 'Batch 403 (Semi-Gloss) has successfully reserved 250kg of Binder and 40kg of Pigment from Main Inventory.')
-                                ),
-                                e('div', {className:'glass-card border-yellow-500/20 bg-yellow-500/5'},
-                                    e('h4', {className:'text-[10px] font-black uppercase opacity-40 mb-4'}, 'Machinery Status'),
-                                    e('div', {className:'flex justify-between text-xs font-bold'},
-                                        e('span', null, 'Disperser A: ACTIVE'),
-                                        e('span', {className:'text-yellow-500'}, 'RPM: 1,450')
-                                    )
-                                )
+                            e('div', {className:'mt-10 glass-card bg-blue-500/5 border-blue-500/20'},
+                                e('h4', {className:'text-[10px] font-black uppercase opacity-40 mb-4'}, 'Preventative Maintenance Schedule'),
+                                e('p', {className:'text-sm opacity-80 mb-4'}, 'Next major plant shutdown scheduled for January 15th (14 days remaining). Spare parts for Disperser D-02 have been auto-ordered.')
                             )
                         ),
 
-                        view !== 'LIVE_PRODUCTION' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view !== 'MAINTENANCE' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
