@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v76.0</title>
+    <title>CORPORATE COMMAND ERP | v78.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,14 +13,17 @@
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
-        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at bottom left, #0f172a, #020617); z-index: -1; }
+        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #0f172a, #020617); z-index: -1; }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; }
         .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; border: none; font-size: 10px; }
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
-        .predictive-glow { box-shadow: 0 0 30px rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); }
+        
+        .debt-alert { background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 15px; border-radius: 8px; }
+        .lock-icon { font-size: 24px; color: #ef4444; }
+
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -28,10 +31,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">FORECAST CORE</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Predictive Intelligence v76.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">DEBT COMMAND</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Credit Control v78.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Run Prediction Engine</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Credit Review</button>
         </div>
     </div>
 
@@ -49,73 +52,73 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('FORECAST');
+                const [view, setView] = useState('CREDIT_CONTROL');
+                
+                const clients = [
+                    { name: 'BuildGhana Ltd', balance: 145000, limit: 100000, status: 'LOCKED', overdue: '15 Days' },
+                    { name: 'Estate Dev Co', balance: 25000, limit: 50000, status: 'ACTIVE', overdue: 'None' },
+                    { name: 'Tema Paint Depot', balance: 89000, limit: 100000, status: 'ACTIVE', overdue: 'None' }
+                ];
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Strategy Room')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Risk Management')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['FORECAST', 'CEO_DASHBOARD', 'PRODUCTION', 'FINANCE'].map(v => 
-                                e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
+                            ['CREDIT_CONTROL', 'PRICE_WATCH', 'CEO_DASHBOARD', 'FINANCE'].map(v => 
+                                e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v.replace('_', ' '))
                             )
                         )
                     ),
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'FORECAST' && e('div', null,
-                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4'}, 'Revenue Prediction'),
-                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'January 2026 Projection | Based on Current Inventory'),
+                        view === 'CREDIT_CONTROL' && e('div', null,
+                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4'}, 'Credit Guard'),
+                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Automatic Dispatch Prevention Engine'),
 
-                            e('div', {className:'grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10'},
-                                e('div', {className:'glass-card predictive-glow'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Projected Sales (Next 30 Days)'),
-                                    e('p', {className:'text-4xl font-black text-yellow-500'}, 'GHS 1,450,000'),
-                                    e('p', {className:'text-[10px] font-bold text-emerald-400 mt-2'}, '↑ 17% vs December')
-                                ),
-                                e('div', {className:'glass-card'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Current Stock Conversion'),
-                                    e('p', {className:'text-4xl font-black'}, '8,500L'),
-                                    e('p', {className:'text-[10px] font-bold opacity-60 mt-2 uppercase'}, 'Capacity to produce 425 Buckets')
-                                ),
-                                e('div', {className:'glass-card'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Estimated Net Margin'),
-                                    e('p', {className:'text-4xl font-black'}, 'GHS 464,000'),
-                                    e('p', {className:'text-[10px] font-bold opacity-60 mt-2 uppercase'}, 'Projected 32% Average')
-                                )
+                            e('div', {className:'grid grid-cols-1 gap-6 mb-12'},
+                                clients.map((client, i) => e('div', {key: i, className:`glass-card flex justify-between items-center ${client.status === 'LOCKED' ? 'border-red-500/40' : 'border-white/10'}`},
+                                    e('div', {className:'flex items-center gap-6'},
+                                        e('div', {className: 'lock-icon'}, client.status === 'LOCKED' ? '🔒' : '🔓'),
+                                        e('div', null,
+                                            e('h3', {className:'text-xl font-black uppercase'}, client.name),
+                                            e('p', {className:'text-[10px] font-bold opacity-40 uppercase'}, `Status: ${client.status}`)
+                                        )
+                                    ),
+                                    e('div', {className:'flex gap-12 text-right'},
+                                        e('div', null, e('p', {className:'text-[9px] uppercase opacity-40'}, 'Current Balance'), e('p', {className:`font-black ${client.balance > client.limit ? 'text-red-500' : ''}`}, `GHS ${client.balance.toLocaleString()}`)),
+                                        e('div', null, e('p', {className:'text-[9px] uppercase opacity-40'}, 'Credit Limit'), e('p', {className:'font-black'}, `GHS ${client.limit.toLocaleString()}`)),
+                                        e('div', {className:'w-32'}, 
+                                            client.status === 'LOCKED' 
+                                            ? e('button', {className:'bg-red-600 text-[9px] font-black text-white px-4 py-2 rounded uppercase'}, 'Dispatch Blocked')
+                                            : e('button', {className:'bg-emerald-600 text-[9px] font-black text-white px-4 py-2 rounded uppercase'}, 'Approved')
+                                        )
+                                    )
+                                ))
                             ),
 
-                            e('div', {className:'glass-card mb-8'},
-                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest'}, 'Raw Material Critical Path'),
-                                e('div', {className:'grid grid-cols-1 md:grid-cols-2 gap-12'},
+                            e('div', {className:'glass-card bg-red-500/5'},
+                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest text-red-500'}, 'Critical Revenue Alert'),
+                                e('div', {className:'debt-alert flex items-start gap-4'},
+                                    e('span', {className:'text-2xl'}, '⚠️'),
                                     e('div', null,
-                                        e('p', {className:'text-sm font-bold mb-4'}, 'Resource Availability'),
-                                        [
-                                            { label: 'Binder (Resin)', val: 95, color: '#10b981' },
-                                            { label: 'Titanium Dioxide', val: 32, color: '#fbbf24' },
-                                            { label: 'Additives', val: 12, color: '#ef4444' }
-                                        ].map((mat, i) => e('div', {key: i, className:'mb-4'},
-                                            e('div', {className:'flex justify-between text-[10px] uppercase font-bold mb-1'}, 
-                                                e('span', null, mat.label), e('span', null, `${mat.val}%`)
-                                            ),
-                                            e('div', {className:'h-1 w-full bg-white/5 rounded-full'}, e('div', {className:'h-full rounded-full', style: {width: `${mat.val}%`, backgroundColor: mat.color}}))
-                                        ))
-                                    ),
-                                    e('div', {className:'bg-white/5 p-6 rounded-2xl border border-white/5'},
-                                        e('p', {className:'text-xs font-black uppercase text-yellow-500 mb-4'}, '⚠️ Forecast Warning'),
-                                        e('p', {className:'text-sm leading-relaxed opacity-80 mb-4'}, 'Your current Additive stock will run out in 4 days. If not replenished, your projected January revenue will drop by GHS 620,000 due to production stoppage.'),
-                                        e('button', {className:'btn-accent w-full'}, 'Auto-Generate PO for Additives')
+                                        e('p', {className:'font-black uppercase text-sm'}, 'System Lockdown Triggered'),
+                                        e('p', {className:'text-xs leading-relaxed opacity-80 mt-1'}, 
+                                            "BuildGhana Ltd has exceeded their credit limit by GHS 45,000. All active delivery orders for this client have been suspended. Truck assignment is disabled until a payment of at least GHS 50,000 is logged in the Finance Module."
+                                        )
                                     )
+                                ),
+                                e('div', {className:'mt-8 flex gap-4'},
+                                    e('button', {className:'btn-accent flex-1'}, 'Auto-Email Statement to Client'),
+                                    e('button', {className:'bg-white text-black font-black text-[10px] px-8 py-4 rounded uppercase'}, 'Manual Override (CEO Only)')
                                 )
                             )
                         ),
 
-                        view !== 'FORECAST' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic text-center'}, 
-                            e('div', null, e('p', null, `${view} MODULE`), e('p', {className:'text-xs font-mono'}, 'SYSTEM_LOCK_ACTIVE'))
-                        )
+                        view !== 'CREDIT_CONTROL' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
