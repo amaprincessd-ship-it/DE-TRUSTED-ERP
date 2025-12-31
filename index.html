@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v71.0</title>
+    <title>CORPORATE COMMAND ERP | v72.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -21,12 +21,9 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        /* QC STYLES */
-        .qc-input { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; color: white; width: 100%; outline: none; }
-        .qc-label { font-size: 10px; font-weight: 800; color: #fbbf24; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .status-pass { color: #10b981; }
-        .status-fail { color: #ef4444; animation: blink 0.8s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
+        /* CERTIFICATE PREVIEW */
+        .coa-preview { background: white; color: black; padding: 40px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 0 40px rgba(0,0,0,0.5); }
+        .coa-header { border-bottom: 2px solid black; margin-bottom: 20px; padding-bottom: 10px; }
         
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -35,10 +32,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">QUALITY GATE</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Compliance & Batch v71</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">DISPATCH CORE</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Logistics & Certification v72</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Quality Test</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Dispatch</button>
         </div>
     </div>
 
@@ -56,34 +53,27 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('QUALITY');
-                const [qcData, setQcData] = useState({ viscosity: '', ph: '', opacity: '', drying: '' });
-                const [isVerified, setIsVerified] = useState(false);
+                const [view, setView] = useState('CERTIFY');
+                const [showCOA, setShowCOA] = useState(false);
 
-                // Industrial Standards for Semi-Gloss
-                const standards = { viscosity: { min: 95, max: 105 }, ph: { min: 8.5, max: 9.5 } };
-
-                const checkCompliance = () => {
-                    const v = parseFloat(qcData.viscosity);
-                    const p = parseFloat(qcData.ph);
-                    if (v >= standards.viscosity.min && v <= standards.viscosity.max && 
-                        p >= standards.ph.min && p <= standards.ph.max) {
-                        setIsVerified(true);
-                        alert("BATCH COMPLIANT: Security Locks Released.");
-                    } else {
-                        setIsVerified(false);
-                        alert("QUALITY FAILURE: Batch must be adjusted.");
-                    }
+                // Mocking data from the previous QC step
+                const batchDetails = {
+                    id: 'SG-2025-001',
+                    product: 'Semi-Gloss High Durability (White)',
+                    viscosity: '102 KU',
+                    ph: '9.1',
+                    opacity: '98.5%',
+                    date: '2025-12-31'
                 };
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
-                            e('h1', { className: 'text-xl font-black italic text-white tracking-tighter' }, "COMPLIANCE ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'QC & Standardization')
+                            e('h1', { className: 'text-xl font-black italic text-white tracking-tighter' }, "LOGISTICS ERP"),
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Certification & Dispatch')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['DASHBOARD', 'QUALITY', 'MIXING', 'AUDIT', 'VENDORS'].map(v => 
+                            ['DASHBOARD', 'CERTIFY', 'QUALITY', 'MIXING', 'DISPATCH'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
                             )
                         )
@@ -91,48 +81,55 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'QUALITY' && e('div', null,
-                            e('div', {className:'flex justify-between items-end mb-10'},
-                                e('div', null,
-                                    e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter'}, 'Quality Assurance'),
-                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Batch ID: SG-2025-001 | 20L Semi-Gloss')
-                                ),
-                                e('div', {className: `px-6 py-2 rounded-full border font-black text-[10px] uppercase ${isVerified ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' : 'border-red-500 text-red-500 bg-red-500/10'}`}, 
-                                    isVerified ? '● Passed Inspection' : '● Verification Required'
-                                )
-                            ),
+                        view === 'CERTIFY' && e('div', null,
+                            e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter mb-4'}, 'Batch Certification'),
+                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Certified batches ready for client delivery'),
 
-                            e('div', {className:'grid grid-cols-1 lg:grid-cols-2 gap-10'},
-                                e('div', {className:'glass-card space-y-6'},
+                            !showCOA ? e('div', {className:'glass-card max-w-2xl'},
+                                e('div', {className:'flex justify-between items-center mb-8'},
                                     e('div', null,
-                                        e('label', {className:'qc-label'}, 'Viscosity (KU) - Standard: 95-105'),
-                                        e('input', {className:'qc-input', placeholder:'Enter measured KU...', value: qcData.viscosity, onChange: (v)=>setQcData({...qcData, viscosity: v.target.value})})
+                                        e('p', {className:'text-[10px] font-black opacity-40 uppercase'}, 'Active Batch'),
+                                        e('h3', {className:'text-3xl font-black'}, batchDetails.id)
                                     ),
-                                    e('div', null,
-                                        e('label', {className:'qc-label'}, 'pH Level - Standard: 8.5-9.5'),
-                                        e('input', {className:'qc-input', placeholder:'Enter measured pH...', value: qcData.ph, onChange: (v)=>setQcData({...qcData, ph: v.target.value})})
-                                    ),
-                                    e('div', null,
-                                        e('label', {className:'qc-label'}, 'Hiding Power / Opacity (%)'),
-                                        e('input', {className:'qc-input', placeholder:'Enter % coverage...', value: qcData.opacity, onChange: (v)=>setQcData({...qcData, opacity: v.target.value})})
-                                    ),
-                                    e('button', {onClick: checkCompliance, className:'btn-accent w-full py-4 mt-4'}, 'Run Compliance Check')
+                                    e('div', {className:'bg-emerald-500/20 text-emerald-500 px-4 py-1 rounded-full text-[9px] font-black uppercase'}, 'QC Validated')
                                 ),
-
-                                e('div', {className:'glass-card flex flex-col justify-between'},
-                                    e('div', null,
-                                        e('h4', {className:'text-xs font-black uppercase opacity-40 mb-6'}, 'Finalization Protocol'),
-                                        e('p', {className:'text-sm opacity-80 mb-8 leading-relaxed'}, 'Inventory addition and label printing are electronically disabled until Viscosity and pH standards are validated by the Lab Lead.')
+                                e('div', {className:'grid grid-cols-2 gap-6 mb-8'},
+                                    e('div', null, e('p', {className:'text-[10px] opacity-40 uppercase'}, 'Product'), e('p', {className:'font-bold'}, batchDetails.product)),
+                                    e('div', null, e('p', {className:'text-[10px] opacity-40 uppercase'}, 'Date of Mix'), e('p', {className:'font-bold text-yellow-500'}, batchDetails.date))
+                                ),
+                                e('button', {onClick: ()=>setShowCOA(true), className:'btn-accent w-full py-4 text-sm'}, 'View Certificate of Analysis (COA)')
+                            ) : 
+                            e('div', null,
+                                e('div', {className:'coa-preview mb-8'},
+                                    e('div', {className:'coa-header flex justify-between items-center'},
+                                        e('div', null,
+                                            e('h1', {className:'text-xl font-black uppercase'}, 'PLATINUM PAINTS GH'),
+                                            e('p', {className:'text-[10px]'}, 'INDUSTRIAL QUALITY CERTIFICATE')
+                                        ),
+                                        e('p', {className:'text-xs'}, `BATCH #: ${batchDetails.id}`)
                                     ),
-                                    e('div', {className:'space-y-3'},
-                                        e('button', {disabled: !isVerified, className:`w-full p-4 rounded text-[10px] font-black uppercase transition ${isVerified ? 'bg-white text-black cursor-pointer' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}, 'Print Batch Labels (20L)'),
-                                        e('button', {disabled: !isVerified, className:`w-full p-4 rounded text-[10px] font-black uppercase transition ${isVerified ? 'bg-emerald-600 text-white cursor-pointer' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}, 'Transfer to Finished Goods')
+                                    e('h2', {className:'text-center font-bold underline mb-6'}, 'CERTIFICATE OF ANALYSIS (COA)'),
+                                    e('div', {className:'grid grid-cols-1 gap-4 text-sm'},
+                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'Product:'), e('span', {className:'font-bold'}, batchDetails.product)),
+                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'Viscosity:'), e('span', {className:'font-bold text-blue-800'}, batchDetails.viscosity)),
+                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'pH Level:'), e('span', {className:'font-bold text-blue-800'}, batchDetails.ph)),
+                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'Hiding Power:'), e('span', {className:'font-bold text-blue-800'}, batchDetails.opacity)),
+                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'Certification Date:'), e('span', null, batchDetails.date))
+                                    ),
+                                    e('div', {className:'mt-10 pt-10 border-t border-dashed flex justify-between items-end italic text-xs'},
+                                        e('div', null, e('p', null, '_______________________'), e('p', null, 'Lab Technologist')),
+                                        e('p', null, 'E-Verified via ERP CORE')
                                     )
+                                ),
+                                e('div', {className:'flex gap-4'},
+                                    e('button', {onClick: ()=>setShowCOA(false), className:'bg-white/10 px-8 py-3 rounded text-[10px] font-black uppercase'}, '← Back'),
+                                    e('button', {className:'btn-accent px-10 py-3 rounded text-[10px] font-black uppercase'}, 'Print PDF & Send to Client'),
+                                    e('button', {className:'bg-emerald-600 px-10 py-3 rounded text-[10px] font-black uppercase text-white'}, 'Final Dispatch to Truck')
                                 )
                             )
                         ),
 
-                        view !== 'QUALITY' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-10 text-4xl font-black uppercase'}, `${view} SYSTEM ACTIVE`)
+                        view !== 'CERTIFY' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-10 text-4xl font-black uppercase tracking-widest'}, `${view} System Active`)
                     )
                 );
             }
