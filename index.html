@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v97.0 CRM</title>
+    <title>CORPORATE COMMAND ERP | v98.0 FINANCIALS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,7 +13,7 @@
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
-        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at bottom right, #0f172a, #020617); z-index: -1; }
+        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #0f172a, #020617); z-index: -1; }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; }
@@ -21,9 +21,8 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        .client-status { font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
-        .status-repeat { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .status-at-risk { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .inv-unpaid { color: #f87171; border: 1px solid rgba(248, 113, 113, 0.2); }
+        .inv-paid { color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
 
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -32,10 +31,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">REVENUE GATE</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Customer Intelligence v97.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">TREASURY</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Accounts Receivable v98.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Synchronize Client Data</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Open Fiscal Ledger</button>
         </div>
     </div>
 
@@ -53,22 +52,22 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('CLIENTS');
+                const [view, setView] = useState('INVOICES');
                 
-                const [clients] = useState([
-                    { id: 'C-001', name: 'West-Hills Construction', lastOrder: '2025-10-15', freq: 'Every 45 Days', status: 'AT_RISK', favColor: 'Eco-Green 402' },
-                    { id: 'C-002', name: 'Airport City Dev', lastOrder: '2025-12-28', freq: 'Every 14 Days', status: 'REPEAT', favColor: 'Slate Grey' },
-                    { id: 'C-003', name: 'Tullow Oil Housing', lastOrder: '2025-11-30', freq: 'Monthly', status: 'REPEAT', favColor: 'Hi-Gloss Safety Orange' }
+                const [invoices] = useState([
+                    { id: 'INV-8801', client: 'West-Hills Construction', amount: 45000, date: '2025-12-28', status: 'UNPAID', due: 'In 3 Days' },
+                    { id: 'INV-8799', client: 'Airport City Dev', amount: 12400, date: '2025-12-20', status: 'PAID', due: 'Settled' },
+                    { id: 'INV-8805', client: 'Tullow Oil Ghana', amount: 89000, date: '2025-12-30', status: 'UNPAID', due: 'In 14 Days' }
                 ]);
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Growth Matrix')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Finance Core')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['CLIENTS', 'LEAD_TRACKER', 'SALES_HISTORY', 'DASHBOARD'].map(v => 
+                            ['INVOICES', 'PAYMENTS', 'TAX_REPORTS', 'CASH_FLOW'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
                             )
                         )
@@ -76,45 +75,59 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'CLIENTS' && e('div', null,
+                        view === 'INVOICES' && e('div', null,
                             e('div', {className:'flex justify-between items-end mb-12'},
                                 e('div', null,
-                                    e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter text-white'}, 'Client Hub'),
-                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Customer Lifecycle & Predictive Revenue')
+                                    e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter text-white'}, 'Receivables'),
+                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Automated Billing & Collections')
                                 ),
-                                e('button', {className:'btn-accent px-8'}, 'New Client Onboarding')
-                            ),
-
-                            e('div', {className:'grid grid-cols-1 gap-6'},
-                                clients.map(c => e('div', {key: c.id, className:'glass-card border-white/5 flex items-center justify-between'},
-                                    e('div', {className:'w-1/4'},
-                                        e('p', {className:'text-[10px] font-black uppercase opacity-40'}, c.id),
-                                        e('h3', {className:'text-xl font-black'}, c.name),
-                                        e('span', {className:`client-status ${c.status === 'REPEAT' ? 'status-repeat' : 'status-at-risk'}`}, c.status.replace('_', ' '))
-                                    ),
-                                    e('div', {className:'w-1/4'},
-                                        e('p', {className:'text-[9px] font-black uppercase opacity-40 mb-1'}, 'Preferred Formulation'),
-                                        e('p', {className:'text-sm font-bold text-yellow-500'}, c.favColor)
-                                    ),
-                                    e('div', {className:'w-1/4'},
-                                        e('p', {className:'text-[9px] font-black uppercase opacity-40 mb-1'}, 'Order Frequency'),
-                                        e('p', {className:'text-sm font-mono'}, c.freq),
-                                        e('p', {className:'text-[9px] opacity-40'}, `Last Order: ${c.lastOrder}`)
-                                    ),
+                                e('div', {className:'flex gap-4'},
                                     e('div', {className:'text-right'},
-                                        e('button', {className:'bg-white/5 text-white text-[10px] font-black px-4 py-3 rounded hover:bg-white/10 transition'}, 'View Full History'),
-                                        e('button', {className:'ml-3 btn-accent px-4 py-3'}, 'Create MTO Quote')
-                                    )
-                                ))
+                                        e('p', {className:'text-[10px] uppercase opacity-40'}, 'Total Outstanding'),
+                                        e('p', {className:'text-2xl font-black text-red-500'}, 'GHS 134,000')
+                                    ),
+                                    e('button', {className:'btn-accent px-6'}, 'Generate New Invoice')
+                                )
                             ),
 
-                            e('div', {className:'mt-10 glass-card bg-emerald-500/5 border-emerald-500/20'},
-                                e('h4', {className:'text-xs font-black uppercase text-emerald-500 mb-2'}, 'Predictive Insight'),
-                                e('p', {className:'text-sm text-white/80'}, `Based on historical patterns, **West-Hills Construction** is 12 days overdue for their typical Eco-Green 402 replenishment. Estimated potential revenue: **GHS 45,000**.`)
+                            e('div', {className:'glass-card'},
+                                e('table', {className:'w-full text-left font-mono'},
+                                    e('thead', null, e('tr', {className:'text-[9px] uppercase opacity-40 border-b border-white/10 pb-4'},
+                                        e('th', {className:'pb-4'}, 'Invoice ID'),
+                                        e('th', {className:'pb-4'}, 'Client'),
+                                        e('th', {className:'pb-4'}, 'Issue Date'),
+                                        e('th', {className:'pb-4'}, 'Amount'),
+                                        e('th', {className:'pb-4'}, 'Status'),
+                                        e('th', {className:'pb-4 text-right'}, 'Action')
+                                    )),
+                                    e('tbody', null, invoices.map(inv => e('tr', {key: inv.id, className:'border-b border-white/5'},
+                                        e('td', {className:'py-6 text-xs font-bold text-white'}, inv.id),
+                                        e('td', {className:'py-6 text-xs opacity-80 uppercase'}, inv.client),
+                                        e('td', {className:'py-6 text-xs opacity-60'}, inv.date),
+                                        e('td', {className:'py-6 text-xs font-black'}, `GHS ${inv.amount.toLocaleString()}`),
+                                        e('td', {className:'py-6'}, 
+                                            e('span', {className:`text-[9px] px-3 py-1 rounded-full font-black ${inv.status === 'PAID' ? 'inv-paid' : 'inv-unpaid'}`}, inv.status)
+                                        ),
+                                        e('td', {className:'py-6 text-right'}, 
+                                            e('button', {className:'bg-white/5 px-4 py-2 rounded text-[9px] font-black uppercase hover:bg-yellow-500 hover:text-black transition'}, 'Email PDF')
+                                        )
+                                    )))
+                                )
+                            ),
+
+                            e('div', {className:'mt-10 grid grid-cols-1 md:grid-cols-2 gap-8'},
+                                e('div', {className:'glass-card bg-red-500/5 border-red-500/20'},
+                                    e('h4', {className:'text-[10px] font-black uppercase text-red-500 mb-2'}, 'Aging Warning'),
+                                    e('p', {className:'text-sm'}, `**West-Hills Construction** has GHS 45,000 due in 72 hours. Automated reminder sent.`)
+                                ),
+                                e('div', {className:'glass-card bg-emerald-500/5 border-emerald-500/20'},
+                                    e('h4', {className:'text-[10px] font-black uppercase text-emerald-500 mb-2'}, 'Tax Provision'),
+                                    e('p', {className:'text-sm'}, `VAT (15%) provision for December: **GHS 21,960**. Ready for GRA submission.`)
+                                )
                             )
                         ),
 
-                        view !== 'CLIENTS' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view !== 'INVOICES' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
