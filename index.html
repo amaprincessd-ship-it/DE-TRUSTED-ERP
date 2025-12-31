@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v93.0 JOB CARDS</title>
+    <title>CORPORATE COMMAND ERP | v94.0 MAINTENANCE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,22 +13,17 @@
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
+        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #0f172a, #020617); z-index: -1; }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; }
         .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; border: none; font-size: 10px; }
+        .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
+        .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        /* PRINT STYLES - Crucial for the Job Card */
-        @media print {
-            body * { visibility: hidden; }
-            .print-area, .print-area * { visibility: visible; }
-            .print-area { position: absolute; left: 0; top: 0; width: 100%; color: black !important; background: white !important; }
-            .sidebar, .btn-accent { display: none !important; }
-        }
+        .health-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+        .health-fill { height: 100%; transition: 0.5s; }
 
-        .job-card-outline { border: 2px solid #334155; border-radius: 8px; overflow: hidden; background: #fff; color: #000; }
-        .job-header { background: #000; color: #fff; padding: 20px; text-align: center; }
-        
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -36,10 +31,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">DOCUMENT CENTER</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Job Card Print v93.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">ASSET CONTROL</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Maintenance v94.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Print Spooler</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Technical Logs</button>
         </div>
     </div>
 
@@ -57,82 +52,64 @@
             const { useState } = React;
 
             function App() {
-                const jobData = {
-                    id: 'JOB-2025-9942',
-                    customer: 'Ghana Ports Authority',
-                    product: 'Anti-Corrosive Sea-Shield (Marine Gray)',
-                    quantity: '5,000 Liters',
-                    priority: 'URGENT',
-                    bom: [
-                        { item: 'Marine Grade Resin B-1', qty: '2,000 KG' },
-                        { item: 'Zinc Phosphate Pigment', qty: '450 KG' },
-                        { item: 'Xylene Solvent', qty: '1,200 L' },
-                        { item: 'Additive T-99 (Hardener)', qty: '15 KG' }
-                    ],
-                    instructions: 'High-speed mixing for 45 mins. Check density every 15 mins.'
-                };
+                const [view, setView] = useState('SCHEDULER');
+                
+                const [machines, setMachines] = useState([
+                    { id: 'MX-01', name: 'Primary Vat Mixer (5T)', runtime: 480, limit: 500, status: 'WARNING', parts: 'Shaft Bearing' },
+                    { id: 'PMP-04', name: 'Resin Transfer Pump', runtime: 120, limit: 1000, status: 'HEALTHY', parts: 'Seal Gasket' },
+                    { id: 'FIL-09', name: 'High-Mesh Filter Press', runtime: 295, limit: 300, status: 'CRITICAL', parts: 'Filter Mesh' }
+                ]);
 
                 return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar flex flex-col p-10' },
-                        e('h1', { className: 'text-xl font-black italic text-white mb-2' }, "PLATINUM ERP"),
-                        e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest mb-10'}, 'Documentation'),
-                        e('button', { onClick: () => window.print(), className: 'btn-accent mb-4' }, 'Print Job Card'),
-                        e('button', { className: 'text-white/40 text-[9px] font-black uppercase' }, 'Export to Excel')
+                    e('aside', { className: 'sidebar flex flex-col' },
+                        e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
+                            e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Asset Integrity')
+                        ),
+                        e('nav', { className: 'flex-1' },
+                            ['SCHEDULER', 'SERVICE_LOGS', 'SPARE_PARTS', 'DASHBOARD'].map(v => 
+                                e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
+                            )
+                        )
                     ),
 
                     e('main', { className: 'main-content flex-1' },
-                        e('div', { className: 'print-area' },
-                            e('div', { className: 'job-card-outline p-0 max-w-4xl mx-auto shadow-2xl' },
-                                e('div', { className: 'job-header' },
-                                    e('h2', { className: 'text-2xl font-black italic' }, 'PRODUCTION JOB TICKET'),
-                                    e('p', { className: 'text-[10px] tracking-widest opacity-70' }, 'PLATINUM PAINT FACTORY SYSTEMS')
-                                ),
-                                e('div', { className: 'p-10' },
-                                    e('div', { className: 'flex justify-between border-b-2 border-black pb-6 mb-8' },
-                                        e('div', null,
-                                            e('p', { className: 'text-[9px] uppercase font-black opacity-40' }, 'Job ID'),
-                                            e('p', { className: 'text-2xl font-black' }, jobData.id),
-                                            e('p', { className: 'text-sm font-bold mt-2' }, `Customer: ${jobData.customer}`)
+                        
+                        view === 'SCHEDULER' && e('div', null,
+                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4 text-white'}, 'Machine Health'),
+                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Predictive Runtime Monitoring'),
+
+                            e('div', {className:'grid grid-cols-1 gap-6'},
+                                machines.map(m => {
+                                    const percent = (m.runtime / m.limit) * 100;
+                                    const color = percent > 90 ? 'bg-red-500' : percent > 70 ? 'bg-yellow-500' : 'bg-emerald-500';
+                                    
+                                    return e('div', {key: m.id, className:'glass-card border-white/5 flex items-center justify-between'},
+                                        e('div', {className: 'w-1/3'},
+                                            e('p', {className:'text-[10px] font-black uppercase opacity-40'}, m.id),
+                                            e('h3', {className:'text-xl font-black text-white'}, m.name),
+                                            e('p', {className:'text-[9px] text-blue-400 font-bold mt-1'}, `CRITICAL PART: ${m.parts}`)
                                         ),
-                                        e('div', { className: 'text-right' },
-                                            e('p', { className: 'text-[9px] uppercase font-black opacity-40' }, 'Priority Status'),
-                                            e('p', { className: 'text-xl font-black text-red-600' }, jobData.priority),
-                                            e('p', { className: 'text-sm font-bold mt-2' }, `Output: ${jobData.quantity}`)
-                                        )
-                                    ),
-
-                                    e('h3', { className: 'text-sm font-black uppercase mb-4 underline' }, 'Bill of Materials (Deducted From Stock)'),
-                                    e('table', { className: 'w-full text-left mb-10' },
-                                        e('thead', null, e('tr', { className: 'border-b border-black' },
-                                            e('th', { className: 'py-2 text-xs' }, 'Material Component'),
-                                            e('th', { className: 'py-2 text-xs text-right' }, 'Target Weight/Volume'),
-                                            e('th', { className: 'py-2 text-xs text-right' }, 'Actual Used (Manual Log)')
-                                        )),
-                                        e('tbody', null, jobData.bom.map((item, i) => e('tr', { key: i, className: 'border-b border-gray-200' },
-                                            e('td', { className: 'py-3 text-sm font-bold' }, item.item),
-                                            e('td', { className: 'py-3 text-sm font-mono text-right' }, item.qty),
-                                            e('td', { className: 'py-3 text-right border-l border-gray-100 w-32' }, '___________')
-                                        )))
-                                    ),
-
-                                    e('div', { className: 'bg-gray-100 p-6 rounded-lg mb-8' },
-                                        e('h3', { className: 'text-[10px] font-black uppercase mb-2' }, 'Operator Instructions'),
-                                        e('p', { className: 'text-sm italic' }, jobData.instructions)
-                                    ),
-
-                                    e('div', { className: 'grid grid-cols-2 gap-10 mt-20' },
-                                        e('div', { className: 'border-t border-black pt-2' },
-                                            e('p', { className: 'text-[9px] font-black uppercase' }, 'Operator Signature'),
-                                            e('p', { className: 'mt-10 text-[8px] opacity-40' }, 'Confirming batch start')
+                                        e('div', {className: 'flex-1 px-10'},
+                                            e('div', {className:'flex justify-between text-[10px] font-bold mb-2'},
+                                                e('span', null, `Runtime: ${m.runtime} hrs`),
+                                                e('span', {className:'opacity-50'}, `Service Due: ${m.limit} hrs`)
+                                            ),
+                                            e('div', {className:'health-bar'}, 
+                                                e('div', {className:`health-fill ${color}`, style: {width: `${percent}%`}})
+                                            )
                                         ),
-                                        e('div', { className: 'border-t border-black pt-2' },
-                                            e('p', { className: 'text-[9px] font-black uppercase' }, 'Lab Supervisor Release'),
-                                            e('p', { className: 'mt-10 text-[8px] opacity-40' }, 'Post-mixing verification')
+                                        e('div', {className:'w-1/4 text-right'},
+                                            percent > 90 ? 
+                                                e('button', {className:'bg-red-600 text-white text-[9px] font-black px-4 py-2 rounded animate-pulse'}, 'SCHEDULE EMERGENCY SERVICE') :
+                                                e('button', {className:'bg-white/5 text-white/40 text-[9px] font-black px-4 py-2 rounded cursor-not-allowed'}, 'HEALTHY')
                                         )
-                                    )
-                                )
+                                    );
+                                })
                             )
-                        )
+                        ),
+
+                        view !== 'SCHEDULER' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
