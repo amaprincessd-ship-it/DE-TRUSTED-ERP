@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v68.0</title>
+    <title>CORPORATE COMMAND ERP | v69.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -14,22 +14,13 @@
         }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; overflow-x: hidden; }
         body::before { content: ""; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.96); backdrop-filter: blur(45px); z-index: -1; }
-        
-        .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.1); box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
+        .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.1); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; position: relative; z-index: 10; }
-        
         .glass-card { background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 25px; }
         .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; border: none; font-size: 10px; transition: 0.3s; }
-        
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
-
-        /* STOCK METRICS */
-        .progress-bar { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { height: 100%; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        .critical { color: #ef4444; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
+        .metric-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; }
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -37,10 +28,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">FACTORY COMMAND</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Raw Material Matrix v68</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">COST ANALYTICS</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Production Intelligence v69</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Establish Uplink</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Initialize Cost Core</button>
         </div>
     </div>
 
@@ -50,7 +41,7 @@
         function checkAccess() {
             if (document.getElementById('master-key-input').value === 'SUPER2025') {
                 document.getElementById('security-barrier').style.display = 'none';
-            } else { alert("AUTHENTICATION FAILED"); }
+            } else { alert("ACCESS DENIED"); }
         }
 
         window.onload = function() {
@@ -58,22 +49,27 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('RAW_MATERIALS');
-                const [inventory, setInventory] = useState([
-                    { id: 'RM-001', name: 'Raw Cocoa Beans', stock: 4500, unit: 'KG', capacity: 10000, supplier: 'Ghana Cocoa Board', status: 'Stable' },
-                    { id: 'RM-002', name: 'Industrial Sugar', stock: 800, unit: 'KG', capacity: 5000, supplier: 'Sugar Refinery Ltd', status: 'Critical' },
-                    { id: 'RM-003', name: 'Packaging Film', stock: 12000, unit: 'Meters', capacity: 15000, supplier: 'FlexiPack GH', status: 'Stable' },
-                    { id: 'RM-004', name: 'Heavy Fuel Oil', stock: 2500, unit: 'Litres', capacity: 10000, supplier: 'GOIL', status: 'Low' }
+                const [view, setView] = useState('COSTING');
+                const [batches, setBatches] = useState([
+                    { 
+                        id: 'BATCH-2025-01', 
+                        material: 'Cocoa Beans', 
+                        inputQty: 1000, 
+                        outputQty: 850, 
+                        purchasePrice: 15.50, // Price per KG
+                        laborCost: 500,
+                        otherCosts: 200
+                    }
                 ]);
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white tracking-tighter' }, "FACTORY ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Material Handling')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Unit Costing Core')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['DASHBOARD', 'RAW_MATERIALS', 'PROCUREMENT', 'MARGINS', 'PIPELINE', 'VENDORS'].map(v => 
+                            ['DASHBOARD', 'COSTING', 'RAW_MATERIALS', 'PROCUREMENT', 'MARGINS'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v.replace('_', ' '))
                             )
                         )
@@ -81,56 +77,68 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'RAW_MATERIALS' && e('div', null,
+                        view === 'COSTING' && e('div', null,
                             e('div', {className:'flex justify-between items-end mb-12'},
                                 e('div', null,
-                                    e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter'}, 'Raw Materials'),
-                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Supply Chain & Silo Management')
+                                    e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter'}, 'Production Costing'),
+                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Raw Material Purchase Price -> Unit Cost')
                                 ),
-                                e('div', {className:'flex gap-4'},
-                                    e('button', {className:'bg-white/5 border border-white/10 px-6 py-2 rounded text-[10px] font-bold uppercase'}, 'Log Incoming Shipment'),
-                                    e('button', {className:'btn-accent w-auto px-10 rounded-full'}, 'Issue Material Requisition')
-                                )
+                                e('button', {className:'btn-accent w-auto px-10 rounded-full'}, 'New Batch Analysis')
                             ),
 
-                            e('div', {className:'grid grid-cols-1 md:grid-cols-2 gap-8'},
-                                inventory.map(item => {
-                                    const percent = (item.stock / item.capacity) * 100;
-                                    const isCritical = percent < 20;
+                            e('div', {className:'grid grid-cols-1 gap-8'},
+                                batches.map(b => {
+                                    const totalMaterialCost = b.inputQty * b.purchasePrice;
+                                    const totalProductionCost = totalMaterialCost + b.laborCost + b.otherCosts;
+                                    const unitCost = (totalProductionCost / b.outputQty).toFixed(2);
+                                    const wastage = (((b.inputQty - b.outputQty) / b.inputQty) * 100).toFixed(1);
 
-                                    return e('div', {key: item.id, className:'glass-card'},
-                                        e('div', {className:'flex justify-between items-start mb-6'},
+                                    return e('div', {key: b.id, className:'glass-card'},
+                                        e('div', {className:'flex justify-between items-start border-b border-white/5 pb-6 mb-6'},
                                             e('div', null,
-                                                e('p', {className:'text-[10px] font-bold opacity-40 uppercase'}, item.id),
-                                                e('h3', {className:'text-2xl font-black uppercase tracking-tight'}, item.name),
-                                                e('p', {className:'text-[10px] text-yellow-500 font-bold uppercase mt-1'}, `Supplier: ${item.supplier}`)
+                                                e('p', {className:'text-[10px] font-bold opacity-40 uppercase'}, b.id),
+                                                e('h3', {className:'text-2xl font-black uppercase tracking-tight'}, b.material),
                                             ),
                                             e('div', {className:'text-right'},
-                                                e('p', {className:`text-3xl font-black ${isCritical ? 'critical' : 'text-white'}`}, `${item.stock.toLocaleString()}`),
-                                                e('p', {className:'text-[10px] font-bold opacity-40 uppercase'}, item.unit)
-                                            )
-                                        ),
-                                        
-                                        e('div', null,
-                                            e('div', {className:'flex justify-between text-[10px] font-bold uppercase opacity-60 mb-1'},
-                                                e('span', null, 'Silo Capacity'),
-                                                e('span', null, `${percent.toFixed(0)}% Full`)
-                                            ),
-                                            e('div', {className:'progress-bar'}, 
-                                                e('div', {className:'progress-fill', style: { width: `${percent}%`, background: isCritical ? '#ef4444' : 'linear-gradient(to right, #fbbf24, #f59e0b)' }})
+                                                e('p', {className:'text-[10px] font-bold opacity-40 uppercase'}, 'Final Unit Cost'),
+                                                e('p', {className:'text-4xl font-black text-yellow-500'}, `GHS ${unitCost}`),
                                             )
                                         ),
 
-                                        e('div', {className:'mt-8 flex gap-2'},
-                                            e('button', {className:'flex-1 bg-white/5 hover:bg-white/10 p-3 rounded text-[9px] font-bold uppercase'}, 'Usage History'),
-                                            isCritical && e('button', {className:'flex-1 bg-red-600/20 text-red-500 p-3 rounded text-[9px] font-bold uppercase border border-red-500/30'}, '🚀 Auto-Reorder Now')
+                                        e('div', {className:'grid grid-cols-1 md:grid-cols-4 gap-4'},
+                                            e('div', {className:'metric-box'},
+                                                e('p', {className:'text-[9px] uppercase font-bold opacity-50'}, 'Raw Material Spend'),
+                                                e('p', {className:'text-lg font-bold'}, `GHS ${totalMaterialCost.toLocaleString()}`),
+                                                e('p', {className:'text-[8px] opacity-40'}, `${b.inputQty}KG @ GHS ${b.purchasePrice}`)
+                                            ),
+                                            e('div', {className:'metric-box'},
+                                                e('p', {className:'text-[9px] uppercase font-bold opacity-50'}, 'Process Wastage'),
+                                                e('p', {className:'text-lg font-bold text-red-400'}, `${wastage}%`),
+                                                e('p', {className:'text-[8px] opacity-40'}, `Loss of ${b.inputQty - b.outputQty}KG`)
+                                            ),
+                                            e('div', {className:'metric-box text-center border-yellow-500/20'},
+                                                e('p', {className:'text-[9px] uppercase font-bold opacity-50 text-yellow-500'}, 'Yield Efficiency'),
+                                                e('p', {className:'text-lg font-bold'}, `${(100 - wastage).toFixed(1)}%`),
+                                            ),
+                                            e('div', {className:'metric-box'},
+                                                e('p', {className:'text-[9px] uppercase font-bold opacity-50'}, 'Total Batch Cost'),
+                                                e('p', {className:'text-lg font-bold'}, `GHS ${totalProductionCost.toLocaleString()}`),
+                                                e('p', {className:'text-[8px] opacity-40'}, `Incl. Labor & Overhead`)
+                                            )
+                                        ),
+
+                                        e('div', {className:'mt-8 flex justify-end gap-4'},
+                                            e('button', {className:'text-[10px] font-black uppercase opacity-40 hover:opacity-100 transition'}, 'Recalculate with New Labor Rate'),
+                                            e('button', {className:'btn-accent px-8'}, 'Apply to Inventory Price')
                                         )
                                     );
                                 })
                             )
                         ),
 
-                        view !== 'RAW_MATERIALS' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-10 text-4xl font-black uppercase'}, `${view} Sub-System Active`)
+                        view !== 'COSTING' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-10 text-4xl font-black uppercase tracking-widest text-center'}, 
+                            e('div', null, e('p', null, `${view} MODULE`), e('p', {className:'text-xs font-mono'}, 'SYSTEM_LOCK_ACTIVE'))
+                        )
                     )
                 );
             }
