@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v90.0 QC LOCKDOWN</title>
+    <title>CORPORATE COMMAND ERP | v91.0 VARIANCE ANALYSIS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,7 +13,7 @@
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
-        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #0f172a, #020617); z-index: -1; }
+        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at bottom left, #1e293b, #020617); z-index: -1; }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; }
@@ -21,10 +21,9 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        .qc-gate { border: 2px solid #ef4444; border-radius: 12px; padding: 20px; background: rgba(239, 68, 68, 0.05); }
-        .qc-released { border-color: #10b981; background: rgba(16, 185, 129, 0.05); }
-        .pulse-red { animation: pulse-red 1.5s infinite; }
-        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .variance-pos { color: #ef4444; } /* Over-usage is bad */
+        .variance-neg { color: #10b981; } /* Under-usage (Efficiency) */
+        .progress-bg { background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow: hidden; }
 
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -33,10 +32,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">LAB TERMINAL</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">QC Release Protocol v90.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">MARGIN WATCH</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Variance Analysis v91.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Open Lab Gate</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Financial Audit</button>
         </div>
     </div>
 
@@ -54,24 +53,24 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('QC_TERMINAL');
-                const [batches, setBatches] = useState([
-                    { id: 'BT-2025-0045', product: 'Premium Emulsion White', status: 'MIXING_COMPLETE', lock: true, viscosity: '', ph: '', opacity: '' }
-                ]);
+                const [view, setView] = useState('VARIANCE');
+                
+                const varianceData = [
+                    { material: 'Resin R-40', planned: 200, actual: 215, unit: 'kg', costImpact: 675 },
+                    { material: 'Titanium Pigment', planned: 50, actual: 48, unit: 'kg', costImpact: -240 },
+                    { material: 'Solvent Base', planned: 100, actual: 110, unit: 'L', costImpact: 150 }
+                ];
 
-                const handleRelease = (id) => {
-                    setBatches(batches.map(b => b.id === id ? { ...b, status: 'RELEASED', lock: false } : b));
-                    alert("BATCH RELEASED TO PACKAGING LINE");
-                };
+                const totalLeakage = varianceData.reduce((acc, curr) => acc + curr.costImpact, 0);
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Quality Lab')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Cost Control')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['QC_TERMINAL', 'TRACE', 'JOBS', 'CEO_DASHBOARD'].map(v => 
+                            ['VARIANCE', 'QC_TERMINAL', 'WAREHOUSE', 'CEO_DASHBOARD'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
                             )
                         )
@@ -79,44 +78,54 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'QC_TERMINAL' && e('div', null,
-                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4 text-white'}, 'Lab Gate'),
-                            e('p', {className:'text-[11px] text-red-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Vat Lockdown & Sample Verification'),
+                        view === 'VARIANCE' && e('div', null,
+                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4 text-white'}, 'Leakage Audit'),
+                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Comparing Planned vs Actual Material Consumption'),
 
-                            e('div', {className:'grid grid-cols-1 gap-8'},
-                                batches.map(b => e('div', {key: b.id, className:`qc-gate ${!b.lock ? 'qc-released' : ''}`},
-                                    e('div', {className:'flex justify-between items-start mb-8'},
-                                        e('div', null,
-                                            e('p', {className:'text-[10px] font-black uppercase opacity-40'}, 'Batch Identifier'),
-                                            e('h3', {className:'text-2xl font-black'}, b.id),
-                                            e('p', {className:'text-xs text-yellow-500 font-bold'}, b.product)
+                            e('div', {className:'grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10'},
+                                e('div', {className:'glass-card border-red-500/20'},
+                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Total Material Variance'),
+                                    e('p', {className:`text-4xl font-black ${totalLeakage > 0 ? 'text-red-500' : 'text-emerald-500'}`}, `GHS ${totalLeakage}`),
+                                    e('p', {className:'text-[10px] font-bold mt-2 uppercase'}, totalLeakage > 0 ? 'Loss on current batch' : 'Efficiency Gain')
+                                ),
+                                e('div', {className:'glass-card'},
+                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Yield Percentage'),
+                                    e('p', {className:'text-4xl font-black text-white'}, '97.2%'),
+                                    e('p', {className:'text-[10px] font-bold opacity-60 mt-2'}, 'Target: 99.0%')
+                                ),
+                                e('div', {className:'glass-card'},
+                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Wastage Rate'),
+                                    e('p', {className:'text-4xl font-black text-yellow-500'}, '2.8%'),
+                                    e('p', {className:'text-[10px] font-bold opacity-60 mt-2 uppercase text-red-400'}, 'Above Threshold')
+                                )
+                            ),
+
+                            e('div', {className:'glass-card'},
+                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest text-white'}, 'Material Consumption Breakdown (Job: BT-2025-0045)'),
+                                e('table', {className:'w-full text-left'},
+                                    e('thead', null, e('tr', {className:'text-[9px] uppercase opacity-40 border-b border-white/10 pb-4'},
+                                        e('th', {className:'pb-4'}, 'Material'), 
+                                        e('th', {className:'pb-4'}, 'Planned Qty'), 
+                                        e('th', {className:'pb-4 text-yellow-500'}, 'Actual Used'), 
+                                        e('th', {className:'pb-4'}, 'Variance'),
+                                        e('th', {className:'pb-4 text-right'}, 'Financial Impact')
+                                    )),
+                                    e('tbody', null, varianceData.map((v, i) => e('tr', {key: i, className:'border-b border-white/5'},
+                                        e('td', {className:'py-6 font-bold text-sm text-white'}, v.material),
+                                        e('td', {className:'py-6 text-sm opacity-60 font-mono'}, `${v.planned}${v.unit}`),
+                                        e('td', {className:'py-6 text-sm font-black text-yellow-500 font-mono'}, `${v.actual}${v.unit}`),
+                                        e('td', {className:`py-6 text-sm font-black ${v.actual > v.planned ? 'text-red-500' : 'text-emerald-500'}`}, 
+                                            `${v.actual > v.planned ? '+' : ''}${((v.actual - v.planned)/v.planned * 100).toFixed(1)}%`
                                         ),
-                                        e('div', {className:'text-right'},
-                                            e('p', {className:`text-xs font-black uppercase ${b.lock ? 'text-red-500 pulse-red' : 'text-emerald-500'}`}, 
-                                                b.lock ? '● LOCKED IN VAT' : '✓ RELEASED'
-                                            )
+                                        e('td', {className:`py-6 text-right font-mono font-black ${v.costImpact > 0 ? 'text-red-500' : 'text-emerald-500'}`}, 
+                                            `${v.costImpact > 0 ? '+' : ''}GHS ${v.costImpact}`
                                         )
-                                    ),
-
-                                    e('div', {className:'grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'},
-                                        ['Viscosity (KU)', 'pH Level', 'Opacity (%)'].map(label => e('div', {key: label},
-                                            e('label', {className:'text-[9px] font-black uppercase opacity-40 block mb-2'}, label),
-                                            e('input', {
-                                                className:'bg-black/40 border border-white/10 w-full p-3 rounded text-white outline-none focus:border-yellow-500',
-                                                placeholder: 'Enter result...',
-                                                disabled: !b.lock
-                                            })
-                                        ))
-                                    ),
-
-                                    b.lock ? 
-                                        e('button', {onClick: () => handleRelease(b.id), className:'btn-accent w-full py-4 text-sm'}, 'Verify & Unlock Batch') :
-                                        e('div', {className:'bg-emerald-500/20 p-4 rounded text-center text-emerald-500 text-[10px] font-black uppercase'}, 'Batch is being filled into containers')
-                                ))
+                                    )))
+                                )
                             )
                         ),
 
-                        view !== 'QC_TERMINAL' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view !== 'VARIANCE' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
