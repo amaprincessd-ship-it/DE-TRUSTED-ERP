@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v64.0</title>
+    <title>CORPORATE COMMAND ERP | v65.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -12,41 +12,128 @@
             --bg-color: #020617; --side-color: #080c14; --text-color: #f8fafc;
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
-        body { 
-            background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0;
-        }
-        body::before {
-            content: ""; position: fixed; inset: 0;
-            background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(35px); z-index: -1;
-        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
+        body::before { content: ""; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(35px); z-index: -1; }
+        
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.1); }
-        .main-content { margin-left: 280px; min-height: 100vh; padding: 50px; position: relative; z-index: 10; }
+        .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; position: relative; z-index: 10; }
         
-        .glass-card { 
-            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%); 
-            backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 30px;
-        }
-        
+        .glass-card { background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 25px; }
         .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; border: none; font-size: 10px; }
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
 
-        /* STATUS BADGES */
-        .status-pill { padding: 4px 10px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
-        .status-pending { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
-        .status-approved { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-        .status-rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-
-        #security-barrier {
-            position: fixed; inset: 0; background: #020617; z-index: 9999;
-            display: flex; align-items: center; justify-content: center;
-        }
+        /* CHAT INTERFACE */
+        .chat-window { height: 200px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .msg-client { color: #fbbf24; margin-bottom: 8px; font-weight: bold; }
+        .msg-system { color: #fff; margin-bottom: 8px; opacity: 0.8; }
+        
+        #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
+        .status-badge { font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div id="security-barrier">
-        <div class="glass-card w-full max-w-sm text-center border-yellow-500/20 shadow-2xl">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">Command Core</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">V64.0 Deployment</p>
-            <input type="password" id="master-key-
+        <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">AUTHENTIC CORE</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">V65.0 ACTIVE</p>
+            <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded" placeholder="••••" autofocus>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authenticate</button>
+        </div>
+    </div>
+
+    <div id="root"></div>
+
+    <script>
+        function checkAccess() {
+            if (document.getElementById('master-key-input').value === 'SUPER2025') {
+                document.getElementById('security-barrier').style.opacity = '0';
+                setTimeout(() => document.getElementById('security-barrier').style.display = 'none', 500);
+            } else { alert("ACCESS DENIED"); }
+        }
+
+        window.onload = function() {
+            const e = React.createElement;
+            const { useState } = React;
+
+            function App() {
+                const [view, setView] = useState('NEGOTIATION');
+                const [activeChat, setActiveChat] = useState(null);
+                const [chatInput, setChatInput] = useState('');
+                const [docs, setDocs] = useState([
+                    { id: 'Q-100', client: 'Total Energies', type: 'Quote', amount: 35000, status: 'Negotiating', chats: [{from:'System', msg:'Quote Sent'}, {from:'Client', msg:'Can we get a 5% discount?'}] },
+                    { id: 'Q-101', client: 'Nestle GH', type: 'Quote', amount: 15000, status: 'Approved', chats: [] }
+                ]);
+
+                const sendChat = (id) => {
+                    if(!chatInput) return;
+                    setDocs(docs.map(d => d.id === id ? {...d, chats: [...d.chats, {from:'Me', msg: chatInput}]} : d));
+                    setChatInput('');
+                };
+
+                const updateStatus = (id, status) => {
+                    setDocs(docs.map(d => d.id === id ? {...d, status: status} : d));
+                };
+
+                return e('div', { className: 'flex' },
+                    e('aside', { className: 'sidebar flex flex-col' },
+                        e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
+                            e('h1', { className: 'text-xl font-black italic text-white' }, "ERP TERMINAL"),
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Financial Pipeline')
+                        ),
+                        e('nav', { className: 'flex-1' },
+                            ['DASHBOARD', 'NEGOTIATION', 'PIPELINE', 'FORGE', 'VENDORS', 'VISUALS'].map(v => 
+                                e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
+                            )
+                        )
+                    ),
+
+                    e('main', { className: 'main-content flex-1' },
+                        
+                        view === 'NEGOTIATION' && e('div', null,
+                            e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter mb-10'}, 'Real-Time Negotiation'),
+                            
+                            e('div', {className:'grid grid-cols-1 lg:grid-cols-2 gap-8'},
+                                docs.map(d => e('div', {key: d.id, className:'glass-card'},
+                                    e('div', {className:'flex justify-between items-start mb-4'},
+                                        e('div', null,
+                                            e('p', {className:'text-[10px] font-bold text-yellow-500'}, d.id),
+                                            e('h3', {className:'text-xl font-black uppercase'}, d.client),
+                                            e('span', {className:'status-badge bg-white/10'}, d.status)
+                                        ),
+                                        e('p', {className:'text-2xl font-black'}, `GHS ${d.amount.toLocaleString()}`)
+                                    ),
+
+                                    e('div', {className:'chat-window mb-4'},
+                                        d.chats.map((c, i) => e('div', {key: i, className: c.from === 'Client' ? 'msg-client' : 'msg-system'}, 
+                                            e('span', {className:'opacity-50 mr-2 uppercase text-[10px]'}, c.from + ':'), c.msg
+                                        ))
+                                    ),
+
+                                    d.status === 'Negotiating' ? e('div', {className:'space-y-4'},
+                                        e('div', {className:'flex gap-2'},
+                                            e('input', {className:'flex-1 bg-black/40 border border-white/10 p-2 rounded text-xs text-white outline-none', placeholder:'Type counter-offer...', value: activeChat === d.id ? chatInput : '', onChange:(v)=> {setActiveChat(d.id); setChatInput(v.target.value);}}),
+                                            e('button', {onClick: ()=>sendChat(d.id), className:'btn-accent px-4'}, 'Send')
+                                        ),
+                                        e('div', {className:'flex gap-2'},
+                                            e('button', {onClick:()=>updateStatus(d.id, 'Approved'), className:'flex-1 bg-emerald-600 text-[10px] font-bold p-2 rounded uppercase'}, 'Approve Quote'),
+                                            e('button', {onClick:()=>updateStatus(d.id, 'Rejected'), className:'flex-1 bg-red-600/30 text-[10px] font-bold p-2 rounded uppercase'}, 'Reject')
+                                        )
+                                    ) : e('div', {className:'text-center p-4 border border-dashed border-white/10 rounded'},
+                                        e('p', {className:'text-[10px] font-bold uppercase mb-2'}, d.status === 'Approved' ? 'Ready for Lead Escalation' : 'Closed'),
+                                        d.status === 'Approved' && e('button', {className:'btn-accent w-full'}, '🔥 Trigger Logistics Lead')
+                                    )
+                                ))
+                            )
+                        ),
+
+                        view !== 'NEGOTIATION' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-20 text-3xl font-black uppercase tracking-widest'}, `${view} System Active`)
+                    )
+                );
+            }
+            ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+        };
+    </script>
+</body>
+</html>
