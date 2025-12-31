@@ -17,8 +17,7 @@
             --bg-image: none;
         }
         body { 
-            background-color: var(--bg-color); 
-            background-image: var(--bg-image);
+            background-color: var(--bg-color); background-image: var(--bg-image);
             background-size: cover; background-position: center; background-attachment: fixed;
             color: var(--text-color); font-family: var(--font-main); margin: 0; overflow-x: hidden;
         }
@@ -37,7 +36,6 @@
         }
         .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 22px; }
         
-        /* FLASHING CRITICAL ALERT */
         @keyframes pulse-red {
             0% { box-shadow: 0 0 0px rgba(239, 68, 68, 0); background: rgba(239, 68, 68, 0.05); }
             50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.2); }
@@ -46,7 +44,15 @@
         .alert-flash { animation: pulse-red 1.5s infinite; border: 1px solid #ef4444 !important; }
         
         .btn-accent { background: var(--accent-color); color: #000; font-weight: 900; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; font-size: 11px; border: none; }
-        .input-box { border: 1px solid rgba(255,255,255,0.2); bg: rgba(0,0,0,0.4); padding: 10px; width: 100%; color: white; border-radius: 6px; outline: none; }
+        .input-box { border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); padding: 10px; width: 100%; color: white; border-radius: 6px; outline: none; }
+
+        /* PRINT STYLES FOR LETTERS */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; color: black !important; background: white !important; }
+            body::before { display: none; }
+            body { background: white; color: black; }
+        }
     </style>
 </head>
 <body>
@@ -54,10 +60,10 @@
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center">
             <div id="gate-logo-area" class="mb-4 flex justify-center"></div>
-            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">COMPLIANCE HUB</h1>
+            <h1 id="gate-brand-text" class="text-3xl font-black mb-1 italic">CORE TERMINAL</h1>
             <p class="text-[10px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Private Command</p>
             <input type="password" id="master-key-input" class="input-box text-center mb-6 text-2xl" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent">Unlock Regulatory Vault</button>
+            <button onclick="checkAccess()" class="btn-accent">Initialize ERP</button>
         </div>
     </div>
 
@@ -77,7 +83,8 @@
             const { useState, useEffect } = React;
 
             function App() {
-                const [view, setView] = useState('COMPLIANCE');
+                const [view, setView] = useState('DASH');
+                const [activeLetter, setActiveLetter] = useState(null);
                 const [theme, setTheme] = useState({
                     name: getSaved('erp_name', 'DE-TRUSTED'),
                     logo: getSaved('erp_logo', ''),
@@ -88,12 +95,9 @@
                     font: getSaved('erp_font', 'Ubuntu, sans-serif')
                 });
 
-                // Regulatory Data
                 const complianceLogs = [
-                    { id: 1, vehicle: "TRK-05", item: "Comprehensive Insurance", expiry: "2026-01-15", daysLeft: 15, status: "CRITICAL" },
-                    { id: 2, vehicle: "VAN-01", item: "Roadworthiness Cert", expiry: "2026-04-10", daysLeft: 100, status: "VALID" },
-                    { id: 3, vehicle: "TRK-05", item: "Cross-Border Permit", expiry: "2026-01-05", daysLeft: 5, status: "CRITICAL" },
-                    { id: 4, vehicle: "FLEET", item: "Haulage License", expiry: "2026-02-28", daysLeft: 59, status: "WARNING" }
+                    { id: 1, vehicle: "TRK-05", item: "Insurance Policy", expiry: "2026-01-15", daysLeft: 15, body: "National Insurance Authority" },
+                    { id: 2, vehicle: "VAN-01", item: "Roadworthiness Cert", expiry: "2026-04-10", daysLeft: 100, body: "DVLA" }
                 ];
 
                 useEffect(() => {
@@ -112,49 +116,76 @@
                     localStorage.setItem(`erp_${key}`, val);
                 };
 
+                const generateLetter = (log) => {
+                    setActiveLetter({
+                        to: log.body,
+                        subject: `RENEWAL OF ${log.item.toUpperCase()} - ${log.vehicle}`,
+                        date: new Date().toLocaleDateString(),
+                        content: `This is a formal request for the renewal of the ${log.item} for vehicle ${log.vehicle}. Our current records show expiry on ${log.expiry}. Please advise on the current fees and required documentation.`
+                    });
+                };
+
                 return e('div', { className: 'flex' },
-                    e('aside', { className: 'sidebar flex flex-col' },
+                    e('aside', { className: 'sidebar flex flex-col no-print' },
                         e('div', { className: 'p-8 border-b border-white/5 text-center' }, 
                             theme.logo && e('img', { src: theme.logo, className: 'max-h-10 mx-auto mb-2' }),
                             e('h1', { className: 'text-lg font-black italic text-yellow-500' }, theme.name)
                         ),
                         e('nav', { className: 'mt-6 text-[10px] font-bold uppercase flex-1' },
-                            e('div', { onClick:()=>setView('COMPLIANCE'), className:`p-4 cursor-pointer ${view==='COMPLIANCE'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '⚖️ Regulatory Watchdog'),
-                            e('div', { onClick:()=>setView('MAINTENANCE'), className:`p-4 cursor-pointer ${view==='MAINTENANCE'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🛠️ Maintenance Hub'),
-                            e('div', { onClick:()=>setView('VISUALS'), className:`p-4 cursor-pointer ${view==='VISUALS'?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, '🖼️ Settings')
+                            ['DASH', 'LOGISTICS', 'COMPLIANCE', 'VISUALS'].map(v => 
+                                e('div', { key:v, onClick:()=>setView(v), className:`p-4 cursor-pointer ${view===v?'bg-white/5 text-yellow-500 border-l-4 border-yellow-500':''}`}, v)
+                            )
                         )
                     ),
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'COMPLIANCE' && e('div', null,
-                            e('div', {className:'flex justify-between items-end mb-8'},
-                                e('div', null,
-                                    e('h2', {className:'text-3xl font-black italic uppercase text-white'}, 'Regulatory Compliance'),
-                                    e('p', {className:'text-[10px] text-yellow-500 font-bold'}, 'ACTIVE MONITORING: ALL PERMITS & LICENSES')
-                                ),
-                                e('button', {className:'btn-accent w-auto px-6'}, '+ Register New Permit')
-                            ),
-                            
+                        view === 'COMPLIANCE' && !activeLetter && e('div', null,
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase'}, 'Regulatory Compliance'),
                             e('div', {className:'grid grid-cols-1 gap-4'},
-                                complianceLogs.map(log => e('div', {key: log.id, className:`glass-card flex justify-between items-center ${log.daysLeft < 20 ? 'alert-flash' : ''}`},
+                                complianceLogs.map(log => e('div', {key: log.id, className:`glass-card flex justify-between items-center ${log.daysLeft < 30 ? 'alert-flash' : ''}`},
                                     e('div', null,
                                         e('p', {className:'text-[10px] opacity-50 font-bold uppercase'}, log.vehicle),
                                         e('h3', {className:'text-xl font-black'}, log.item),
                                         e('p', {className:'text-xs opacity-70'}, `Expires: ${log.expiry}`)
                                     ),
-                                    e('div', {className:'text-right'},
-                                        e('p', {className:`text-2xl font-black ${log.daysLeft < 20 ? 'text-red-500' : 'text-emerald-500'}`}, `${log.daysLeft} DAYS`),
-                                        e('p', {className:'text-[9px] font-bold uppercase'}, 'Until Expiry')
+                                    e('div', {className:'flex gap-4 items-center'},
+                                        e('div', {className:'text-right mr-4'},
+                                            e('p', {className:`text-2xl font-black ${log.daysLeft < 30 ? 'text-red-500' : 'text-emerald-500'}`}, `${log.daysLeft} DAYS`),
+                                            e('p', {className:'text-[9px] font-bold uppercase'}, 'Until Expiry')
+                                        ),
+                                        log.daysLeft < 30 && e('button', {onClick:()=>generateLetter(log), className:'bg-white/10 hover:bg-white/20 text-[9px] font-bold p-2 rounded uppercase border border-white/20'}, '📝 Auto-Draft Letter')
                                     )
                                 ))
                             )
                         ),
 
-                        view === 'MAINTENANCE' && e('div', {className:'text-center p-20 opacity-30 italic text-2xl font-black'}, 'PREDICTIVE MAINTENANCE HUB ACTIVE'),
+                        activeLetter && e('div', {className:'glass-card bg-white text-black p-12 max-w-2xl mx-auto shadow-2xl'},
+                            e('div', {className:'flex justify-between items-start border-b-2 border-black pb-4 mb-8'},
+                                theme.logo && e('img', {src:theme.logo, className:'max-h-16'}),
+                                e('div', {className:'text-right'},
+                                    e('h1', {className:'font-black text-xl uppercase'}, theme.name),
+                                    e('p', {className:'text-[10px] font-bold uppercase tracking-widest'}, 'Official Command')
+                                )
+                            ),
+                            e('p', {className:'mb-4 font-bold'}, activeLetter.date),
+                            e('p', {className:'mb-2 font-bold'}, `TO: ${activeLetter.to}`),
+                            e('p', {className:'mb-8 font-black underline'}, `SUBJECT: ${activeLetter.subject}`),
+                            e('p', {className:'leading-relaxed mb-12'}, activeLetter.content),
+                            e('div', {className:'mt-20 border-t border-black w-48 pt-2'},
+                                e('p', {className:'font-black uppercase text-sm'}, 'Authorized Signature'),
+                                e('p', {className:'text-[10px]'}, theme.name)
+                            ),
+                            e('div', {className:'mt-12 flex gap-4 no-print'},
+                                e('button', {onClick:()=>window.print(), className:'btn-accent px-6 w-auto'}, 'Print Letter'),
+                                e('button', {onClick:()=>setActiveLetter(null), className:'bg-gray-200 px-6 font-bold rounded text-[10px]'}, 'Cancel')
+                            )
+                        ),
 
+                        view === 'DASH' && e('div', {className:'text-center p-20 italic opacity-30 text-2xl font-black'}, 'OPERATIONAL CONTROL CENTER ACTIVE'),
+                        view === 'LOGISTICS' && e('div', {className:'text-center p-20 italic opacity-30 text-2xl font-black'}, 'FLEET & ROUTE INTELLIGENCE ACTIVE'),
                         view === 'VISUALS' && e('div', null,
-                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase text-yellow-500'}, 'Identity Settings'),
+                            e('h2', {className:'text-3xl font-black mb-8 italic uppercase text-yellow-500'}, 'System Visuals'),
                             e('div', {className:'glass-card max-w-md space-y-4'},
                                 e('input', {className:'input-box', value:theme.name, placeholder:'System Name', onChange:(v)=>update('name', v.target.value)}),
                                 e('input', {className:'input-box', value:theme.logo, placeholder:'Logo URL', onChange:(v)=>update('logo', v.target.value)}),
