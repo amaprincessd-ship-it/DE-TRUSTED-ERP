@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v95.0 LABOR FORCE</title>
+    <title>CORPORATE COMMAND ERP | v96.0 PROCUREMENT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -21,8 +21,8 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        .worker-card { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px 0; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .vendor-badge { font-size: 9px; padding: 4px 8px; border-radius: 4px; font-weight: 900; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+        .status-critical { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
 
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -31,10 +31,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">LABOR COMMAND</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Staff & Shift Logic v95.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">PROCUREMENT</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Vendor Sourcing v96.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Synchronize Shift Data</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Access Purchasing Vault</button>
         </div>
     </div>
 
@@ -52,22 +52,26 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('SHIFT_PLAN');
+                const [view, setView] = useState('REORDER');
                 
-                const [staff, setStaff] = useState([
-                    { id: 'EMP-001', name: 'Kwame Mensah', role: 'Head Mixer', shift: 'Morning', jobAssignment: 'JOB-9942', status: 'ACTIVE' },
-                    { id: 'EMP-002', name: 'Abena Osei', role: 'Lab Technician', shift: 'Morning', jobAssignment: 'QC-GATE', status: 'ACTIVE' },
-                    { id: 'EMP-003', name: 'Kofi Boateng', role: 'Packaging lead', shift: 'Night', jobAssignment: 'STANDBY', status: 'AWAY' }
+                const [vendors] = useState([
+                    { id: 'V-101', name: 'Global Chemicals Ltd', rating: '4.8/5', leadTime: '3 Days' },
+                    { id: 'V-102', name: 'Titanium Sourcing Inc', rating: '4.2/5', leadTime: '7 Days' }
+                ]);
+
+                const [alerts] = useState([
+                    { item: 'Industrial Resin R-40', stock: 120, min: 500, status: 'CRITICAL', vendor: 'Global Chemicals Ltd' },
+                    { item: 'White Pigment Base', stock: 45, min: 100, status: 'CRITICAL', vendor: 'Titanium Sourcing Inc' }
                 ]);
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Human Capital')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Supply Chain')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['SHIFT_PLAN', 'TIMESHEETS', 'EFFICIENCY_LOG', 'DASHBOARD'].map(v => 
+                            ['REORDER', 'VENDORS', 'PO_HISTORY', 'DASHBOARD'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
                             )
                         )
@@ -75,53 +79,48 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'SHIFT_PLAN' && e('div', null,
-                            e('div', {className:'flex justify-between items-end mb-12'},
-                                e('div', null,
-                                    e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter text-white'}, 'Active Force'),
-                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Real-Time Labor Allocation')
-                                ),
-                                e('div', null,
-                                    e('button', {className:'btn-accent px-6'}, 'Clock-In New Staff')
-                                )
+                        view === 'REORDER' && e('div', null,
+                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4 text-white'}, 'Purchase Desk'),
+                            e('p', {className:'text-[11px] text-red-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Automatic Reorder Suggestions'),
+
+                            e('div', {className:'grid grid-cols-1 gap-6 mb-10'},
+                                alerts.map((a, i) => e('div', {key: i, className:'glass-card border-red-500/20 flex items-center justify-between'},
+                                    e('div', null,
+                                        e('span', {className:'text-[9px] font-black uppercase text-red-500 bg-red-500/10 px-2 py-1 rounded'}, 'Stock Warning'),
+                                        e('h3', {className:'text-xl font-black mt-2 text-white'}, a.item),
+                                        e('p', {className:'text-xs opacity-60'}, `Available: ${a.stock} KG | Threshold: ${a.min} KG`)
+                                    ),
+                                    e('div', {className:'text-center'},
+                                        e('p', {className:'text-[10px] opacity-40 uppercase font-black mb-1'}, 'Preferred Vendor'),
+                                        e('span', {className:'vendor-badge'}, a.vendor)
+                                    ),
+                                    e('div', {className:'flex gap-3'},
+                                        e('button', {className:'bg-white/5 text-white text-[10px] font-black px-4 py-3 rounded'}, 'View Quotes'),
+                                        e('button', {className:'btn-accent px-6 py-3'}, `Generate PO for ${a.min * 2}kg`)
+                                    )
+                                ))
                             ),
 
-                            e('div', {className:'grid grid-cols-1 lg:grid-cols-3 gap-8'},
-                                e('div', {className:'lg:col-span-2 glass-card'},
-                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest text-white'}, 'Active Floor Personnel'),
-                                    staff.map(worker => e('div', {key: worker.id, className:'worker-card flex justify-between items-center'},
-                                        e('div', null,
-                                            e('p', {className:'text-sm font-black'}, worker.name),
-                                            e('p', {className:'text-[10px] opacity-40 uppercase font-bold'}, `${worker.id} | ${worker.role}`)
-                                        ),
-                                        e('div', {className:'text-center'},
-                                            e('p', {className:'text-[9px] opacity-60 uppercase font-black mb-1'}, 'Job Assignment'),
-                                            e('span', {className:'bg-white/5 px-3 py-1 rounded text-[10px] font-mono text-yellow-500'}, worker.jobAssignment)
-                                        ),
-                                        e('div', {className:'text-right'},
-                                            e('span', {className:`status-dot ${worker.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-red-500'}`}),
-                                            e('span', {className:'text-[10px] font-black uppercase'}, worker.status)
-                                        )
-                                    ))
-                                ),
-                                e('div', null,
-                                    e('div', {className:'glass-card mb-6'},
-                                        e('h3', {className:'text-xs font-black uppercase opacity-40 mb-4 tracking-widest'}, 'Shift Summary'),
-                                        e('div', {className:'space-y-4'},
-                                            e('div', {className:'flex justify-between'}, e('span', {className:'text-xs opacity-60'}, 'Morning Shift'), e('span', {className:'text-xs font-bold'}, '12 Staff')),
-                                            e('div', {className:'flex justify-between'}, e('span', {className:'text-xs opacity-60'}, 'Total Hours Today'), e('span', {className:'text-xs font-bold'}, '96.5 Hrs')),
-                                            e('div', {className:'flex justify-between'}, e('span', {className:'text-xs opacity-60'}, 'Labor Cost (Est)'), e('span', {className:'text-xs font-black text-emerald-400'}, 'GHS 4,200'))
-                                        )
-                                    ),
-                                    e('div', {className:'glass-card border-yellow-500/20'},
-                                        e('h4', {className:'text-[10px] font-black uppercase mb-4'}, 'Efficiency Note'),
-                                        e('p', {className:'text-xs italic opacity-80'}, "Kwame Mensah's team is currently operating at 105% efficiency on JOB-9942. Predicted completion is 20 minutes early.")
-                                    )
+                            e('div', {className:'glass-card'},
+                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest'}, 'Vendor Performance Matrix'),
+                                e('table', {className:'w-full text-left'},
+                                    e('thead', null, e('tr', {className:'text-[9px] uppercase opacity-40 border-b border-white/10 pb-4'},
+                                        e('th', {className:'pb-4'}, 'Supplier Name'),
+                                        e('th', {className:'pb-4'}, 'Lead Time'),
+                                        e('th', {className:'pb-4'}, 'Quality Rating'),
+                                        e('th', {className:'pb-4 text-right'}, 'Status')
+                                    )),
+                                    e('tbody', null, vendors.map(v => e('tr', {key: v.id, className:'border-b border-white/5'},
+                                        e('td', {className:'py-6 font-bold text-white'}, v.name),
+                                        e('td', {className:'py-6 font-mono text-sm'}, v.leadTime),
+                                        e('td', {className:'py-6 text-sm font-black text-yellow-500'}, v.rating),
+                                        e('td', {className:'py-6 text-right'}, e('span', {className:'text-emerald-500 text-[10px] font-black'}, 'PRIMARY'))
+                                    )))
                                 )
                             )
                         ),
 
-                        view !== 'SHIFT_PLAN' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view !== 'REORDER' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
