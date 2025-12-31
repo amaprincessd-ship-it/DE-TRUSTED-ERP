@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v91.0 VARIANCE ANALYSIS</title>
+    <title>CORPORATE COMMAND ERP | v92.0 EXECUTIVE HUB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style id="theme-engine">
         :root {
             --bg-color: #020617; --side-color: #080c14; --text-color: #f8fafc;
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
-        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at bottom left, #1e293b, #020617); z-index: -1; }
+        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #1e293b, #020617); z-index: -1; }
         .sidebar { background-color: var(--side-color); height: 100vh; width: 280px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
         .main-content { margin-left: 280px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; }
@@ -21,10 +22,8 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        .variance-pos { color: #ef4444; } /* Over-usage is bad */
-        .variance-neg { color: #10b981; } /* Under-usage (Efficiency) */
-        .progress-bg { background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow: hidden; }
-
+        .chart-container { position: relative; height: 200px; width: 100%; }
+        
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -32,10 +31,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">MARGIN WATCH</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Variance Analysis v91.0</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase text-white">SYSTEM OVERRIDE</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Executive Intelligence v92.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded font-mono" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Financial Audit</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Synchronize Dashboard</button>
         </div>
     </div>
 
@@ -45,7 +44,32 @@
         function checkAccess() {
             if (document.getElementById('master-key-input').value === 'SUPER2025') {
                 document.getElementById('security-barrier').style.display = 'none';
+                renderCharts();
             } else { alert("ACCESS DENIED"); }
+        }
+
+        function renderCharts() {
+            setTimeout(() => {
+                const ctx1 = document.getElementById('profitChart').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                        datasets: [{ label: 'Daily Profit (GHS)', data: [12000, 19000, 15000, 25000, 22000, 30000], borderColor: '#fbbf24', tension: 0.4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+                });
+
+                const ctx2 = document.getElementById('wasteChart').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Efficiency', 'Variance', 'Scrap'],
+                        datasets: [{ data: [94, 4, 2], backgroundColor: ['#10b981', '#fbbf24', '#ef4444'], borderWeight: 0 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#fff', font: { size: 8 } } } } }
+                });
+            }, 100);
         }
 
         window.onload = function() {
@@ -53,24 +77,16 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('VARIANCE');
-                
-                const varianceData = [
-                    { material: 'Resin R-40', planned: 200, actual: 215, unit: 'kg', costImpact: 675 },
-                    { material: 'Titanium Pigment', planned: 50, actual: 48, unit: 'kg', costImpact: -240 },
-                    { material: 'Solvent Base', planned: 100, actual: 110, unit: 'L', costImpact: 150 }
-                ];
-
-                const totalLeakage = varianceData.reduce((acc, curr) => acc + curr.costImpact, 0);
+                const [view, setView] = useState('DASHBOARD');
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
                             e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Cost Control')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Visual Intelligence')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['VARIANCE', 'QC_TERMINAL', 'WAREHOUSE', 'CEO_DASHBOARD'].map(v => 
+                            ['DASHBOARD', 'PRODUCTION', 'WAREHOUSE', 'FINANCIALS'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
                             )
                         )
@@ -78,54 +94,68 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'VARIANCE' && e('div', null,
-                            e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter mb-4 text-white'}, 'Leakage Audit'),
-                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Comparing Planned vs Actual Material Consumption'),
+                        view === 'DASHBOARD' && e('div', null,
+                            e('div', {className:'flex justify-between items-end mb-12'},
+                                e('div', null,
+                                    e('h2', {className:'text-6xl font-black italic uppercase tracking-tighter text-white'}, 'Intelligence'),
+                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Real-Time Factory Performance')
+                                ),
+                                e('div', {className:'text-right'},
+                                    e('button', {className:'btn-accent px-6 py-3'}, 'Generate Monthly Report')
+                                )
+                            ),
 
-                            e('div', {className:'grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10'},
-                                e('div', {className:'glass-card border-red-500/20'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Total Material Variance'),
-                                    e('p', {className:`text-4xl font-black ${totalLeakage > 0 ? 'text-red-500' : 'text-emerald-500'}`}, `GHS ${totalLeakage}`),
-                                    e('p', {className:'text-[10px] font-bold mt-2 uppercase'}, totalLeakage > 0 ? 'Loss on current batch' : 'Efficiency Gain')
+                            e('div', {className:'grid grid-cols-1 md:grid-cols-4 gap-6 mb-10'},
+                                [
+                                    { label: 'Revenue (MTD)', val: 'GHS 842k', sub: '+12% vs last month', color: 'text-white' },
+                                    { label: 'Avg Margin', val: '34.2%', sub: 'Target: 35%', color: 'text-emerald-500' },
+                                    { label: 'Unfulfilled Orders', val: '14', sub: 'Priority: High', color: 'text-yellow-500' },
+                                    { label: 'Material Variance', val: '+2.4%', sub: 'GHS 4,200 Leakage', color: 'text-red-500' }
+                                ].map((m, i) => e('div', {key: i, className:'glass-card p-6'},
+                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, m.label),
+                                    e('p', {className:`text-3xl font-black ${m.color}`}, m.val),
+                                    e('p', {className:'text-[9px] font-bold opacity-60 mt-1 uppercase'}, m.sub)
+                                ))
+                            ),
+
+                            e('div', {className:'grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10'},
+                                e('div', {className:'glass-card'},
+                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest text-white'}, 'Profitability Trend (Weekly)'),
+                                    e('div', {className:'chart-container'}, e('canvas', {id: 'profitChart'}))
                                 ),
                                 e('div', {className:'glass-card'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Yield Percentage'),
-                                    e('p', {className:'text-4xl font-black text-white'}, '97.2%'),
-                                    e('p', {className:'text-[10px] font-bold opacity-60 mt-2'}, 'Target: 99.0%')
-                                ),
-                                e('div', {className:'glass-card'},
-                                    e('p', {className:'text-[10px] font-black uppercase opacity-40 mb-2'}, 'Wastage Rate'),
-                                    e('p', {className:'text-4xl font-black text-yellow-500'}, '2.8%'),
-                                    e('p', {className:'text-[10px] font-bold opacity-60 mt-2 uppercase text-red-400'}, 'Above Threshold')
+                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest text-white'}, 'Material Efficiency (Current Batch)'),
+                                    e('div', {className:'chart-container'}, e('canvas', {id: 'wasteChart'}))
                                 )
                             ),
 
                             e('div', {className:'glass-card'},
-                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-8 tracking-widest text-white'}, 'Material Consumption Breakdown (Job: BT-2025-0045)'),
-                                e('table', {className:'w-full text-left'},
-                                    e('thead', null, e('tr', {className:'text-[9px] uppercase opacity-40 border-b border-white/10 pb-4'},
-                                        e('th', {className:'pb-4'}, 'Material'), 
-                                        e('th', {className:'pb-4'}, 'Planned Qty'), 
-                                        e('th', {className:'pb-4 text-yellow-500'}, 'Actual Used'), 
-                                        e('th', {className:'pb-4'}, 'Variance'),
-                                        e('th', {className:'pb-4 text-right'}, 'Financial Impact')
-                                    )),
-                                    e('tbody', null, varianceData.map((v, i) => e('tr', {key: i, className:'border-b border-white/5'},
-                                        e('td', {className:'py-6 font-bold text-sm text-white'}, v.material),
-                                        e('td', {className:'py-6 text-sm opacity-60 font-mono'}, `${v.planned}${v.unit}`),
-                                        e('td', {className:'py-6 text-sm font-black text-yellow-500 font-mono'}, `${v.actual}${v.unit}`),
-                                        e('td', {className:`py-6 text-sm font-black ${v.actual > v.planned ? 'text-red-500' : 'text-emerald-500'}`}, 
-                                            `${v.actual > v.planned ? '+' : ''}${((v.actual - v.planned)/v.planned * 100).toFixed(1)}%`
+                                e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6 tracking-widest text-white'}, 'Recent High-Value Production Jobs'),
+                                e('div', {className:'space-y-4'},
+                                    [
+                                        { id: 'JOB-901', customer: 'Standard Chartered HQ', status: 'IN_LAB', progress: 85 },
+                                        { id: 'JOB-905', customer: 'Airport City Project', status: 'MIXING', progress: 45 },
+                                        { id: 'JOB-899', customer: 'Tullow Oil Ghana', status: 'COMPLETED', progress: 100 }
+                                    ].map((job, idx) => e('div', {key: idx, className:'flex justify-between items-center bg-white/5 p-4 rounded-xl'},
+                                        e('div', null,
+                                            e('p', {className:'text-sm font-black text-white'}, job.customer),
+                                            e('p', {className:'text-[10px] opacity-60 font-mono'}, job.id)
                                         ),
-                                        e('td', {className:`py-6 text-right font-mono font-black ${v.costImpact > 0 ? 'text-red-500' : 'text-emerald-500'}`}, 
-                                            `${v.costImpact > 0 ? '+' : ''}GHS ${v.costImpact}`
+                                        e('div', {className:'w-1/3'},
+                                            e('div', {className:'flex justify-between text-[9px] mb-1'}, 
+                                                e('span', null, job.status),
+                                                e('span', null, `${job.progress}%`)
+                                            ),
+                                            e('div', {className:'h-1 bg-white/10 rounded-full overflow-hidden'}, 
+                                                e('div', {className:'h-full bg-yellow-500', style:{width: `${job.progress}%`}})
+                                            )
                                         )
-                                    )))
+                                    ))
                                 )
                             )
                         ),
 
-                        view !== 'VARIANCE' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
+                        view !== 'DASHBOARD' && e('div', {className:'flex items-center justify-center h-[60vh] opacity-10 text-4xl font-black uppercase italic'}, `${view} System Active`)
                     )
                 );
             }
