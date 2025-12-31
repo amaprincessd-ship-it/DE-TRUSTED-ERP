@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLATINUM ERP | v100.0 TOTAL COMMAND</title>
+    <title>PLATINUM ERP | v101.0 WAREHOUSE COMMAND</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style id="theme-engine">
         :root {
             --bg-color: #020617; --side-color: #080c14; --text-color: #f8fafc;
             --accent-color: #fbbf24; --font-main: 'Inter', sans-serif;
         }
-        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; overflow-x: hidden; }
-        body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at top right, #1e293b, #020617); z-index: -1; }
-        .sidebar { background-color: var(--side-color); height: 100vh; width: 260px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; transition: 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); margin: 0; }
+        .sidebar { background-color: var(--side-color); height: 100vh; width: 260px; position: fixed; z-index: 100; border-right: 1px solid rgba(255,255,255,0.05); }
+        .main-content { margin-left: 260px; min-height: 100vh; padding: 40px; }
         .glass-card { background: rgba(255,255,255,0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 24px; }
-        .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; border: none; font-size: 10px; letter-spacing: 1px; transition: 0.2s; }
-        .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(251, 191, 36, 0.2); }
+        .input-field { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; color: white; font-size: 13px; width: 100%; outline: none; transition: 0.3s; }
+        .input-field:focus { border-color: var(--accent-color); background: rgba(0,0,0,0.5); }
+        .btn-accent { background: var(--accent-color); color: #000; font-weight: 800; padding: 12px; border-radius: 8px; cursor: pointer; text-transform: uppercase; border: none; font-size: 11px; letter-spacing: 1px; }
         .nav-item { padding: 14px 25px; cursor: pointer; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; text-transform: uppercase; }
-        .nav-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
         .nav-item.active { background: rgba(251, 191, 36, 0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
-        .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 9px; font-weight: 900; }
         
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/20">
-            <h1 class="text-4xl font-black mb-1 italic tracking-tighter uppercase text-white">PLATINUM OS</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Enterprise Deployment v100.0</p>
+            <h1 class="text-4xl font-black mb-1 italic tracking-tighter uppercase text-white">WAREHOUSE COMMAND</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.5em] uppercase">Inventory Control v101.0</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-5 w-full text-center text-3xl mb-6 text-white outline-none rounded-xl font-mono" placeholder="••••" autofocus>
-            <button onclick="bootSystem()" class="btn-accent w-full py-5 text-sm">Initialize Factory Command</button>
+            <button onclick="bootSystem()" class="btn-accent w-full py-5 text-sm">Synchronize Ledger</button>
         </div>
     </div>
 
@@ -46,93 +41,83 @@
     <script>
         function bootSystem() {
             if (document.getElementById('master-key-input').value === 'SUPER2025') {
-                document.getElementById('security-barrier').style.opacity = '0';
-                setTimeout(() => document.getElementById('security-barrier').style.display = 'none', 500);
-            } else { alert("SYSTEM REJECTED UNAUTHORIZED KEY"); }
+                document.getElementById('security-barrier').style.display = 'none';
+            } else { alert("ACCESS DENIED"); }
         }
 
         window.onload = function() {
             const e = React.createElement;
-            const { useState, useEffect } = React;
+            const { useState } = React;
 
             function App() {
-                const [activeModule, setActiveModule] = useState('DASHBOARD');
-                const [systemTime, setSystemTime] = useState(new Date().toLocaleTimeString());
+                const [view, setView] = useState('RECEIPT');
+                const [receiptData, setReceiptData] = useState({
+                    item_id: '', warehouse_id: '', bin_id: '', quantity: '', batch_no: '', expiry_date: ''
+                });
 
-                useEffect(() => {
-                    const timer = setInterval(() => setSystemTime(new Date().toLocaleTimeString()), 1000);
-                    return () => clearInterval(timer);
-                }, []);
-
-                const menu = [
-                    { id: 'DASHBOARD', label: 'Command Intel' },
-                    { id: 'PRODUCTION', label: 'Vat Management' },
-                    { id: 'LAB', label: 'QC & Release' },
-                    { id: 'WAREHOUSE', label: 'Inventory Vault' },
-                    { id: 'SALES', label: 'CRM & Invoicing' },
-                    { id: 'PROCUREMENT', label: 'Supply Chain' },
-                    { id: 'RESOURCES', label: 'Labor & HR' },
-                    { id: 'FINANCE', label: 'Treasury' },
-                    { id: 'MAINTENANCE', label: 'Machine Health' },
-                    { id: 'SECURITY', label: 'Role Matrix' }
+                // Mocking Ageing Query Result (SQL Logic 1.4)
+                const ageingReport = [
+                    { item_name: 'Titanium White Pigment', batch_no: 'TW-009', expiry_date: '2026-05-10', days_to_expiry: 130 },
+                    { item_name: 'Alkyd Resin B-12', batch_no: 'RE-882', expiry_date: '2025-12-15', days_to_expiry: -15 }
                 ];
+
+                const submitReceipt = async () => {
+                    console.log("Transmitting to Backend API /inventory/receive:", receiptData);
+                    alert(`STOCK LEDGER UPDATE: Batch ${receiptData.batch_no} recorded in Bin ${receiptData.bin_id}`);
+                };
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-8 border-b border-white/5 text-center' }, 
                             e('h1', { className: 'text-2xl font-black italic text-white tracking-tighter' }, "PLATINUM"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-[0.3em]'}, 'Factory Systems')
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-[0.3em]'}, 'Warehouse OS')
                         ),
-                        e('nav', { className: 'flex-1 py-6 overflow-y-auto' },
-                            menu.map(item => e('div', { 
-                                key: item.id, 
-                                onClick: () => setActiveModule(item.id), 
-                                className: `nav-item ${activeModule === item.id ? 'active' : ''}` 
-                            }, item.label))
-                        ),
-                        e('div', { className: 'p-6 border-t border-white/5 text-[10px] font-mono opacity-40' },
-                            e('p', null, `TIME: ${systemTime}`),
-                            e('p', null, 'SERVER: ACCRA-01')
+                        e('nav', { className: 'flex-1 py-6' },
+                            e('div', { onClick: () => setView('RECEIPT'), className: `nav-item ${view === 'RECEIPT' ? 'active' : ''}` }, 'Stock Receipt'),
+                            e('div', { onClick: () => setView('AGEING'), className: `nav-item ${view === 'AGEING' ? 'active' : ''}` }, 'Ageing & Expiry'),
+                            e('div', { onClick: () => setView('BINS'), className: `nav-item ${view === 'BINS' ? 'active' : ''}` }, 'Bin Management')
                         )
                     ),
 
                     e('main', { className: 'main-content flex-1' },
-                        e('div', { className: 'flex justify-between items-center mb-10' },
-                            e('div', null,
-                                e('h2', { className: 'text-5xl font-black italic uppercase tracking-tighter text-white' }, activeModule),
-                                e('p', { className: 'text-[10px] text-yellow-500 font-bold uppercase tracking-[0.4em]' }, 'Unified System Management')
-                            ),
-                            e('div', { className: 'flex gap-4' },
-                                e('div', { className: 'glass-card py-2 px-6 flex items-center gap-4' },
-                                    e('span', { className: 'status-pill bg-emerald-500/20 text-emerald-500' }, 'SYSTEM LIVE'),
-                                    e('span', { className: 'status-pill bg-blue-500/20 text-blue-500' }, 'v100.0')
-                                )
+                        
+                        view === 'RECEIPT' && e('div', null,
+                            e('h2', { className: 'text-5xl font-black italic uppercase tracking-tighter text-white mb-2' }, 'Stock Receipt'),
+                            e('p', { className: 'text-[10px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12' }, 'Manual Stock Ledger Entry (Transaction Type: IN)'),
+                            
+                            e('div', { className: 'glass-card max-w-2xl' },
+                                e('div', { className: 'grid grid-cols-2 gap-6' },
+                                    e('div', null, e('label', {className: 'text-[10px] font-bold uppercase opacity-50 ml-1'}, 'Item ID'), e('input', { className: 'input-field mt-1', placeholder: 'SKU Link', onChange: v => setReceiptData({...receiptData, item_id: v.target.value}) })),
+                                    e('div', null, e('label', {className: 'text-[10px] font-bold uppercase opacity-50 ml-1'}, 'Warehouse ID'), e('input', { className: 'input-field mt-1', placeholder: 'e.g., WH-ACCRA', onChange: v => setReceiptData({...receiptData, warehouse_id: v.target.value}) })),
+                                    e('div', null, e('label', {className: 'text-[10px] font-bold uppercase opacity-50 ml-1'}, 'Bin ID'), e('input', { className: 'input-field mt-1', placeholder: 'Bin Location Code', onChange: v => setReceiptData({...receiptData, bin_id: v.target.value}) })),
+                                    e('div', null, e('label', {className: 'text-[10px] font-bold uppercase opacity-50 ml-1'}, 'Quantity'), e('input', { className: 'input-field mt-1', placeholder: '0.00', onChange: v => setReceiptData({...receiptData, quantity: v.target.value}) })),
+                                    e('div', null, e('label', {className: 'text-[10px] font-bold uppercase opacity-50 ml-1'}, 'Batch Number'), e('input', { className: 'input-field mt-1', placeholder: 'LOT-XXXX', onChange: v => setReceiptData({...receiptData, batch_no: v.target.value}) })),
+                                    e('div', null, e('label', {className: 'text-[10px] font-bold uppercase opacity-50 ml-1'}, 'Expiry Date'), e('input', { type: 'date', className: 'input-field mt-1', onChange: v => setReceiptData({...receiptData, expiry_date: v.target.value}) }))
+                                ),
+                                e('button', { className: 'btn-accent w-full mt-10 py-4', onClick: submitReceipt }, 'Process Inventory Receipt')
                             )
                         ),
 
-                        activeModule === 'DASHBOARD' && e('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6' },
-                            e('div', { className: 'glass-card md:col-span-2' }, 
-                                e('h3', { className: 'text-xs font-black uppercase opacity-40 mb-6' }, 'Live Production Flow'),
-                                e('div', { className: 'h-64 flex items-center justify-center border border-white/5 rounded-xl italic opacity-20' }, 'Chart Engine Initializing...')
-                            ),
-                            e('div', { className: 'glass-card' }, 
-                                e('h3', { className: 'text-xs font-black uppercase opacity-40 mb-6' }, 'Critical Alerts'),
-                                e('div', { className: 'space-y-4' },
-                                    e('div', { className: 'p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-[10px]' }, 
-                                        e('p', {className:'font-black text-red-500 uppercase'}, 'Inventory Critical'),
-                                        e('p', null, 'Resin R-40 below safety threshold.')
-                                    ),
-                                    e('div', { className: 'p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-[10px]' }, 
-                                        e('p', {className:'font-black text-yellow-500 uppercase'}, 'Maintenance Due'),
-                                        e('p', null, 'Mixer-01 runtime limit reached.')
-                                    )
+                        view === 'AGEING' && e('div', null,
+                            e('h2', { className: 'text-5xl font-black italic uppercase tracking-tighter text-white mb-2' }, 'Stock Ageing'),
+                            e('p', { className: 'text-[10px] text-red-500 font-bold uppercase tracking-[0.4em] mb-12' }, 'SQL Analytical Result: Expiry Risk & Cycle Life'),
+
+                            e('div', { className: 'glass-card' },
+                                e('table', { className: 'w-full text-left font-mono' },
+                                    e('thead', null, e('tr', { className: 'text-[10px] uppercase opacity-40 border-b border-white/10' },
+                                        e('th', { className: 'pb-4' }, 'Item Name'),
+                                        e('th', { className: 'pb-4' }, 'Batch No'),
+                                        e('th', { className: 'pb-4' }, 'Expiry Date'),
+                                        e('th', { className: 'pb-4 text-right' }, 'Days to Expiry')
+                                    )),
+                                    e('tbody', null, ageingReport.map((row, i) => e('tr', { key: i, className: 'border-b border-white/5' },
+                                        e('td', { className: 'py-5 text-sm font-bold text-white' }, row.item_name),
+                                        e('td', { className: 'py-5 text-sm opacity-60' }, row.batch_no),
+                                        e('td', { className: 'py-5 text-sm opacity-60' }, row.expiry_date),
+                                        e('td', { className: `py-5 text-sm font-black text-right ${row.days_to_expiry < 0 ? 'text-red-500' : 'text-emerald-500'}` }, row.days_to_expiry)
+                                    )))
                                 )
                             )
-                        ),
-
-                        activeModule !== 'DASHBOARD' && e('div', { className: 'glass-card min-h-[60vh] flex flex-col items-center justify-center' },
-                            e('div', { className: 'w-20 h-20 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin mb-6' }),
-                            e('p', { className: 'text-xl font-black italic uppercase opacity-20' }, `Loading ${activeModule} Module...`)
                         )
                     )
                 );
