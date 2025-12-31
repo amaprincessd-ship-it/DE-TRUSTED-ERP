@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORPORATE COMMAND ERP | v72.0</title>
+    <title>CORPORATE COMMAND ERP | v73.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -21,9 +21,11 @@
         .nav-item { padding: 16px 30px; cursor: pointer; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); border-left: 4px solid transparent; letter-spacing: 0.1em; transition: 0.3s; }
         .nav-item.active { background: rgba(255,255,255,0.05); color: var(--accent-color); border-left-color: var(--accent-color); }
         
-        /* CERTIFICATE PREVIEW */
-        .coa-preview { background: white; color: black; padding: 40px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 0 40px rgba(0,0,0,0.5); }
-        .coa-header { border-bottom: 2px solid black; margin-bottom: 20px; padding-bottom: 10px; }
+        /* FLEET SPECIFIC */
+        .truck-card { border-left: 4px solid var(--accent-color); background: rgba(255,255,255,0.02); margin-bottom: 15px; padding: 20px; border-radius: 12px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .transit { background: #fbbf24; box-shadow: 0 0 10px #fbbf24; }
+        .delivered { background: #10b981; box-shadow: 0 0 10px #10b981; }
         
         #security-barrier { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -32,10 +34,10 @@
 
     <div id="security-barrier">
         <div class="glass-card w-full max-w-sm text-center border-yellow-500/30">
-            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">DISPATCH CORE</h1>
-            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Logistics & Certification v72</p>
+            <h1 class="text-3xl font-black mb-1 italic tracking-tighter uppercase">FLEET COMMAND</h1>
+            <p class="text-[9px] text-yellow-500 font-bold mb-8 tracking-[0.4em] uppercase">Logistics & Tracking v73</p>
             <input type="password" id="master-key-input" class="bg-black/50 border border-white/10 p-4 w-full text-center text-2xl mb-6 text-white outline-none rounded" placeholder="••••" autofocus>
-            <button onclick="checkAccess()" class="btn-accent w-full py-4">Authorize Dispatch</button>
+            <button onclick="checkAccess()" class="btn-accent w-full py-4">Establish Fleet Link</button>
         </div>
     </div>
 
@@ -53,27 +55,20 @@
             const { useState } = React;
 
             function App() {
-                const [view, setView] = useState('CERTIFY');
-                const [showCOA, setShowCOA] = useState(false);
-
-                // Mocking data from the previous QC step
-                const batchDetails = {
-                    id: 'SG-2025-001',
-                    product: 'Semi-Gloss High Durability (White)',
-                    viscosity: '102 KU',
-                    ph: '9.1',
-                    opacity: '98.5%',
-                    date: '2025-12-31'
-                };
+                const [view, setView] = useState('FLEET');
+                const [trucks, setTrucks] = useState([
+                    { id: 'TRK-01', driver: 'Kofi Mensah', batch: 'SG-2025-001', destination: 'Tema Harbour Site', status: 'In-Transit', eta: '45 mins' },
+                    { id: 'TRK-02', driver: 'Yaw Boateng', batch: 'SG-2025-004', destination: 'Appolonia City', status: 'Delivered', eta: 'Closed' }
+                ]);
 
                 return e('div', { className: 'flex' },
                     e('aside', { className: 'sidebar flex flex-col' },
                         e('div', { className: 'p-10 border-b border-white/10 text-center mb-6' }, 
-                            e('h1', { className: 'text-xl font-black italic text-white tracking-tighter' }, "LOGISTICS ERP"),
-                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Certification & Dispatch')
+                            e('h1', { className: 'text-xl font-black italic text-white' }, "PLATINUM ERP"),
+                            e('p', {className:'text-[8px] font-bold text-yellow-500 uppercase tracking-widest'}, 'Fleet Operations')
                         ),
                         e('nav', { className: 'flex-1' },
-                            ['DASHBOARD', 'CERTIFY', 'QUALITY', 'MIXING', 'DISPATCH'].map(v => 
+                            ['DASHBOARD', 'FLEET', 'CERTIFY', 'QUALITY', 'MIXING'].map(v => 
                                 e('div', { key:v, onClick:()=>setView(v), className:`nav-item ${view===v?'active':''}`}, v)
                             )
                         )
@@ -81,55 +76,54 @@
 
                     e('main', { className: 'main-content flex-1' },
                         
-                        view === 'CERTIFY' && e('div', null,
-                            e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter mb-4'}, 'Batch Certification'),
-                            e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em] mb-12'}, 'Certified batches ready for client delivery'),
+                        view === 'FLEET' && e('div', null,
+                            e('div', {className:'flex justify-between items-end mb-12'},
+                                e('div', null,
+                                    e('h2', {className:'text-5xl font-black italic uppercase tracking-tighter'}, 'Fleet Command'),
+                                    e('p', {className:'text-[11px] text-yellow-500 font-bold uppercase tracking-[0.4em]'}, 'Real-Time Delivery Monitoring')
+                                ),
+                                e('button', {className:'btn-accent w-auto px-10 rounded-full'}, 'Assign New Load')
+                            ),
 
-                            !showCOA ? e('div', {className:'glass-card max-w-2xl'},
-                                e('div', {className:'flex justify-between items-center mb-8'},
-                                    e('div', null,
-                                        e('p', {className:'text-[10px] font-black opacity-40 uppercase'}, 'Active Batch'),
-                                        e('h3', {className:'text-3xl font-black'}, batchDetails.id)
-                                    ),
-                                    e('div', {className:'bg-emerald-500/20 text-emerald-500 px-4 py-1 rounded-full text-[9px] font-black uppercase'}, 'QC Validated')
-                                ),
-                                e('div', {className:'grid grid-cols-2 gap-6 mb-8'},
-                                    e('div', null, e('p', {className:'text-[10px] opacity-40 uppercase'}, 'Product'), e('p', {className:'font-bold'}, batchDetails.product)),
-                                    e('div', null, e('p', {className:'text-[10px] opacity-40 uppercase'}, 'Date of Mix'), e('p', {className:'font-bold text-yellow-500'}, batchDetails.date))
-                                ),
-                                e('button', {onClick: ()=>setShowCOA(true), className:'btn-accent w-full py-4 text-sm'}, 'View Certificate of Analysis (COA)')
-                            ) : 
-                            e('div', null,
-                                e('div', {className:'coa-preview mb-8'},
-                                    e('div', {className:'coa-header flex justify-between items-center'},
-                                        e('div', null,
-                                            e('h1', {className:'text-xl font-black uppercase'}, 'PLATINUM PAINTS GH'),
-                                            e('p', {className:'text-[10px]'}, 'INDUSTRIAL QUALITY CERTIFICATE')
+                            e('div', {className:'grid grid-cols-1 lg:grid-cols-2 gap-8'},
+                                e('div', {className:'glass-card'},
+                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6'}, 'Active Shipments'),
+                                    trucks.map(t => e('div', {key: t.id, className:'truck-card'},
+                                        e('div', {className:'flex justify-between items-start mb-4'},
+                                            e('div', null,
+                                                e('p', {className:'text-[10px] font-bold text-yellow-500'}, t.id),
+                                                e('h4', {className:'text-xl font-black'}, t.driver)
+                                            ),
+                                            e('div', {className:'text-right'},
+                                                e('span', {className:`status-dot ${t.status === 'In-Transit' ? 'transit' : 'delivered'}`}),
+                                                e('span', {className:'text-[10px] font-black uppercase'}, t.status)
+                                            )
                                         ),
-                                        e('p', {className:'text-xs'}, `BATCH #: ${batchDetails.id}`)
-                                    ),
-                                    e('h2', {className:'text-center font-bold underline mb-6'}, 'CERTIFICATE OF ANALYSIS (COA)'),
-                                    e('div', {className:'grid grid-cols-1 gap-4 text-sm'},
-                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'Product:'), e('span', {className:'font-bold'}, batchDetails.product)),
-                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'Viscosity:'), e('span', {className:'font-bold text-blue-800'}, batchDetails.viscosity)),
-                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'pH Level:'), e('span', {className:'font-bold text-blue-800'}, batchDetails.ph)),
-                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'Hiding Power:'), e('span', {className:'font-bold text-blue-800'}, batchDetails.opacity)),
-                                        e('div', {className:'flex justify-between border-b pb-1'}, e('span', null, 'Certification Date:'), e('span', null, batchDetails.date))
-                                    ),
-                                    e('div', {className:'mt-10 pt-10 border-t border-dashed flex justify-between items-end italic text-xs'},
-                                        e('div', null, e('p', null, '_______________________'), e('p', null, 'Lab Technologist')),
-                                        e('p', null, 'E-Verified via ERP CORE')
-                                    )
+                                        e('div', {className:'grid grid-cols-2 gap-4 text-xs opacity-80'},
+                                            e('div', null, e('p', {className:'opacity-40 uppercase text-[9px]'}, 'Batch Carried'), e('p', null, t.batch)),
+                                            e('div', null, e('p', {className:'opacity-40 uppercase text-[9px]'}, 'Destination'), e('p', null, t.destination)),
+                                            e('div', null, e('p', {className:'opacity-40 uppercase text-[9px]'}, 'ETA'), e('p', null, t.eta))
+                                        )
+                                    ))
                                 ),
-                                e('div', {className:'flex gap-4'},
-                                    e('button', {onClick: ()=>setShowCOA(false), className:'bg-white/10 px-8 py-3 rounded text-[10px] font-black uppercase'}, '← Back'),
-                                    e('button', {className:'btn-accent px-10 py-3 rounded text-[10px] font-black uppercase'}, 'Print PDF & Send to Client'),
-                                    e('button', {className:'bg-emerald-600 px-10 py-3 rounded text-[10px] font-black uppercase text-white'}, 'Final Dispatch to Truck')
+                                e('div', {className:'glass-card bg-emerald-500/5 border-emerald-500/20'},
+                                    e('h3', {className:'text-xs font-black uppercase opacity-40 mb-6'}, 'Logistics Insights'),
+                                    e('div', {className:'space-y-6'},
+                                        e('div', null,
+                                            e('p', {className:'text-3xl font-black'}, 'GHS 142,500'),
+                                            e('p', {className:'text-[10px] font-bold uppercase opacity-60'}, 'Total Value In-Transit')
+                                        ),
+                                        e('div', null,
+                                            e('p', {className:'text-3xl font-black'}, '85%'),
+                                            e('p', {className:'text-[10px] font-bold uppercase opacity-60'}, 'On-Time Delivery Rate')
+                                        ),
+                                        e('button', {className:'w-full bg-white text-black font-black py-4 rounded text-[10px] uppercase mt-4'}, 'Generate Full Logistics Report')
+                                    )
                                 )
                             )
                         ),
 
-                        view !== 'CERTIFY' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-10 text-4xl font-black uppercase tracking-widest'}, `${view} System Active`)
+                        view !== 'FLEET' && e('div', {className:'flex items-center justify-center h-[70vh] italic opacity-10 text-4xl font-black uppercase'}, `${view} System Active`)
                     )
                 );
             }
